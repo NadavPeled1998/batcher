@@ -1,6 +1,11 @@
 import {
+  Box,
   Button,
   Flex,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,39 +13,54 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ChevronDown } from "react-feather";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Search } from "react-feather";
+import { TokenPickerModal } from "./TokenPicker/TokenPickerModal";
 
 export const TokenPicker = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const modalController = useDisclosure();
+  const [token, setToken] = useState("ETH");
+
+  const handleTokenSelect = (token: string) => {
+    setToken(token);
+    console.log(token);
+  };
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody></ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant="ghost">Secondary Action</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <TokenPickerModal onSelect={handleTokenSelect} {...modalController} />
       <Flex
-        direction={["column", "row"]}
-        gap={[1, 5]}
-        alignItems={["flex-start", "center"]}
+        flex={1}
+        cursor="pointer"
+        alignItems="center"
+        gap={2}
+        onClick={modalController.onOpen}
+        rounded="full"
+        pt={1}
+        pl={1}
+        pb={1}
+        bg="gray.700"
+        transition="all 0.2s"
+        _hover={{
+          bg: "gray.600",
+        }}
       >
-        <Button onClick={onOpen} rounded="full" px={6} bg="gray.700">
-          <Flex gap={4} alignItems="center">
-            <span>ETH</span> <ChevronDown size="1em" />
-          </Flex>
-        </Button>
+        <img
+          src={
+            require(`cryptocurrency-icons/svg/color/${token.toLowerCase()}.svg`)
+              .default
+          }
+          width="30"
+          height={30}
+          alt="eth"
+        />
+        <span>{token}</span>
+        <Box boxSize="24px" d="flex" alignItems="center">
+          <ChevronDown color="white" size="1em" strokeWidth={4} />
+        </Box>
       </Flex>
     </>
   );

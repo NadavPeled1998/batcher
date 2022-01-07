@@ -1,5 +1,6 @@
 import {
   Button,
+  CloseButton,
   Divider,
   Flex,
   FormControl,
@@ -7,6 +8,7 @@ import {
   FormLabel,
   Input,
   InputGroup,
+  InputLeftElement,
   InputRightElement,
   Tab,
   TabList,
@@ -17,6 +19,8 @@ import { Check, Layers } from "react-feather";
 import { useSendForm } from "../hooks/useSendForm";
 import { TokenPicker } from "../components/TokenPicker";
 import { BatchItem } from "../components/BatchItem";
+import { FeatherWallet } from "../assets/FeatherWallet";
+
 
 export const SendForm = () => {
   const { register, handleSubmit, errors } = useSendForm();
@@ -38,15 +42,20 @@ export const SendForm = () => {
         <FormLabel htmlFor="address" color="muted.200">
           Recipient Address
         </FormLabel>
-        <InputGroup>
+
+        <InputGroup disabled>
+          <InputLeftElement
+            px={0}
+            w="24px"
+            children={<FeatherWallet size="1.2em" />}
+          />
           <Input
             id="address"
             variant="flushed"
-            placeholder="Ethereum address"
             colorScheme="primary.200"
             {...register("address")}
           />
-          {/* <InputRightElement children={<Check />} /> */}
+          <InputRightElement children={<CloseButton />} />
         </InputGroup>
         <FormErrorMessage color="primary.200">
           {errors.address && errors.address.message}
@@ -55,9 +64,9 @@ export const SendForm = () => {
 
       <FormControl colorScheme="primary" fontWeight={500}>
         <Flex alignItems="flex-end">
-          <FormLabel htmlFor="address" color="muted.200">
+          {/* <FormLabel htmlFor="address" color="muted.200">
             Select token
-          </FormLabel>
+          </FormLabel> */}
           <Tabs
             ml="auto"
             colorScheme="primary"
@@ -88,10 +97,11 @@ export const SendForm = () => {
             variant="unstyled"
             placeholder="0.00"
             type="number"
+            {...register("amount")}
           />
         </Flex>
         <Flex>
-          <Text fontSize="sm" color="muted.200">
+          <Text hidden fontSize="sm" color="muted.200">
             Balance: 157,585 ETH
           </Text>
           <Text ml="auto" fontSize="sm" color="muted.200">
@@ -114,7 +124,7 @@ export const SendForm = () => {
           <span>Batch</span>
         </Flex>
       </Button>
-      
+
       <Flex direction="column">
         <BatchItem />
         <BatchItem />

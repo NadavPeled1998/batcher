@@ -5,6 +5,7 @@ import { isValidAddress } from "../utils/address";
 
 type Inputs = {
   address: string;
+  amount: number;
 };
 
 const schema = yup
@@ -12,6 +13,7 @@ const schema = yup
     address: yup
       .string()
       .test("is-valid-address", "Invalid address", isValidAddress),
+    amount: yup.number().positive(),
   })
   .required();
 
