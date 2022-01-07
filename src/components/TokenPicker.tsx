@@ -36,12 +36,11 @@ export const TokenPicker = () => {
         gap={[1, 5]}
         alignItems={["flex-start", "center"]}
       >
-        <Button onClick={onOpen}>
-          <Flex gap={5} alignItems="center">
+        <Button onClick={onOpen} rounded="full" px={6} bg="gray.700">
+          <Flex gap={4} alignItems="center">
             <span>ETH</span> <ChevronDown size="1em" />
           </Flex>
         </Button>
-        <span>Balance: 1.087</span>
       </Flex>
     </>
   );
