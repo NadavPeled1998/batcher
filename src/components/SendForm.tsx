@@ -114,6 +114,12 @@ export const SendForm = () => {
           <span>Batch</span>
         </Flex>
       </Button>
+      
+      <Flex direction="column">
+        <BatchItem />
+        <BatchItem />
+        <BatchItem />
+      </Flex>
 
       <Button
         colorScheme="primary"
@@ -123,7 +129,6 @@ export const SendForm = () => {
       >
         Send
       </Button>
-      <BatchItem />
     </Flex>
   );
 };

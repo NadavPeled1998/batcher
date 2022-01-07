@@ -24,9 +24,7 @@ export const Header = () => {
       >
         <TabList>
           <Tab>
-            <Text px={4} color="white">
-              Send
-            </Text>
+            <Text color="white">Send</Text>
           </Tab>
           <Tab>
             <Text px={4} color="white">
