@@ -15,27 +15,44 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Search } from "react-feather";
+import { useMoralis } from "react-moralis";
+import { useList } from "react-use";
+import { Token, useERC20Balance } from "../../hooks/useERC20Balance";
+import { TokenIcon } from "./TokenIcon";
 
 interface TokenPickerModalProps extends ReturnType<typeof useDisclosure> {
-  onSelect: (token: string) => void;
+  onSelect: (token: Token) => void;
 }
 export const TokenPickerModal: FC<TokenPickerModalProps> = ({
   onSelect,
   isOpen,
   onClose,
 }) => {
-  const tokens = [
-    ["LTC", "Litecoin", "150.0025"],
-    ["ETH", "Ethereum", "15.647"],
-    ["BTC", "Bitcoin", "0.0587"],
-    ["XRP", "Ripple", "0.0025"],
-  ];
-
-  const handleSelect = (token: string) => {
+  const handleSelect = (token: Token) => {
     onSelect(token);
     onClose?.();
+  };
+  const { Moralis } = useMoralis();
+  const { tokens: assets } = useERC20Balance();
+  const [search, setSearch] = useState("");
+  const [list, { filter, set, reset }] = useList(assets);
+
+  useEffect(() => {
+    set(assets);
+  }, [set, assets]);
+
+  const filterTokens = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const value = ev.target.value;
+    reset();
+    if (!value) return;
+
+    const reg = new RegExp(value, "i");
+    filter((token) => {
+      if (!value) return true;
+      return reg.test(token.symbol) || reg.test(token.name);
+    });
   };
 
   return (
@@ -48,39 +65,46 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = ({
           <Flex direction="column" gap={3}>
             <InputGroup size="lg" mb={6}>
               <InputLeftElement children={<Search />} />
-              <Input rounded="full" />
+              <Input rounded="full" onInput={filterTokens} />
             </InputGroup>
-            {tokens.map(([token, chain, value], index) => (
+            {list.map((token, index) => (
               <Flex
                 onClick={() => handleSelect(token)}
                 gap={2}
                 alignItems="center"
                 rounded="full"
-             
-                // bg="gray.700"
+                p={1}
+                pr={4}
+                transition="all 0.2s"
+                _hover={{ bg: "gray.700" }}
               >
-                <img
-                  key={index}
-                  src={
-                    require(`cryptocurrency-icons/svg/color/${token.toLowerCase()}.svg`)
-                      .default
-                  }
-                  width="40"
-                  alt="eth"
-                />
+                <TokenIcon token={token} />
                 <Flex direction="column" alignItems="flex-start">
                   <Text fontSize="md" fontWeight={500}>
-                    {token}
+                    {token.symbol}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
-                    {chain}
+                    {token.name}
                   </Text>
                 </Flex>
                 <Text ml="auto" fontWeight={500}>
-                  {value}
+                  {parseFloat(
+                    Moralis.Units.FromWei(
+                      token.balance,
+                      Number(token.decimals)
+                    ).toFixed(6)
+                  )}
                 </Text>
               </Flex>
             ))}
+            {list.length === 0 && (
+              <object
+                data={require("../../assets/unicorn.svg").default}
+                type="image/svg+xml"
+              >
+                <img src="yourfallback.jpg" />
+              </object>
+            )}
           </Flex>
         </ModalBody>
 

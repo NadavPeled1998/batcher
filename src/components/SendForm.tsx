@@ -1,35 +1,42 @@
 import {
   Button,
-  CloseButton,
   Divider,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
   Tab,
   TabList,
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { Check, Layers } from "react-feather";
-import { useSendForm } from "../hooks/useSendForm";
-import { TokenPicker } from "../components/TokenPicker";
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import { ArrowUp, Layers } from "react-feather";
 import { BatchItem } from "../components/BatchItem";
-import { FeatherWallet } from "../assets/FeatherWallet";
-
+import { TokenPicker } from "../components/TokenPicker";
+import { useSendForm } from "../hooks/useSendForm";
+import { AddressInput } from "./AddressInput";
+import { TokenAmountInput } from "./TokenAmountInput";
 
 export const SendForm = () => {
-  const { register, handleSubmit, errors } = useSendForm();
+  const {
+    register,
+    handleSubmit,
+    setAmount,
+    formState: { errors },
+  } = useSendForm();
+
   const submit = (...rest: any) => {
-    console.log("asdas", rest);
+    console.log("submit", rest);
   };
+
+  console.count("render");
 
   return (
     <Flex
+      key={"unique2"}
       as="form"
       direction="column"
       gap={10}
@@ -39,34 +46,27 @@ export const SendForm = () => {
       onSubmit={handleSubmit(submit)}
     >
       <FormControl colorScheme="primary" isInvalid={Boolean(errors.address)}>
-        <FormLabel htmlFor="address" color="muted.200">
+        <FormLabel fontSize="sm" htmlFor="address" color="muted.200">
           Recipient Address
         </FormLabel>
-
-        <InputGroup disabled>
-          <InputLeftElement
-            px={0}
-            w="24px"
-            children={<FeatherWallet size="1.2em" />}
-          />
-          <Input
-            id="address"
-            variant="flushed"
-            colorScheme="primary.200"
-            {...register("address")}
-          />
-          <InputRightElement children={<CloseButton />} />
-        </InputGroup>
-        <FormErrorMessage color="primary.200">
-          {errors.address && errors.address.message}
+        <AddressInput {...register("address")} />
+        <FormErrorMessage>
+          <ArrowUp size="1.2em" /> {errors.address && errors.address.message}
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl colorScheme="primary" fontWeight={500}>
-        <Flex alignItems="flex-end">
-          {/* <FormLabel htmlFor="address" color="muted.200">
+      <FormControl
+        d="flex"
+        flexDirection="column"
+        gap={2}
+        colorScheme="primary"
+        fontWeight={500}
+        isInvalid={Boolean(errors.amount)}
+      >
+        <Flex alignItems="flex-end" key={"unique1"}>
+          <FormLabel fontSize="sm" htmlFor="address" color="muted.200">
             Select token
-          </FormLabel> */}
+          </FormLabel>
           <Tabs
             ml="auto"
             colorScheme="primary"
@@ -88,16 +88,25 @@ export const SendForm = () => {
             </TabList>
           </Tabs>
         </Flex>
-        <Flex alignItems="center">
+        <Flex alignItems="center" p={2} bg="gray.700" rounded={10}>
           <TokenPicker />
-          <Input
-            pl={4}
-            textAlign="end"
-            fontSize="4xl"
-            variant="unstyled"
-            placeholder="0.00"
-            type="number"
+          <TokenAmountInput
+            key={"unique"}
+            inputType={0}
+            // {...register("amount")}
+            onValueChange={setAmount}
             {...register("amount")}
+            customInput={(props) => (
+              <Input
+                flex={1}
+                pl={4}
+                textAlign="right"
+                fontSize="4xl"
+                variant="unstyled"
+                placeholder="0.00"
+                {...props}
+              />
+            )}
           />
         </Flex>
         <Flex>
@@ -109,6 +118,9 @@ export const SendForm = () => {
           </Text>
         </Flex>
         <Divider mt={2} />
+        <FormErrorMessage alignSelf="flex-end">
+          {errors.amount && errors.amount.message} <ArrowUp size="1.2em" />
+        </FormErrorMessage>
       </FormControl>
 
       <Button
