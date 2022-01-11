@@ -1,9 +1,10 @@
 import { FC } from "react";
+import { Token } from "../hooks/useERC20Balance";
 
 export interface IBatchItem {
   address: string;
   amount: number;
-  token: string;
+  token: Token;
 }
 
 export interface BatchListProps {

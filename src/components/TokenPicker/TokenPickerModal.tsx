@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Flex,
   Input,
@@ -35,8 +36,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = ({
     onClose?.();
   };
   const { Moralis } = useMoralis();
-  const { tokens: assets } = useERC20Balance();
-  const [search, setSearch] = useState("");
+  const { tokens: assets, tokensWithPrices } = useERC20Balance();
   const [list, { filter, set, reset }] = useList(assets);
 
   useEffect(() => {
@@ -67,8 +67,9 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = ({
               <InputLeftElement children={<Search />} />
               <Input rounded="full" onInput={filterTokens} />
             </InputGroup>
-            {list.map((token, index) => (
+            {tokensWithPrices.map(({ token, price }, index) => (
               <Flex
+                key={index}
                 onClick={() => handleSelect(token)}
                 gap={2}
                 alignItems="center"
@@ -87,13 +88,14 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = ({
                     {token.name}
                   </Text>
                 </Flex>
-                <Text ml="auto" fontWeight={500}>
+                <Text ml="auto" textAlign="right" fontWeight={500}>
                   {parseFloat(
                     Moralis.Units.FromWei(
                       token.balance,
                       Number(token.decimals)
                     ).toFixed(6)
                   )}
+                  <Text fontSize="xs">{price?.usdPrice.toFixed(2) || 1}</Text>
                 </Text>
               </Flex>
             ))}

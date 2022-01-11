@@ -4,24 +4,12 @@ import { Header } from "./Header";
 
 export const DefaultLayout = () => {
   return (
-    <Flex
-      direction="column"
-      gap={10}
-      h="100vh"
-      maxW="1200px"
-      mx="auto"
-      p="8"
-      overflow="auto"
-    >
-      <Header
-        position="sticky"
-        top="0"
-        backdropBlur={"2xl"}
-        zIndex={8988}
-        style={{ backdropFilter: "blur(4px)" }}
-      />
-      <Flex flex={1}>
-        <Outlet />
+    <Flex direction="column" h="100vh" p={[4, 8]} pt={10} overflow="auto">
+      <Flex direction="column" mx="auto" gap={4} maxW="1200px" w="full">
+        <Header zIndex={1} />
+        <Flex flex={1} alignItems="flex-start">
+          <Outlet />
+        </Flex>
       </Flex>
     </Flex>
   );

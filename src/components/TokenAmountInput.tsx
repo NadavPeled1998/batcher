@@ -5,9 +5,7 @@ export enum InputType {
   Token,
   Fiat,
 }
-
-export interface TokenAmountInputProps
-  extends React.ComponentProps<typeof NumberFormat> {
+export interface TokenAmountInputProps extends NumberFormatProps<unknown> {
   inputType?: InputType;
 }
 
@@ -17,10 +15,11 @@ export const TokenAmountInput = forwardRef<
 >(({ inputType = InputType.Fiat, ...props }, ref) => {
   const prefix = inputType === InputType.Token ? "" : "$";
   const decimalScale = inputType === InputType.Token ? 6 : 2;
+
   return (
     <NumberFormat
       {...props}
-      ref={ref}
+      getInputRef={ref}
       thousandSeparator={true}
       thousandsGroupStyle="thousand"
       prefix={prefix}

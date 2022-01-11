@@ -19,22 +19,17 @@ type Props = React.ComponentProps<typeof Input>;
 export const AddressInput = forwardRef<HTMLInputElement, Props>(
   (props, ref) => {
     const [address, setAddress] = useState("");
-
-    const [on, set] = useBoolean(false);
     const showClearBtn = address.length > 0;
-    const isValid = isValidAddress(address);
 
     return (
-      <InputGroup disabled>
-        <InputLeftElement
-          px={0}
-          w="24px"
-          children={<FeatherWallet size="1.2em" />}
-        />
+      <InputGroup disabled size="lg">
+        <InputLeftElement children={<FeatherWallet size="1.2em" />} />
         <Input
           id="address"
-          variant="flushed"
+          variant="outline"
           colorScheme="primary.200"
+          // bg="gray.800"
+          rounded="full"
           value={address}
           onInput={(e: any) => setAddress(e.target.value)}
           ref={ref}
@@ -43,11 +38,6 @@ export const AddressInput = forwardRef<HTMLInputElement, Props>(
         <InputRightElement>
           <Flex alignItems="center">
             {showClearBtn && <CloseButton onClick={() => setAddress("")} />}
-            {/* {isValid && (
-              <Button variant="ghost" size="sm">
-                <UserPlus size="1em"/>
-              </Button>
-            )} */}
           </Flex>
         </InputRightElement>
       </InputGroup>

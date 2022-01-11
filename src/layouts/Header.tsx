@@ -11,31 +11,37 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import logo from "../assets/logo.svg";
+import logo from "../assets/batcher.svg";
 import { useAuth } from "../hooks/useAuth";
 
 export const Header: FC<FlexProps> = (props) => {
   const { authenticate, isAuthenticated } = useAuth();
   return (
-    <Flex direction="column" alignItems="center" gap="2" {...props}>
-      <Img src={logo} w={32} />
+    <Flex direction="column" alignItems="center"  {...props}>
+      <Img src={logo} w={32} mb={4}/>
 
       <Tabs
+        
+        w="auto"
         colorScheme="primary"
         rounded="full"
+        size="sm"
+        bg="gray.900"
+        p="1"
+        variant="solid-rounded"
         color="white"
         onChange={(...rest) => console.log("change", rest)}
       >
         <TabList>
-          <Tab>
+          <Tab w="33.33%">
             <Text color="white">Send</Text>
           </Tab>
-          <Tab>
+          <Tab w="33.33%">
             <Text px={4} color="white">
               Manage
             </Text>
           </Tab>
-          <Tab>
+          <Tab w="33.33%">
             <Text px={4} color="white">
               History
             </Text>

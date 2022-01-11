@@ -26,6 +26,7 @@ const theme = extendTheme({
   config,
   colors: {
     primary: createColors("#0095FF"),
+    // primary: createColors("#19BC4F"),
     muted: createColors("#676C77"),
     border: createColors("#343B48"),
   },

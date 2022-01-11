@@ -1,125 +1,162 @@
 import {
+  Box,
   Button,
   Divider,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input,
   Tab,
   TabList,
   Tabs,
   Text,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
-import { ArrowUp, Layers } from "react-feather";
+import { FC } from "react";
+import { ArrowUp, Layers, X } from "react-feather";
+import { FeatherGasStation } from "../assets/FeatherGasStation";
 import { BatchItem } from "../components/BatchItem";
 import { TokenPicker } from "../components/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
+import { store } from "../store";
 import { AddressInput } from "./AddressInput";
-import { TokenAmountInput } from "./TokenAmountInput";
+import { ClearBatchDialog } from "./Dialogs/ClearBatchDialog";
+import { InputType, TokenAmountInput } from "./TokenAmountInput";
 
-export const SendForm = () => {
+export const SendForm: FC = observer(() => {
   const {
-    register,
-    handleSubmit,
-    setAmount,
+    submit,
+    amountController,
+    addressController,
+    tokenController,
+    getValues,
     formState: { errors },
   } = useSendForm();
 
-  const submit = (...rest: any) => {
-    console.log("submit", rest);
-  };
-
-  console.count("render");
+  const { token } = getValues();
 
   return (
     <Flex
-      key={"unique2"}
       as="form"
       direction="column"
-      gap={10}
-      w="xl"
+      gap={8}
+      bg="gray.900"
+      p={[7, 10]}
+      h="auto"
+      w="md"
+      rounded="40px"
       maxW="full"
       mx="auto"
-      onSubmit={handleSubmit(submit)}
+      onSubmit={submit}
     >
       <FormControl colorScheme="primary" isInvalid={Boolean(errors.address)}>
-        <FormLabel fontSize="sm" htmlFor="address" color="muted.200">
+        <FormLabel
+          fontSize="sm"
+          textAlign="center"
+          htmlFor="address"
+          color="muted.200"
+        >
           Recipient Address
         </FormLabel>
-        <AddressInput {...register("address")} />
+        <AddressInput {...addressController} />
         <FormErrorMessage>
-          <ArrowUp size="1.2em" /> {errors.address && errors.address.message}
+          <Text textAlign="center" mx="auto">
+            {errors.address && errors.address.message}
+          </Text>
         </FormErrorMessage>
       </FormControl>
 
       <FormControl
-        d="flex"
-        flexDirection="column"
-        gap={2}
+        d="grid"
+        alignContent="center"
+        gap={1}
+        gridTemplateAreas={`
+          "label"
+          "picker"
+          "amount"
+          "error"
+          "usd"
+          "toggle"
+          "divider"
+        `}
+        textAlign="center"
         colorScheme="primary"
         fontWeight={500}
         isInvalid={Boolean(errors.amount)}
       >
-        <Flex alignItems="flex-end" key={"unique1"}>
-          <FormLabel fontSize="sm" htmlFor="address" color="muted.200">
-            Select token
-          </FormLabel>
-          <Tabs
-            ml="auto"
-            colorScheme="primary"
-            p={1}
-            bg="gray.700"
-            rounded="full"
-            variant="solid-rounded"
-            size="sm"
-            color="white"
-            onChange={(...rest) => console.log("change", rest)}
-          >
-            <TabList>
-              <Tab>
-                <Text color="white">ETH</Text>
-              </Tab>
-              <Tab>
-                <Text color="white">USD</Text>
-              </Tab>
-            </TabList>
-          </Tabs>
-        </Flex>
-        <Flex alignItems="center" p={2} bg="gray.700" rounded={10}>
-          <TokenPicker />
+        <FormLabel
+          textAlign="center"
+          gridArea="label"
+          fontSize="sm"
+          htmlFor="address"
+          color="muted.200"
+        >
+          Select token
+        </FormLabel>
+        <Tabs
+          gridArea="toggle"
+          colorScheme="primary"
+          mx="auto"
+          mt="4"
+          p="0.5"
+          defaultIndex={store.sendFrom.amountInputType}
+          bg="gray.700"
+          rounded="full"
+          variant="solid-rounded"
+          size="sm"
+          color="white"
+          onChange={(type) => store.sendFrom.setAmountInputType(type)}
+        >
+          <TabList>
+            <Tab py="0.5" px="4">
+              <Text color="white">{token ? token.symbol : "ETH"}</Text>
+            </Tab>
+            <Tab py="0.5" px="4">
+              <Text color="white">USD</Text>
+            </Tab>
+          </TabList>
+        </Tabs>
+        <Box gridArea="picker" mx="auto">
+          <TokenPicker {...tokenController} />
+        </Box>
+        <Box gridArea="amount">
           <TokenAmountInput
-            key={"unique"}
-            inputType={0}
-            // {...register("amount")}
-            onValueChange={setAmount}
-            {...register("amount")}
-            customInput={(props) => (
-              <Input
-                flex={1}
-                pl={4}
-                textAlign="right"
-                fontSize="4xl"
-                variant="unstyled"
-                placeholder="0.00"
-                {...props}
-              />
-            )}
+            placeholder={
+              store.sendFrom.amountInputType === InputType.Token
+                ? "0.00"
+                : "$0.00"
+            }
+            inputType={store.sendFrom.amountInputType}
+            {...amountController}
+            style={{
+              background: "none",
+              outline: "none",
+              fontSize: "2.5em",
+              flex: 1,
+              textAlign: "center",
+              width: "100%",
+              // color:
+              //   store.sendFrom.amountInputType === InputType.Token
+              //     ? "var(--chakra-colors-primary-200)"
+              //     : "white",
+            }}
           />
-        </Flex>
-        <Flex>
-          <Text hidden fontSize="sm" color="muted.200">
-            Balance: 157,585 ETH
+        </Box>
+
+        <Text gridArea="usd" fontSize="sm" color="muted.200">
+          0.00 USD
+        </Text>
+
+        <FormErrorMessage
+          d="flex"
+          flexDir="column"
+          gridArea="error"
+          textAlign="center"
+        >
+          <ArrowUp size="1.2em" />
+          <Text mx="auto" d="flex" alignItems="center">
+            {errors.amount && errors.amount.message}
           </Text>
-          <Text ml="auto" fontSize="sm" color="muted.200">
-            0.00 USD
-          </Text>
-        </Flex>
-        <Divider mt={2} />
-        <FormErrorMessage alignSelf="flex-end">
-          {errors.amount && errors.amount.message} <ArrowUp size="1.2em" />
         </FormErrorMessage>
       </FormControl>
 
@@ -129,6 +166,7 @@ export const SendForm = () => {
         w={32}
         mx="auto"
         variant="ghost"
+        rounded="full"
         disabled={Boolean(errors.address)}
       >
         <Flex experimental_spaceX="2" alignItems="center">
@@ -137,20 +175,73 @@ export const SendForm = () => {
         </Flex>
       </Button>
 
-      <Flex direction="column">
-        <BatchItem />
-        <BatchItem />
-        <BatchItem />
+      {store.batch.items.length > 0 && (
+        <Box experimental_spaceY={2}>
+          <Flex alignItems="center" justifyContent="space-between">
+            <Text fontSize="sm" color="gray.400">
+              Batch
+            </Text>
+            <ClearBatchDialog />
+          </Flex>
+          <Divider hidden={!store.batch.items.length} />
+          <Flex direction="column" maxH="200px" overflowY="auto">
+            {store.batch.items
+              .slice()
+              .reverse()
+              .map((item, index) => (
+                <BatchItem key={index} item={item} />
+              ))}
+          </Flex>
+        </Box>
+      )}
+
+      <Flex hidden={!store.batch.items.length} direction="column" gap={1}>
+        <Text fontSize="sm" color="gray.400">
+          Totals
+        </Text>
+        <Divider />
+        <Flex gap={2}>
+          {Object.entries(store.batch.totals).map(([token, total]) => (
+            <Flex gap="1" fontSize="sm" key={token}>
+              <Text>{token}</Text>
+              <Text fontWeight="bold">{total}</Text>
+            </Flex>
+          ))}
+        </Flex>
+        <Flex
+          alignItems="center"
+          justifyContent="flex-end"
+          fontSize="sm"
+          color="gray.400"
+          gap={1}
+        >
+          <FeatherGasStation
+            stroke="none"
+            fill="var(--chakra-colors-primary-200)"
+          />
+          <Text>Gas:</Text>
+          <Text color="primary.200">
+            ${(store.batch.items.length * 0.42).toFixed(2)}
+          </Text>
+          <Text>instead of</Text>
+          <Text decoration="line-through" color="yellow.800">
+            ${(store.batch.items.length * 2.48).toFixed(2)}
+          </Text>
+        </Flex>
       </Flex>
 
       <Button
+        hidden={!store.batch.items.length}
+        rounded="full"
         colorScheme="primary"
         disabled={Boolean(errors.address)}
         size="lg"
         variant="outline"
       >
-        Send
+        {!store.batch.items.length
+          ? "Send"
+          : `Send Batch (${store.batch.items.length})`}
       </Button>
     </Flex>
   );
-};
+});
