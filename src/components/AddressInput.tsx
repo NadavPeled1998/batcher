@@ -9,12 +9,13 @@ import {
 import React, { forwardRef, useState } from "react";
 import { FeatherWallet } from "../assets/FeatherWallet";
 
-type Props = React.ComponentProps<typeof Input>;
+interface Props extends React.ComponentProps<typeof Input> {
+  clear: () => void;
+}
 
 export const AddressInput = forwardRef<HTMLInputElement, Props>(
-  (props, ref) => {
-    const [address, setAddress] = useState("");
-    const showClearBtn = address.length > 0;
+  ({ clear, ...props }, ref) => {
+    const showClearBtn = !!props.value;
 
     return (
       <InputGroup disabled size="lg">
@@ -25,14 +26,12 @@ export const AddressInput = forwardRef<HTMLInputElement, Props>(
           colorScheme="primary.200"
           rounded="full"
           fontSize="md"
-          value={address}
-          onInput={(e: any) => setAddress(e.target.value)}
           ref={ref}
           {...props}
         />
         <InputRightElement hidden={!showClearBtn}>
           <Flex alignItems="center">
-            <CloseButton rounded="full" onClick={() => setAddress("")} />
+            <CloseButton rounded="full" onClick={clear} />
           </Flex>
         </InputRightElement>
       </InputGroup>

@@ -1,9 +1,20 @@
 import { makeAutoObservable } from "mobx";
 import { InputType } from "../components/TokenAmountInput";
 import { Token } from "../hooks/useERC20Balance";
+import { isValidAddress } from "../utils/address";
 import { genDefaultETHToken } from "../utils/defaults";
 import { Tokens } from "./prices";
+import * as yup from "yup";
+import { Batch } from "./batch";
 
+const schema = yup
+  .object({
+    address: yup
+      .string()
+      .test("is-valid-address", "Invalid address", isValidAddress),
+    amount: yup.number().required().positive(),
+  })
+  .required();
 export class Form {
   amountInputType: InputType = InputType.Token;
   selectedToken: Token = genDefaultETHToken();
@@ -21,7 +32,7 @@ export class Form {
     value: "",
   };
 
-  constructor(public tokenStore: Tokens) {
+  constructor(public tokenStore: Tokens, public batchStore: Batch) {
     makeAutoObservable(this);
     this.tokenPicker.value = this.tokenStore.list[0] || genDefaultETHToken();
   }
@@ -42,9 +53,17 @@ export class Form {
     this.amountInputType = type;
   }
 
+  async submit() {
+    this.batchStore.add({
+      address: this.address.value,
+      amount: Number(this.amount.value),
+      token: this.tokenPicker.value,
+    });
+    this.clear();
+  }
+
   clear() {
     this.address.value = "";
-    this.tokenPicker.value = this.tokenStore.list[0] || genDefaultETHToken();
     this.amount.value = "";
   }
 }

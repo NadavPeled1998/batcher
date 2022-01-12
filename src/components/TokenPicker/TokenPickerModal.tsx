@@ -3,9 +3,7 @@ import {
   Flex,
   Input,
   InputGroup,
-  InputLeftElement,
-  list,
-  Modal,
+  InputLeftElement, Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -14,15 +12,15 @@ import {
   ModalOverlay,
   Spinner,
   Text,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
+import { Moralis } from "moralis";
 import { FC } from "react";
 import { Search } from "react-feather";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { TokenIcon } from "./TokenIcon";
-import { Moralis } from "moralis";
-import { observer } from "mobx-react-lite";
 
 interface TokenPickerModalProps extends ReturnType<typeof useDisclosure> {
   onSelect: (token: Token) => void;

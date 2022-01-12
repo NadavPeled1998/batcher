@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from "react";
+import { forwardRef } from "react";
 import NumberFormat, { NumberFormatProps } from "react-number-format";
 
 export enum InputType {
