@@ -1,18 +1,13 @@
 import {
-  Button,
   CloseButton,
   Flex,
   Input,
   InputGroup,
   InputLeftElement,
   InputRightElement,
-  useBoolean,
 } from "@chakra-ui/react";
 import React, { forwardRef, useState } from "react";
-import { UserPlus } from "react-feather";
-import { useToggle } from "react-use";
 import { FeatherWallet } from "../assets/FeatherWallet";
-import { isValidAddress } from "../utils/address";
 
 type Props = React.ComponentProps<typeof Input>;
 
@@ -28,16 +23,16 @@ export const AddressInput = forwardRef<HTMLInputElement, Props>(
           id="address"
           variant="outline"
           colorScheme="primary.200"
-          // bg="gray.800"
           rounded="full"
+          fontSize="md"
           value={address}
           onInput={(e: any) => setAddress(e.target.value)}
           ref={ref}
           {...props}
         />
-        <InputRightElement>
+        <InputRightElement hidden={!showClearBtn}>
           <Flex alignItems="center">
-            {showClearBtn && <CloseButton onClick={() => setAddress("")} />}
+            <CloseButton rounded="full" onClick={() => setAddress("")} />
           </Flex>
         </InputRightElement>
       </InputGroup>

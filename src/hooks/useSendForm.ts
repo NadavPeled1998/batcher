@@ -1,11 +1,18 @@
+import { Input } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCallback, useMemo } from "react";
+import React, { createRef, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { NumberFormatValues } from "react-number-format";
+import NumberFormat, {
+  NumberFormatProps,
+  NumberFormatValues,
+} from "react-number-format";
 import * as yup from "yup";
+import { AddressInput } from "../components/AddressInput";
+import { TokenAmountInput } from "../components/TokenAmountInput";
+import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { store } from "../store";
 import { isValidAddress } from "../utils/address";
-import { Token, useNativeToken } from "./useERC20Balance";
+import { Token } from "./useERC20Balance";
 
 type Inputs = {
   address: string;
@@ -19,57 +26,43 @@ const schema = yup
       .string()
       .test("is-valid-address", "Invalid address", isValidAddress),
     amount: yup.number().required().positive(),
-    token: yup.object().required(),
   })
   .required();
 
 export const useSendForm = () => {
-  const { nativeToken } = useNativeToken();
-  const { setValue, register, ...form } = useForm<Inputs>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      address: "",
-      amount: 0,
-      token: nativeToken,
+  const addressRef = useRef<any>();
+  const amountRef = useRef();
+
+  const addressController: React.ComponentProps<typeof AddressInput> = {
+    ref: addressRef,
+    value: store.form.address.value,
+  };
+
+  const amountController: React.ComponentProps<typeof TokenAmountInput> = {
+    ref: amountRef,
+    value: store.form.amount.value,
+    onValueChange: ({ value }) => {
+      store.form.setAmount(value);
     },
-  });
+  };
 
-  const addressController = useMemo(() => register("address"), [register]);
+  const tokenController: React.ComponentProps<typeof TokenPicker> = {
+    value: store.form.tokenPicker.value,
+    onChange: (token) => store.form.setToken(token),
+  };
 
-  const amountController = useMemo(() => {
-    const {  onBlur, ...rest } = register("amount");
-    return {
-      ...rest,
-      onValueChange: ({ floatValue }: NumberFormatValues) => {
-        setValue("amount", floatValue || 0);
-      },
-    };
-  }, [register, setValue]);
-
-  const tokenController = useMemo(
-    () => ({
-      ...register("token"),
-      onChange: (token: Token) =>
-        setValue("token", token, { shouldValidate: true }),
-    }),
-    [register, setValue]
-  );
-
-  const submit = form.handleSubmit(({ address, amount, token }) => {
-    store.batch.add({
-      address,
-      amount,
-      token,
-    });
-  });
+  const submit = () => {};
 
   return {
-    ...form,
-    register,
-    setValue,
     amountController,
     addressController,
     tokenController,
     submit,
+    formState: {
+      errors: {} as {
+        address?: { message: string };
+        amount?: { message: string };
+      },
+    },
   };
 };

@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Divider,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -13,15 +12,15 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
-import { ArrowUp, Layers, X } from "react-feather";
-import { FeatherGasStation } from "../assets/FeatherGasStation";
-import { BatchItem } from "../components/BatchItem";
-import { TokenPicker } from "../components/TokenPicker";
+import { ArrowUp, Layers } from "react-feather";
+import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
 import { AddressInput } from "./AddressInput";
-import { ClearBatchDialog } from "./Dialogs/ClearBatchDialog";
+import { BatchList } from "./BatchList/BatchList";
+import { EstimatedGas } from "./EstimatedGas";
 import { InputType, TokenAmountInput } from "./TokenAmountInput";
+import { Totals } from "./Totals";
 
 export const SendForm: FC = observer(() => {
   const {
@@ -29,11 +28,8 @@ export const SendForm: FC = observer(() => {
     amountController,
     addressController,
     tokenController,
-    getValues,
     formState: { errors },
   } = useSendForm();
-
-  const { token } = getValues();
 
   return (
     <Flex
@@ -99,17 +95,17 @@ export const SendForm: FC = observer(() => {
           mx="auto"
           mt="4"
           p="0.5"
-          defaultIndex={store.sendFrom.amountInputType}
+          defaultIndex={store.form.amountInputType}
           bg="gray.700"
           rounded="full"
           variant="solid-rounded"
           size="sm"
           color="white"
-          onChange={(type) => store.sendFrom.setAmountInputType(type)}
+          onChange={(type) => store.form.setAmountInputType(type)}
         >
           <TabList>
             <Tab py="0.5" px="4">
-              <Text color="white">{token ? token.symbol : "ETH"}</Text>
+              <Text color="white">{tokenController.value?.symbol}</Text>
             </Tab>
             <Tab py="0.5" px="4">
               <Text color="white">USD</Text>
@@ -122,11 +118,11 @@ export const SendForm: FC = observer(() => {
         <Box gridArea="amount">
           <TokenAmountInput
             placeholder={
-              store.sendFrom.amountInputType === InputType.Token
+              store.form.amountInputType === InputType.Token
                 ? "0.00"
                 : "$0.00"
             }
-            inputType={store.sendFrom.amountInputType}
+            inputType={store.form.amountInputType}
             {...amountController}
             style={{
               background: "none",
@@ -135,10 +131,6 @@ export const SendForm: FC = observer(() => {
               flex: 1,
               textAlign: "center",
               width: "100%",
-              // color:
-              //   store.sendFrom.amountInputType === InputType.Token
-              //     ? "var(--chakra-colors-primary-200)"
-              //     : "white",
             }}
           />
         </Box>
@@ -168,67 +160,16 @@ export const SendForm: FC = observer(() => {
         variant="ghost"
         rounded="full"
         disabled={Boolean(errors.address)}
+        leftIcon={<Layers />}
       >
-        <Flex experimental_spaceX="2" alignItems="center">
-          <Layers />
-          <span>Batch</span>
-        </Flex>
+        Batch
       </Button>
 
-      {store.batch.items.length > 0 && (
-        <Box experimental_spaceY={2}>
-          <Flex alignItems="center" justifyContent="space-between">
-            <Text fontSize="sm" color="gray.400">
-              Batch
-            </Text>
-            <ClearBatchDialog />
-          </Flex>
-          <Divider hidden={!store.batch.items.length} />
-          <Flex direction="column" maxH="200px" overflowY="auto">
-            {store.batch.items
-              .slice()
-              .reverse()
-              .map((item, index) => (
-                <BatchItem key={index} item={item} />
-              ))}
-          </Flex>
-        </Box>
-      )}
+      <BatchList />
 
-      <Flex hidden={!store.batch.items.length} direction="column" gap={1}>
-        <Text fontSize="sm" color="gray.400">
-          Totals
-        </Text>
-        <Divider />
-        <Flex gap={2}>
-          {Object.entries(store.batch.totals).map(([token, total]) => (
-            <Flex gap="1" fontSize="sm" key={token}>
-              <Text>{token}</Text>
-              <Text fontWeight="bold">{total}</Text>
-            </Flex>
-          ))}
-        </Flex>
-        <Flex
-          alignItems="center"
-          justifyContent="flex-end"
-          fontSize="sm"
-          color="gray.400"
-          gap={1}
-        >
-          <FeatherGasStation
-            stroke="none"
-            fill="var(--chakra-colors-primary-200)"
-          />
-          <Text>Gas:</Text>
-          <Text color="primary.200">
-            ${(store.batch.items.length * 0.42).toFixed(2)}
-          </Text>
-          <Text>instead of</Text>
-          <Text decoration="line-through" color="yellow.800">
-            ${(store.batch.items.length * 2.48).toFixed(2)}
-          </Text>
-        </Flex>
-      </Flex>
+      <Totals />
+
+      <EstimatedGas />
 
       <Button
         hidden={!store.batch.items.length}

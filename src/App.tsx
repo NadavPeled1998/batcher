@@ -3,6 +3,7 @@ import React from "react";
 import { Outlet, ReactLocation, Router } from "react-location";
 import { MoralisProvider } from "react-moralis";
 import "./App.css";
+import { useAccount } from "./hooks/useAccount";
 import { routes } from "./routes";
 import { Fonts } from "./theme/Fonts";
 import theme from "./theme/theme";

@@ -1,10 +1,10 @@
-import { CloseButton, Flex, FlexProps, Text } from "@chakra-ui/react";
+import { CloseButton, Flex, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { ChevronRight, Send } from "react-feather";
-import { IBatchItem } from "../components/BatchList";
-import { store } from "../store";
-import { shortenAddress } from "../utils/address";
-import { TokenIcon } from "./TokenPicker/TokenIcon";
+import { store } from "../../store";
+import { shortenAddress } from "../../utils/address";
+import { TokenIcon } from "../TokenPicker/TokenIcon";
+import { IBatchItem } from "./BatchList";
 
 export interface BatchItemProps {
   item: IBatchItem;
@@ -12,7 +12,7 @@ export interface BatchItemProps {
 
 export const BatchItem: FC<BatchItemProps> = ({ item }) => {
   return (
-    <Flex fontSize="md" alignItems="center" gap={2}>
+    <Flex fontSize="sm" alignItems="center" gap={2}>
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
       <Text>
         {item.amount} {item.token.symbol}
@@ -25,6 +25,7 @@ export const BatchItem: FC<BatchItemProps> = ({ item }) => {
       />
       <Text>{shortenAddress(item.address)}</Text>
       <CloseButton
+        rounded="full"
         ml="auto"
         color="primary.200"
         onClick={() => store.batch.remove(item)}

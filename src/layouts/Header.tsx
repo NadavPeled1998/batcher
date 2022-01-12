@@ -1,21 +1,15 @@
 import {
-  Box,
-  Button,
   Flex,
-  FlexProps,
-  Heading,
-  Img,
+  FlexProps, Img,
   Tab,
   TabList,
   Tabs,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { FC } from "react";
 import logo from "../assets/batcher.svg";
-import { useAuth } from "../hooks/useAuth";
 
 export const Header: FC<FlexProps> = (props) => {
-  const { authenticate, isAuthenticated } = useAuth();
   return (
     <Flex direction="column" alignItems="center"  {...props}>
       <Img src={logo} w={32} mb={4}/>
@@ -48,9 +42,6 @@ export const Header: FC<FlexProps> = (props) => {
           </Tab>
         </TabList>
       </Tabs>
-      {/* <Button onClick={authenticate}>
-        {isAuthenticated ? "Connected!" : "Connect wallet"}
-      </Button> */}
     </Flex>
   );
 };

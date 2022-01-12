@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 import { X } from "react-feather";
 import { store } from "../../store";
 
-export const ClearBatchDialog = () => {
+export const ClearBatchButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef<any>();
@@ -27,6 +27,7 @@ export const ClearBatchDialog = () => {
         size="sm"
         colorScheme="primary"
         variant="ghost"
+        rounded="full"
         leftIcon={<X size="1.2em" />}
         onClick={() => setIsOpen(true)}
       >
@@ -37,9 +38,10 @@ export const ClearBatchDialog = () => {
         isOpen={isOpen}
         leastDestructiveRef={cancelRef}
         onClose={onClose}
+        isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent bg="gray.800">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Clear Batch
             </AlertDialogHeader>
@@ -49,10 +51,17 @@ export const ClearBatchDialog = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
+              <Button rounded="full" ref={cancelRef} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="red" onClick={clearAndClose} ml={3}>
+              <Button
+                rounded="full"
+                colorScheme="red"
+                bg="red.600"
+                color="white"
+                onClick={clearAndClose}
+                ml={3}
+              >
                 Clear
               </Button>
             </AlertDialogFooter>

@@ -1,7 +1,6 @@
-import { Home } from "../pages/Home";
 import { Route } from "react-location";
-import { DefaultLayout } from "../layouts/DefaultLayout";
 import { SendForm } from "../components/SendForm";
+import { DefaultLayout } from "../layouts/DefaultLayout";
 
 export const routes: Route[] = [
   {
