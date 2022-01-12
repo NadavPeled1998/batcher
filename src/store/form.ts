@@ -17,7 +17,6 @@ const schema = yup
   .required();
 export class Form {
   amountInputType: InputType = InputType.Token;
-  selectedToken: Token = genDefaultETHToken();
 
   address = {
     value: "",
@@ -37,12 +36,27 @@ export class Form {
     this.tokenPicker.value = this.tokenStore.list[0] || genDefaultETHToken();
   }
 
+  get selectedTokenUSDPrice() {
+    const tokenPrice = this.tokenStore.prices.get(
+      this.tokenPicker.value.token_address
+    );
+    return tokenPrice?.usdPrice || 0;
+  }
+
+  get canInputFiat() {
+    return this.selectedTokenUSDPrice > 0;
+  }
+
   setAddress(address: string) {
     this.address.value = address;
   }
 
   setToken(token: Token) {
     this.tokenPicker.value = token;
+    if (!this.canInputFiat) {
+      this.amount.type = InputType.Token;
+    }
+    console.log();
   }
 
   setAmount(amount: string) {
@@ -50,7 +64,7 @@ export class Form {
   }
 
   setAmountInputType(type: InputType) {
-    this.amountInputType = type;
+    this.amount.type = type;
   }
 
   async submit() {

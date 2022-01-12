@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
-import { ArrowUp, Layers } from "react-feather";
+import { AlertTriangle, ArrowUp, Layers, Triangle } from "react-feather";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
@@ -89,40 +89,57 @@ export const SendForm: FC = observer(() => {
         >
           Select token
         </FormLabel>
-        <Tabs
-          gridArea="toggle"
-          colorScheme="primary"
-          mx="auto"
-          mt="4"
-          p="0.5"
-          defaultIndex={store.form.amountInputType}
-          bg="gray.700"
-          rounded="full"
-          variant="solid-rounded"
-          size="sm"
-          color="white"
-          onChange={(type) => store.form.setAmountInputType(type)}
-        >
-          <TabList>
-            <Tab py="0.5" px="4">
-              <Text color="white">{tokenController.value?.symbol}</Text>
-            </Tab>
-            <Tab py="0.5" px="4">
-              <Text color="white">USD</Text>
-            </Tab>
-          </TabList>
-        </Tabs>
+
+        <Flex direction="column" alignItems="center" gridArea="toggle">
+          <Tabs
+            colorScheme="primary"
+            mx="auto"
+            mt="4"
+            p="0.5"
+            index={store.form.amount.type}
+            style={
+              !store.form.canInputFiat
+                ? {
+                    pointerEvents: "none",
+                    opacity: 0.5,
+                  }
+                : {}
+            }
+            bg="gray.700"
+            rounded="full"
+            variant="solid-rounded"
+            size="sm"
+            color="white"
+            onChange={(type) => store.form.setAmountInputType(type)}
+          >
+            <TabList>
+              <Tab py="0.5" px="4">
+                <Text color="white">{tokenController.value?.symbol}</Text>
+              </Tab>
+              <Tab py="0.5" px="4">
+                <Text color="white">USD</Text>
+              </Tab>
+            </TabList>
+          </Tabs>
+          <Text
+            d="flex"
+            gap={1}
+            alignItems="center"
+            hidden={store.form.canInputFiat}
+            fontSize="xs"
+          >
+            <AlertTriangle color="var(--chakra-colors-orange-400)" size="1em" /> No USD price for that
+          </Text>
+        </Flex>
         <Box gridArea="picker" mx="auto">
           <TokenPicker {...tokenController} />
         </Box>
         <Box gridArea="amount">
           <TokenAmountInput
             placeholder={
-              store.form.amountInputType === InputType.Token
-                ? "0.00"
-                : "$0.00"
+              store.form.amount.type === InputType.Token ? "0.00" : "$0.00"
             }
-            inputType={store.form.amountInputType}
+            inputType={store.form.amount.type}
             {...amountController}
             style={{
               background: "none",
