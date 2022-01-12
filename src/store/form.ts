@@ -77,7 +77,7 @@ export class Form {
   }
 
   clear() {
-    this.address.value = "";
-    this.amount.value = "";
+    // this.address.value = "";
+    // this.amount.value = "";
   }
 }

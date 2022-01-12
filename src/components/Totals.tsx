@@ -1,10 +1,16 @@
-import { Divider, Flex, Text } from "@chakra-ui/react";
+import { Divider, Flex, FlexProps, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
+import { FC } from "react";
 import { store } from "../store";
 import { formatNumber } from "../utils/currency";
 
-export const Totals = observer(() => (
-  <Flex hidden={!store.batch.items.length} direction="column" gap={1}>
+export const Totals: FC<FlexProps> = observer((props) => (
+  <Flex
+    hidden={!store.batch.items.length}
+    direction="column"
+    gap={1}
+    {...props}
+  >
     <Text fontSize="sm" color="gray.400">
       Totals
     </Text>
@@ -17,7 +23,8 @@ export const Totals = observer(() => (
           <Text fontSize="xs">
             ($
             {formatNumber(
-              total * store.tokens.prices.get(token.token_address)?.usdPrice || 0
+              total * store.tokens.prices.get(token.token_address)?.usdPrice ||
+                0
             )}
             )
           </Text>
