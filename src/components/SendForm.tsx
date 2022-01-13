@@ -194,6 +194,7 @@ export const SendForm: FC = observer(() => {
             colorScheme="primary"
             w={32}
             mx="auto"
+            mt="auto"
             variant="ghost"
             rounded="full"
             disabled={Boolean(errors.address)}
@@ -205,6 +206,7 @@ export const SendForm: FC = observer(() => {
           <Button
             colorScheme="primary"
             mx="auto"
+            mt="auto"
             variant="ghost"
             rounded="full"
             disabled={Boolean(errors.address)}

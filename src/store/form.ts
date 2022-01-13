@@ -63,19 +63,20 @@ export class Form {
     this.amount.value = amount;
   }
 
-
-
   setAmountInputType(type: InputType) {
     this.amount.type = type;
   }
 
   reset() {
-    this.amount.value = ''
-    this.amount.type = InputType.Token
-    this.tokenPicker.value = genDefaultETHToken()
-    this.address.value = ''
+    this.clear();
+    this.amount.type = InputType.Token;
+    this.tokenPicker.value = genDefaultETHToken();
   }
 
+  clear() {
+    this.address.value = "";
+    this.amount.value = "";
+  }
 
   async submit() {
     this.batchStore.add({
@@ -84,10 +85,5 @@ export class Form {
       token: this.tokenPicker.value,
     });
     this.clear();
-  }
-
-  clear() {
-    // this.address.value = "";
-    // this.amount.value = "";
   }
 }

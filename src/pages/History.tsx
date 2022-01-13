@@ -1,21 +1,61 @@
-import {
-  Badge,
-  Flex,
-  Heading,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
-import { Send } from "react-feather";
+import { Flex, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { useTable, Column } from "react-table";
 import { TokenIcon } from "../components/TokenPicker/TokenIcon";
-import { shortenAddress } from "../utils/address";
-
+import { Token } from "../hooks/useERC20Balance";
+import { genDefaultETHToken } from "../utils/defaults";
+type Col = {
+  col1: string;
+  col2: Token;
+};
 export const History = () => {
+  const data = useMemo(
+    (): Col[] => [
+      {
+        col1: "Hello",
+        col2: genDefaultETHToken(),
+      },
+      {
+        col1: "react-table",
+        col2: genDefaultETHToken(),
+      },
+      {
+        col1: "whatever",
+        col2: genDefaultETHToken(),
+      },
+    ],
+    []
+  );
+
+  const columns = useMemo(
+    (): Column<Col>[] => [
+      {
+        Header: "Column 1",
+        accessor: "col1", // accessor is the "key" in the data
+        Cell: (props) => (
+          <Flex gap={2} alignItems={"center"}>
+            <TokenIcon token="ETH" size="20" />
+            <Text>{props.value} &gt; custom render</Text>
+          </Flex>
+        ),
+      },
+      {
+        Header: "Column 2",
+        accessor: "col2",
+        Cell: (props) => (
+          <Flex gap={2} alignItems={"center"}>
+            <TokenIcon token="ETH" size="20" />
+            <Text>{props.value.balance} &gt; custom render</Text>
+          </Flex>
+        ),
+      },
+    ],
+    []
+  );
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns, data });
+
   return (
     <Flex
       direction="column"
@@ -27,128 +67,30 @@ export const History = () => {
       overflow="auto"
       //   rounded="40px"
     >
-      <Heading>Here will be a filter, I promise</Heading>
-
-      <Table size="sm" whiteSpace="nowrap" overflow="auto">
+      <Table {...getTableProps()} whiteSpace="nowrap" size="sm">
         <Thead>
-          <Tr>
-            <Th>Action</Th>
-            <Th>To/From</Th>
-            <Th>Date</Th>
-            <Th>Token</Th>
-            <Th isNumeric>Amount</Th>
-          </Tr>
+          {headerGroups.map((headerGroup) => (
+            <Tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <Th {...column.getHeaderProps()}>{column.render("Header")}</Th>
+              ))}
+            </Tr>
+          ))}
         </Thead>
-        <Tbody>
-          <Tr>
-            <Td>
-              <Flex gap={2} alignItems="center">
-                <Send size="1em" color="var(--chakra-colors-primary-200)" />{" "}
-                <Text>Send</Text>
-              </Flex>
-            </Td>
-            <Td>
-              {shortenAddress("0x15E7e507172ffe9EC1bEEC7b11C3a1Cff1521407")}
-            </Td>
-            <Td>{new Date().toDateString()}</Td>
-            <Td>
-              <Badge fontWeight="300" colorScheme="primary">
-                NFT{" "}
-                <Text fontSize="9px" d="inline">
-                  ERC721
-                </Text>
-              </Badge>
-            </Td>
-            <Td isNumeric></Td>
-          </Tr>
-          <Tr>
-            <Td>
-              <Flex gap={2} alignItems="center">
-                <Send size="1em" color="var(--chakra-colors-primary-200)" />{" "}
-                <Text>Send</Text>
-              </Flex>
-            </Td>
-            <Td>
-              {shortenAddress("0x15E7e507172ffe9EC1bEEC7b11C3a1Cff1521407")}
-            </Td>
-            <Td>{new Date().toDateString()}</Td>
-            <Td>
-              <Badge fontWeight="300" colorScheme="green">
-                Token{" "}
-                <Text fontSize="9px" d="inline">
-                  ERC20
-                </Text>
-              </Badge>
-            </Td>
-            <Td>
-              <Flex justifyContent="flex-end" gap={2}>
-                <TokenIcon token="BNB" size="15" />
-                <Text>30.48 BNB</Text>
-              </Flex>
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>
-              <Flex gap={2} alignItems="center">
-                <Send size="1em" color="var(--chakra-colors-primary-200)" />{" "}
-                <Text>Send</Text>
-              </Flex>
-            </Td>
-            <Td>
-              {shortenAddress("0x15E7e507172ffe9EC1bEEC7b11C3a1Cff1521407")}
-            </Td>
-            <Td>{new Date().toDateString()}</Td>
-            <Td>
-              <Badge fontWeight="300" colorScheme="green">
-                Token{" "}
-                <Text fontSize="9px" d="inline">
-                  ERC20
-                </Text>
-              </Badge>
-            </Td>
-            <Td>
-              <Flex justifyContent="flex-end" gap={2}>
-                <TokenIcon token="UNI" size="15" />
-                <Text>30.48 UNI</Text>
-              </Flex>
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>
-              <Flex gap={2} alignItems="center">
-                <Send size="1em" color="var(--chakra-colors-primary-200)" />{" "}
-                <Text>Send</Text>
-              </Flex>
-            </Td>
-            <Td>
-              {shortenAddress("0x15E7e507172ffe9EC1bEEC7b11C3a1Cff1521407")}
-            </Td>
-            <Td>{new Date().toDateString()}</Td>
-            <Td>
-              <Badge fontWeight="300" colorScheme="green">
-                Token{" "}
-                <Text fontSize="9px" d="inline">
-                  ERC20
-                </Text>
-              </Badge>
-            </Td>
-            <Td>
-              <Flex justifyContent="flex-end" gap={2}>
-                <TokenIcon token="LINK" size="15" />
-                <Text>30.48 LINK</Text>
-              </Flex>
-            </Td>
-          </Tr>
+        <Tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <Tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
+                  );
+                })}
+              </Tr>
+            );
+          })}
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>Action</Th>
-            <Th>To/From</Th>
-            <Th>Date</Th>
-            <Th>Token</Th>
-            <Th isNumeric>Amount</Th>
-          </Tr>
-        </Tfoot>
       </Table>
     </Flex>
   );
