@@ -16,7 +16,7 @@ export const BatchList: FC = observer(() => {
   if (!store.batch.items.length) return null;
 
   return (
-    <Box experimental_spaceY={2}>
+    <Flex direction="column" gap={2} flex={1}>
       <Flex alignItems="center" justifyContent="space-between">
         <Text fontSize="sm" color="gray.400">
           Batch{" "}
@@ -27,14 +27,16 @@ export const BatchList: FC = observer(() => {
         <ClearBatchButton />
       </Flex>
       <Divider />
-      <Flex direction="column" maxH="200px" overflowY="auto">
-        {store.batch.items
-          .slice()
-          .reverse()
-          .map((item, index) => (
-            <BatchItem key={index} item={item} />
-          ))}
+      <Flex direction="column" flex={1}>
+        <Box h="full" maxH="160px" overflowY="scroll">
+          {store.batch.items
+            .slice()
+            .reverse()
+            .map((item, index) => (
+              <BatchItem key={index} item={item} />
+            ))}
+        </Box>
       </Flex>
-    </Box>
+    </Flex>
   );
 });
