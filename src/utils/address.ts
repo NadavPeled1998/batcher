@@ -12,8 +12,12 @@ export const isValidAddress = (address?: string): boolean => {
   return /^0x[0-9a-fA-F]{40}$/.test(address);
 };
 
-export const isNative = (address: string) =>
-  address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+export const isNative = (address: string) => {
+  return [
+    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "0x0000000000000000000000000000000000000000",
+  ].includes(address);
+};
 
 export const getTokenAddressToFetch = (address: string) => {
   return isNative(address) ? networkConfigs["0x1"].wrapped : address;
