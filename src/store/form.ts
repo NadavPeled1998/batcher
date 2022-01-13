@@ -74,7 +74,6 @@ export class Form {
     this.amount.type = InputType.Token
     this.tokenPicker.value = genDefaultETHToken()
     this.address.value = ''
-    this.batchStore.clear()
   }
 
 
