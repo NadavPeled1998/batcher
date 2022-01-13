@@ -113,9 +113,10 @@ export const useSendForm = () => {
     submitCount.current = 0;
     setErrors({});
     store.form.submit();
+    store.form.reset()
   };
 
-  const sendTransaction = () => {
+  const sendTransaction = async () => {
     if(web3) {
       const multiSendContract = new web3.eth.Contract(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,41 +125,97 @@ export const useSendForm = () => {
       )
       let isSendERC20 = false
       let isSendERC721 = false
-      let receivers = []
-      let amounts = []
-      let addresses = []
-      let types = [] 
+      let isSendNative = false
+      let receivers: string[] = []
+      let amounts: string[] = []
+      let addresses: string[] = []
+      let types: string[] = [] 
+      let value = ''
+
       store.batch.items.map(item => {
+        // push to receivers
         receivers.push(item.address)
+
+        // push to amounts
         if(item.token.type === 'erc721') {
           isSendERC721 = true
-          amounts.push(item.amount)
+          amounts.push(String(item.amount))
         } 
         else {
           amounts.push(etherToWei(web3, item.amount, item.token.decimals))
         }
+
+        // push to addresses
         if(item.token.type === 'native') {
+          isSendNative = true
+          value = String(+value + +etherToWei(web3, item.amount, item.token.decimals))
           addresses.push("0x0000000000000000000000000000000000000000")
         }
         else {
-          addresses.push(item.address)
+          addresses.push(item.token.token_address)
         }
+
         if(item.token.type === 'erc20') {
           isSendERC20 = true
         }
-        types.push(item.token.type)
+        // push to types
+        if(item.token.type) {
+          types.push(item.token.type)
+        }
       })
-      /// need to continue from here
-      // if(!isSendERC20 && !isSendERC721) {
-      //   multiSendContract.multiSendNative()
-      // }
+
+      console.log("SendTransaction 0", {isSendERC721, isSendERC20, receivers, amounts, addresses} )
+
+      const getMethodWithParams = () => {
+        if(isSendERC721 && isSendERC20) {
+          return multiSendContract.methods.multiSendAll(receivers, amounts, addresses, types)
+        }
+        if(isSendNative) {
+          if(isSendERC721) {
+            return multiSendContract.methods.multiSendNativeAndERC721(receivers, amounts, addresses)
+          }
+          if(isSendERC20) {
+            return multiSendContract.methods.multiSendNativeAndERC20(receivers, amounts, addresses)
+          }
+          return multiSendContract.methods.multiSendNative(receivers, amounts) 
+        }
+        if(isSendERC20) {
+          return multiSendContract.methods.multiSendERC20(receivers, amounts, addresses) 
+        }
+        if(isSendERC721) {
+          return multiSendContract.methods.multiSendERC721(receivers, amounts, addresses) 
+        }
+      }
+      let methodWithParams = getMethodWithParams()
+      console.log("SendTransaction 1", { methodWithParams })
+      const { toBN } = web3.utils
+      let gas = "1000000"
+      try {
+        gas = toBN(await methodWithParams.estimateGas({ from: account, value }))
+        .mul(toBN(11))
+        .div(toBN(10))
+        .toString()
+      }
+      catch(e) {
+        console.log("SendTransaction 1.5 checl gas failed", {e})
+        gas = "1000000"
+      }
+
+      console.log("SendTransaction 2", gas)
+
+      const txid = await new Promise((resolve, reject) => {
+        methodWithParams
+        .send({ from: account, value, gas  })
+        .on('transactionHash', (hash: string) => resolve(hash))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .on('error', (err: any) => reject(err))
+      }) 
+
+      alert(txid)   
       console.log("sendTransaction", store.batch.items)
 
-
       store.form.reset()
-      // console.log(store.batch.items)
-      // multiSendContract.methods.multiSendNative()
-
+      store.batch.clear()
     }
   }
 
@@ -170,6 +227,7 @@ export const useSendForm = () => {
 
   useEffect(() => {
     store.form.reset()
+    store.batch.clear()
   }, [account, chainId])
 
   return {
