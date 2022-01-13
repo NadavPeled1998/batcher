@@ -33,16 +33,18 @@ export const SendForm: FC = observer(() => {
     addressController,
     tokenController,
     formState: { errors },
-    sendTransaction
+    sendTransaction,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account } = useMoralis()
+  const { authenticate, isAuthenticated, isWeb3Enabled, account } =
+    useMoralis();
 
-  const isConnected = isAuthenticated && isWeb3Enabled && account
+  const isConnected = isAuthenticated && isWeb3Enabled && account;
 
   return (
     <Flex
       as="form"
+      direction={["column", "column", "column", "row"]}
       gap={8}
       bg="gray.900"
       p={[7, 10]}
@@ -52,7 +54,14 @@ export const SendForm: FC = observer(() => {
       mx="auto"
       onSubmit={submit}
     >
-      <Flex alignItems="center" direction="column" w="sm" gap={8} bg="gray.900">
+      <Flex
+        alignItems="center"
+        direction="column"
+        w="sm"
+        maxW="full"
+        gap={8}
+        bg="gray.900"
+      >
         <FormControl colorScheme="primary" isInvalid={Boolean(errors.address)}>
           <FormLabel
             fontSize="sm"
@@ -180,44 +189,47 @@ export const SendForm: FC = observer(() => {
           </FormErrorMessage>
         </FormControl>
         {isConnected ? (
-        <Button
-          type="submit"
-          colorScheme="primary"
-          w={32}
-          mx="auto"
-          variant="ghost"
-          rounded="full"
-          disabled={Boolean(errors.address)}
-          leftIcon={<Layers />}
-        >
-          Batch
-        </Button>
-      ) : (
-        <Button
-          colorScheme="primary"
-          mx="auto"
-          variant="ghost"
-          rounded="full"
-          disabled={Boolean(errors.address)}
-          leftIcon={<FeatherWallet />}
-          onClick={() => authenticate()}
-        >
-          Connect Wallet
-        </Button>
-      )}
+          <Button
+            type="submit"
+            colorScheme="primary"
+            w={32}
+            mx="auto"
+            variant="ghost"
+            rounded="full"
+            disabled={Boolean(errors.address)}
+            leftIcon={<Layers />}
+          >
+            Batch
+          </Button>
+        ) : (
+          <Button
+            colorScheme="primary"
+            mx="auto"
+            variant="ghost"
+            rounded="full"
+            disabled={Boolean(errors.address)}
+            leftIcon={<FeatherWallet />}
+            onClick={() => authenticate()}
+          >
+            Connect Wallet
+          </Button>
+        )}
       </Flex>
-      <Center hidden={!store.batch.items.length} height="430px">
-        <Divider  orientation="vertical" h="full" />
+      <Center
+        hidden={!store.batch.items.length}
+        height={["0", "0", "0", "430px"]}
+      >
+        <Divider orientation="vertical" h="full" />
       </Center>
       <Flex
         hidden={!store.batch.items.length}
         direction="column"
-        w="xs"
+        w={["full", "full", "full", "xs"]}
         gap={8}
         bg="gray.900"
       >
         <BatchList />
-        <Totals/>
+        <Totals />
         <EstimatedGas />
         <Button
           hidden={!store.batch.items.length}
@@ -229,8 +241,8 @@ export const SendForm: FC = observer(() => {
           onClick={sendTransaction}
         >
           {store.batch.items.length === 1
-          ? "Send"
-          : `Send Batch (${store.batch.items.length})`}
+            ? "Send"
+            : `Send Batch (${store.batch.items.length})`}
         </Button>
       </Flex>
     </Flex>
