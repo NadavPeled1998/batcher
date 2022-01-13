@@ -9,5 +9,6 @@ export const genDefaultETHToken = (): Token => {
     balance: "0",
     logo: undefined,
     thumbnail: undefined,
+    type: "native",
   };
 };

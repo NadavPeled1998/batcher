@@ -5,6 +5,9 @@ import { TokenAmountInput } from "../components/TokenAmountInput";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { store } from "../store";
 import { isValidAddress } from "../utils/address";
+import { useMoralis } from "react-moralis";
+import multiSendABI from '../abi/multiSend.json'
+import { etherToWei } from "../utils/ethereum";
 
 const schema = yup
   .object({
@@ -33,6 +36,21 @@ export const useSendForm = () => {
   const submitCount = useRef(0);
   const addressRef = useRef<any>();
   const amountRef = useRef<any>();
+  const { web3, account, chainId } = useMoralis() 
+
+  const schema = yup
+  .object({
+    address: yup
+      .string()
+      .test("is-valid-address", "Invalid address", isValidAddress),
+    amount: yup
+      .number()
+      .required()
+      .positive()
+      .default(0)
+    ,
+  })
+  .required();
 
   const addressController: React.ComponentProps<typeof AddressInput> = {
     ref: addressRef,
@@ -97,17 +115,69 @@ export const useSendForm = () => {
     store.form.submit();
   };
 
+  const sendTransaction = () => {
+    if(web3) {
+      const multiSendContract = new web3.eth.Contract(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        multiSendABI as any,
+        "0xa679356125A6d1EE8807904adF72ef3BDa2f9aD9",
+      )
+      let isSendERC20 = false
+      let isSendERC721 = false
+      let receivers = []
+      let amounts = []
+      let addresses = []
+      let types = [] 
+      store.batch.items.map(item => {
+        receivers.push(item.address)
+        if(item.token.type === 'erc721') {
+          isSendERC721 = true
+          amounts.push(item.amount)
+        } 
+        else {
+          amounts.push(etherToWei(web3, item.amount, item.token.decimals))
+        }
+        if(item.token.type === 'native') {
+          addresses.push("0x0000000000000000000000000000000000000000")
+        }
+        else {
+          addresses.push(item.address)
+        }
+        if(item.token.type === 'erc20') {
+          isSendERC20 = true
+        }
+        types.push(item.token.type)
+      })
+      /// need to continue from here
+      // if(!isSendERC20 && !isSendERC721) {
+      //   multiSendContract.multiSendNative()
+      // }
+      console.log("sendTransaction", store.batch.items)
+
+
+      store.form.reset()
+      // console.log(store.batch.items)
+      // multiSendContract.methods.multiSendNative()
+
+    }
+  }
+
   useEffect(() => {
     if (submitCount.current > 0) {
       validate();
     }
   }, [amountController.value, addressController.value]);
 
+  useEffect(() => {
+    store.form.reset()
+  }, [account, chainId])
+
   return {
     amountController,
     addressController,
     tokenController,
     submit,
+    sendTransaction,
     formState: {
       errors,
     },

@@ -63,9 +63,20 @@ export class Form {
     this.amount.value = amount;
   }
 
+
+
   setAmountInputType(type: InputType) {
     this.amount.type = type;
   }
+
+  reset() {
+    this.amount.value = ''
+    this.amount.type = InputType.Token
+    this.tokenPicker.value = genDefaultETHToken()
+    this.address.value = ''
+    this.batchStore.clear()
+  }
+
 
   async submit() {
     this.batchStore.add({

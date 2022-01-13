@@ -105,7 +105,8 @@ export class Tokens {
   }
 
   set(tokens: Token[]) {
-    this.list = [...tokens];
+    const checkIfIsNative = (address: string) => ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"].includes(address)
+    this.list = [...tokens.map((token: Token) => {return {...token, type: checkIfIsNative(token.token_address) ? 'native' : 'erc20'}})];
   }
 
   fetch(walletAddress: string, chainId: ChainID) {

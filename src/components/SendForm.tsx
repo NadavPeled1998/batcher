@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
-import { AlertTriangle, ArrowUp, Layers, Triangle } from "react-feather";
+import { AlertTriangle, ArrowUp, Layers } from "react-feather";
+import { useMoralis } from "react-moralis";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
@@ -21,6 +22,7 @@ import { BatchList } from "./BatchList/BatchList";
 import { EstimatedGas } from "./EstimatedGas";
 import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
+import { FeatherWallet } from "../assets/FeatherWallet";
 
 export const SendForm: FC = observer(() => {
   const {
@@ -29,7 +31,12 @@ export const SendForm: FC = observer(() => {
     addressController,
     tokenController,
     formState: { errors },
+    sendTransaction
   } = useSendForm();
+
+  const { authenticate, isAuthenticated, isWeb3Enabled, account } = useMoralis()
+
+  const isConnected = isAuthenticated && isWeb3Enabled && account
 
   return (
     <Flex
@@ -100,9 +107,9 @@ export const SendForm: FC = observer(() => {
             style={
               !store.form.canInputFiat
                 ? {
-                    pointerEvents: "none",
-                    opacity: 0.5,
-                  }
+                  pointerEvents: "none",
+                  opacity: 0.5,
+                }
                 : {}
             }
             bg="gray.700"
@@ -168,19 +175,32 @@ export const SendForm: FC = observer(() => {
           </Text>
         </FormErrorMessage>
       </FormControl>
-
-      <Button
-        type="submit"
-        colorScheme="primary"
-        w={32}
-        mx="auto"
-        variant="ghost"
-        rounded="full"
-        disabled={Boolean(errors.address)}
-        leftIcon={<Layers />}
-      >
-        Batch
-      </Button>
+      {isConnected ? (
+        <Button
+          type="submit"
+          colorScheme="primary"
+          w={32}
+          mx="auto"
+          variant="ghost"
+          rounded="full"
+          disabled={Boolean(errors.address)}
+          leftIcon={<Layers />}
+        >
+          Batch
+        </Button>
+      ) : (
+        <Button
+          colorScheme="primary"
+          mx="auto"
+          variant="ghost"
+          rounded="full"
+          disabled={Boolean(errors.address)}
+          leftIcon={<FeatherWallet />}
+          onClick={() => authenticate()}
+        >
+          Connect Wallet
+        </Button>
+      )}
 
       <BatchList />
 
@@ -195,8 +215,9 @@ export const SendForm: FC = observer(() => {
         disabled={Boolean(errors.address)}
         size="lg"
         variant="outline"
+        onClick={sendTransaction}
       >
-        {!store.batch.items.length
+        {store.batch.items.length === 1
           ? "Send"
           : `Send Batch (${store.batch.items.length})`}
       </Button>
