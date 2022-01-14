@@ -11,6 +11,8 @@ export const useAccount = () => {
   const fetchBalances = useCallback(() => {
     if (!account) return;
 
+    console.log("fetchbalance", {account, chainId})
+
     Promise.all([
       api.account
         .getNativeBalance({
@@ -26,6 +28,7 @@ export const useAccount = () => {
         chain: chainId as ChainID,
       }),
     ]).then((tokens) => {
+      console.log("res", {tokens})
       store.tokens.set(tokens.flat());
       // log tokens names and balances (fromWei)
       console.log(
@@ -38,8 +41,11 @@ export const useAccount = () => {
           .join("\n")
       );
       store.tokens.prices.multiFetch(tokens.flat());
-    });
+    })
+    .catch((e) => {
+      console.log("get tokens failed", { e })
+    })
   }, [account, chainId, api]);
 
-  useEffect(fetchBalances, [account, fetchBalances]);
+  useEffect(fetchBalances, [account, fetchBalances, chainId]);
 };

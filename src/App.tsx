@@ -9,8 +9,8 @@ import theme from "./theme/theme";
 
 // const serverUrl = process.env.REACT_APP_MORALIS_SERVER_URL!;
 // const appId = process.env.REACT_APP_MORALIS_APP_ID!;
-const serverUrl = "https://ruouwmpqomdf.usemoralis.com:2053/server";
-const appId = "qsQgM58YEG8yepeo1zEtRTbvdiZ9ln08KXQShHuK";
+const serverUrl = "https://zbqogacyxxx7.usemoralis.com:2053/server";
+const appId = "jKZDa5G9DdnPSzGR4akqUG5pJ6G8Jh9efZWBgT2D";
 
 const location = new ReactLocation();
 function App() {
