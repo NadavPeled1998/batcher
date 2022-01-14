@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { AlertTriangle, ArrowUp, Layers } from "react-feather";
 import { useMoralis } from "react-moralis";
 import { FeatherWallet } from "../assets/FeatherWallet";
@@ -27,8 +27,11 @@ import { EstimatedGas } from "./EstimatedGas";
 import { SelectedTokenBalance } from "./SelectedTokenBalance";
 import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
+import { FeatherWallet } from "../assets/FeatherWallet";
+import { ApproveModal } from "./ApproveModal";
 
 export const SendForm: FC = observer(() => {
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false)
   const {
     submit,
     amountController,
@@ -36,12 +39,17 @@ export const SendForm: FC = observer(() => {
     tokenController,
     formState: { errors },
     sendTransaction,
+    approveAll
   } = useSendForm();
 
   const { authenticate, isAuthenticated, isWeb3Enabled, account } =
     useMoralis();
 
   const isConnected = isAuthenticated && isWeb3Enabled && account;
+
+  useEffect(() => {
+    if(store.commands.approveCommand.done) setIsApproveModalOpen(true)
+  }, [store.commands.approveCommand.done])
 
   return (
     <Flex
@@ -71,6 +79,7 @@ export const SendForm: FC = observer(() => {
             htmlFor="address"
             color="gray.500"
           >
+            {account} <br/>
             Recipient Address
           </FormLabel>
           <AddressInput {...addressController} />
@@ -80,7 +89,7 @@ export const SendForm: FC = observer(() => {
             </Text>
           </FormErrorMessage>
         </FormControl>
-
+        
         <FormControl
           d="grid"
           alignContent="center"
@@ -250,6 +259,11 @@ export const SendForm: FC = observer(() => {
         <BatchList />
         <Totals />
         <EstimatedGas />
+        <ApproveModal 
+          isOpen={isApproveModalOpen} 
+          onClose={() => setIsApproveModalOpen(false)}
+          onSubmit={approveAll}
+        />
         <Button
           hidden={!store.batch.items.length}
           rounded="full"
@@ -257,7 +271,7 @@ export const SendForm: FC = observer(() => {
           disabled={Boolean(errors.address)}
           size="lg"
           variant="outline"
-          onClick={sendTransaction}
+          onClick={() => Object.keys(store.batch.needsApproveMap).length ? setIsApproveModalOpen(true) : sendTransaction()}
         >
           {store.batch.items.length === 1
             ? "Send"
