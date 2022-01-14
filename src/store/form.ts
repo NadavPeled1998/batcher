@@ -6,22 +6,15 @@ import { genDefaultETHToken } from "../utils/defaults";
 import { Tokens } from "./prices";
 import * as yup from "yup";
 import { Batch } from "./batch";
+import Moralis from "moralis";
 
-const schema = yup
-  .object({
-    address: yup
-      .string()
-      .test("is-valid-address", "Invalid address", isValidAddress),
-    amount: yup.number().required().positive(),
-  })
-  .required();
 export class Form {
   constructor(public tokenStore: Tokens, public batchStore: Batch) {
     makeAutoObservable(this);
-    this.tokenPicker = this.tokenStore.list[0] || genDefaultETHToken();
+    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
   }
 
-  tokenPicker: Token;
+  selectedToken: Token;
   address = "";
 
   amountInputType: InputType = InputType.Token;
@@ -38,18 +31,25 @@ export class Form {
 
   set amount(value) {
     if (this.amountInputType === InputType.Token) {
-      this._amount = value;
-      this.usd = value * this.selectedTokenUSDPrice;
+      this.updateAmount(value);
     } else {
-      this.usd = value;
-      this._amount = value / this.selectedTokenUSDPrice;
+      this.updateUSD(value);
     }
   }
 
+  updateAmount(amount: number) {
+    this._amount = amount;
+    this.usd = amount * this.selectedTokenUSDPrice;
+  }
+
+  updateUSD(usd: number) {
+    this.usd = usd;
+    this._amount = usd / this.selectedTokenUSDPrice;
+  }
+
   get selectedTokenUSDPrice() {
-    return 3158.5 ;
     const tokenPrice = this.tokenStore.prices.get(
-      this.tokenPicker.token_address
+      this.selectedToken.token_address
     );
     return tokenPrice?.usdPrice || 0;
   }
@@ -63,7 +63,7 @@ export class Form {
   }
 
   setToken(token: Token) {
-    this.tokenPicker = token;
+    this.selectedToken = token;
     if (!this.canInputFiat) {
       this.amountInputType = InputType.Token;
     }
@@ -82,7 +82,7 @@ export class Form {
   reset() {
     this.clear();
     this.amountInputType = InputType.Token;
-    this.tokenPicker = genDefaultETHToken();
+    this.selectedToken = genDefaultETHToken();
   }
 
   clear() {
@@ -94,7 +94,7 @@ export class Form {
     this.batchStore.add({
       address: this.address,
       amount: Number(this.amount),
-      token: this.tokenPicker,
+      token: this.selectedToken,
     });
     this.clear();
   }

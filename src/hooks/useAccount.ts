@@ -27,16 +27,7 @@ export const useAccount = () => {
       }),
     ]).then((tokens) => {
       store.tokens.set(tokens.flat());
-      // log tokens names and balances (fromWei)
-      console.log(
-        store.tokens.list
-          .map((token) => ({
-            name: token.name,
-            balance: token.balance,
-          }))
-          .map((token) => `${token.name}: ${token.balance}`)
-          .join("\n")
-      );
+      store.form.setToken(tokens[0]);
       store.tokens.prices.multiFetch(tokens.flat());
     });
   }, [account, chainId, api]);

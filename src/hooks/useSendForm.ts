@@ -72,7 +72,7 @@ export const useSendForm = () => {
   };
 
   const tokenController: React.ComponentProps<typeof TokenPicker> = {
-    value: store.form.tokenPicker,
+    value: store.form.selectedToken,
     onChange: (token) => store.form.setToken(token),
   };
 

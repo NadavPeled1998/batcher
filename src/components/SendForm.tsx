@@ -16,16 +16,17 @@ import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { AlertTriangle, ArrowUp, Layers } from "react-feather";
 import { useMoralis } from "react-moralis";
+import { FeatherWallet } from "../assets/FeatherWallet";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
+import { formatNumber } from "../utils/currency";
 import { AddressInput } from "./AddressInput";
 import { BatchList } from "./BatchList/BatchList";
 import { EstimatedGas } from "./EstimatedGas";
+import { SelectedTokenBalance } from "./SelectedTokenBalance";
 import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
-import { FeatherWallet } from "../assets/FeatherWallet";
-import { formatNumber } from "../utils/currency";
 
 export const SendForm: FC = observer(() => {
   const {
@@ -68,7 +69,7 @@ export const SendForm: FC = observer(() => {
             fontSize="sm"
             textAlign="center"
             htmlFor="address"
-            color="muted.200"
+            color="gray.500"
           >
             Recipient Address
           </FormLabel>
@@ -103,7 +104,7 @@ export const SendForm: FC = observer(() => {
             gridArea="label"
             fontSize="sm"
             htmlFor="address"
-            color="muted.200"
+            color="gray.500"
           >
             Select token
           </FormLabel>
@@ -115,14 +116,14 @@ export const SendForm: FC = observer(() => {
               mt="4"
               p="0.5"
               index={store.form.amountInputType}
-              // style={
-              //   !store.form.canInputFiat
-              //     ? {
-              //         pointerEvents: "none",
-              //         opacity: 0.5,
-              //       }
-              //     : {}
-              // }
+              style={
+                !store.form.canInputFiat
+                  ? {
+                      pointerEvents: "none",
+                      opacity: 0.5,
+                    }
+                  : {}
+              }
               bg="gray.700"
               rounded="full"
               variant="solid-rounded"
@@ -140,6 +141,7 @@ export const SendForm: FC = observer(() => {
               </TabList>
             </Tabs>
             <Text
+              mt="2"
               d="flex"
               gap={1}
               alignItems="center"
@@ -150,12 +152,18 @@ export const SendForm: FC = observer(() => {
                 color="var(--chakra-colors-orange-400)"
                 size="1em"
               />{" "}
-              No USD price for that
+              Couldn't fetch USD rate for {tokenController.value?.symbol}
             </Text>
           </Flex>
-          <Box gridArea="picker" mx="auto">
+          <Flex
+            direction="column"
+            alignItems="center"
+            gridArea="picker"
+            mx="auto"
+          >
             <TokenPicker {...tokenController} />
-          </Box>
+            <SelectedTokenBalance />
+          </Flex>
           <Box gridArea="amount">
             <TokenAmountInput
               placeholder={
@@ -176,9 +184,11 @@ export const SendForm: FC = observer(() => {
             />
           </Box>
 
-          <Text gridArea="usd" fontSize="sm" color="muted.200">
+          <Text gridArea="usd" fontSize="sm" color="gray.500">
             {store.form.amountInputType === InputType.Token
-              ? formatNumber(store.form.usd) + " USD"
+              ? !store.form.canInputFiat
+                ? "unknown USD"
+                : formatNumber(store.form.usd) + " USD"
               : formatNumber(store.form._amount, 6) +
                 " " +
                 tokenController.value?.symbol}
