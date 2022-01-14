@@ -4,9 +4,9 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  InputRightElement,
+  InputRightElement
 } from "@chakra-ui/react";
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef } from "react";
 import { FeatherWallet } from "../assets/FeatherWallet";
 
 interface Props extends React.ComponentProps<typeof Input> {

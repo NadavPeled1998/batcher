@@ -1,6 +1,6 @@
 import { Box, Flex, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { ChevronDown } from "react-feather";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
@@ -14,7 +14,7 @@ export interface TokenPickerProps {
 export const TokenPicker: FC<TokenPickerProps> = observer(
   ({ onChange, value }) => {
     const modalController = useDisclosure();
-    const { prices, native } = store.tokens;
+    const { prices } = store.tokens;
 
     const handleTokenSelect = (token: Token) => {
       onChange?.(token);

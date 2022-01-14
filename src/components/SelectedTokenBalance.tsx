@@ -14,14 +14,14 @@ export const SelectedTokenBalance = observer(() => {
   if (!web3) return null;
 
   const setMax = () => {
-    const { toBN, toWei, fromWei } = web3.utils;
+    const { toBN, fromWei } = web3.utils;
     const gas = toBN("1000000");
     const weiBalance = toBN(store.form.selectedToken.balance);
 
     const max = fromWei(weiBalance.sub(gas), "ether");
     store.form.updateAmount(+max);
   };
-  
+
   return (
     <Text fontSize="xs" gap={2}>
       <Text color="gray.500" d="inline">

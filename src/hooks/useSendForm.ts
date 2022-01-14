@@ -132,7 +132,7 @@ export const useSendForm = () => {
       let types: string[] = [] 
       let value = ''
 
-      store.batch.items.map(item => {
+      store.batch.items.forEach(item => {
         // push to receivers
         receivers.push(item.address)
 
