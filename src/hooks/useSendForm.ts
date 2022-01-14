@@ -54,7 +54,7 @@ export const useSendForm = () => {
 
   const addressController: React.ComponentProps<typeof AddressInput> = {
     ref: addressRef,
-    value: store.form.address.value,
+    value: store.form.address,
     onChange: (e: FormEvent<HTMLInputElement>) => {
       store.form.setAddress(e.currentTarget.value);
     },
@@ -65,14 +65,14 @@ export const useSendForm = () => {
 
   const amountController: React.ComponentProps<typeof TokenAmountInput> = {
     ref: amountRef,
-    value: store.form.amount.value,
+    value: store.form.amount,
     onValueChange: ({ value }) => {
       store.form.setAmount(value);
     },
   };
 
   const tokenController: React.ComponentProps<typeof TokenPicker> = {
-    value: store.form.tokenPicker.value,
+    value: store.form.tokenPicker,
     onChange: (token) => store.form.setToken(token),
   };
 
@@ -88,8 +88,8 @@ export const useSendForm = () => {
     return schema
       .validate(
         {
-          address: store.form.address.value,
-          amount: store.form.amount.value || 0,
+          address: store.form.address,
+          amount: store.form.amount || 0,
         },
         { abortEarly: false }
       )

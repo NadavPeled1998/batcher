@@ -16,29 +16,40 @@ const schema = yup
   })
   .required();
 export class Form {
-  amountInputType: InputType = InputType.Token;
-
-  address = {
-    value: "",
-  };
-
-  tokenPicker = {
-    value: genDefaultETHToken(),
-  };
-
-  amount = {
-    type: InputType.Token,
-    value: "",
-  };
-
   constructor(public tokenStore: Tokens, public batchStore: Batch) {
     makeAutoObservable(this);
-    this.tokenPicker.value = this.tokenStore.list[0] || genDefaultETHToken();
+    this.tokenPicker = this.tokenStore.list[0] || genDefaultETHToken();
+  }
+
+  tokenPicker: Token;
+  address = "";
+
+  amountInputType: InputType = InputType.Token;
+  usd: number = 0;
+  _amount: number = 0;
+
+  get amount() {
+    if (this.amountInputType === InputType.Token) {
+      return this._amount;
+    } else {
+      return this.usd;
+    }
+  }
+
+  set amount(value) {
+    if (this.amountInputType === InputType.Token) {
+      this._amount = value;
+      this.usd = value * this.selectedTokenUSDPrice;
+    } else {
+      this.usd = value;
+      this._amount = value / this.selectedTokenUSDPrice;
+    }
   }
 
   get selectedTokenUSDPrice() {
+    return 3158.5 ;
     const tokenPrice = this.tokenStore.prices.get(
-      this.tokenPicker.value.token_address
+      this.tokenPicker.token_address
     );
     return tokenPrice?.usdPrice || 0;
   }
@@ -48,41 +59,42 @@ export class Form {
   }
 
   setAddress(address: string) {
-    this.address.value = address;
+    this.address = address;
   }
 
   setToken(token: Token) {
-    this.tokenPicker.value = token;
+    this.tokenPicker = token;
     if (!this.canInputFiat) {
-      this.amount.type = InputType.Token;
+      this.amountInputType = InputType.Token;
     }
-    console.log();
   }
 
   setAmount(amount: string) {
-    this.amount.value = amount;
+    const val = Number(amount);
+    if ([this._amount, this.usd].includes(val)) return;
+    this.amount = val;
   }
 
   setAmountInputType(type: InputType) {
-    this.amount.type = type;
+    this.amountInputType = type;
   }
 
   reset() {
     this.clear();
-    this.amount.type = InputType.Token;
-    this.tokenPicker.value = genDefaultETHToken();
+    this.amountInputType = InputType.Token;
+    this.tokenPicker = genDefaultETHToken();
   }
 
   clear() {
-    this.address.value = "";
-    this.amount.value = "";
+    this.address = "";
+    this.amount = 0;
   }
 
   async submit() {
     this.batchStore.add({
-      address: this.address.value,
-      amount: Number(this.amount.value),
-      token: this.tokenPicker.value,
+      address: this.address,
+      amount: Number(this.amount),
+      token: this.tokenPicker,
     });
     this.clear();
   }

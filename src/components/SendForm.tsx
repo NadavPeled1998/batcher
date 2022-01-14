@@ -25,6 +25,7 @@ import { EstimatedGas } from "./EstimatedGas";
 import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
 import { FeatherWallet } from "../assets/FeatherWallet";
+import { formatNumber } from "../utils/currency";
 
 export const SendForm: FC = observer(() => {
   const {
@@ -113,15 +114,15 @@ export const SendForm: FC = observer(() => {
               mx="auto"
               mt="4"
               p="0.5"
-              index={store.form.amount.type}
-              style={
-                !store.form.canInputFiat
-                  ? {
-                      pointerEvents: "none",
-                      opacity: 0.5,
-                    }
-                  : {}
-              }
+              index={store.form.amountInputType}
+              // style={
+              //   !store.form.canInputFiat
+              //     ? {
+              //         pointerEvents: "none",
+              //         opacity: 0.5,
+              //       }
+              //     : {}
+              // }
               bg="gray.700"
               rounded="full"
               variant="solid-rounded"
@@ -158,9 +159,11 @@ export const SendForm: FC = observer(() => {
           <Box gridArea="amount">
             <TokenAmountInput
               placeholder={
-                store.form.amount.type === InputType.Token ? "0.00" : "$0.00"
+                store.form.amountInputType === InputType.Token
+                  ? "0.00"
+                  : "$0.00"
               }
-              inputType={store.form.amount.type}
+              inputType={store.form.amountInputType}
               {...amountController}
               style={{
                 background: "none",
@@ -174,7 +177,11 @@ export const SendForm: FC = observer(() => {
           </Box>
 
           <Text gridArea="usd" fontSize="sm" color="muted.200">
-            0.00 USD
+            {store.form.amountInputType === InputType.Token
+              ? formatNumber(store.form.usd) + " USD"
+              : formatNumber(store.form._amount, 6) +
+                " " +
+                tokenController.value?.symbol}
           </Text>
           <FormErrorMessage
             d="flex"
