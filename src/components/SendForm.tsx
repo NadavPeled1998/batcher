@@ -16,7 +16,6 @@ import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
 import { AlertTriangle, ArrowUp, Layers } from "react-feather";
 import { useMoralis } from "react-moralis";
-import { FeatherWallet } from "../assets/FeatherWallet";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
