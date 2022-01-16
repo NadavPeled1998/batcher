@@ -6,7 +6,7 @@ import {
   genDefaultETHToken,
   generateNativeTokenMetaData,
 } from "../utils/defaults";
-import { NATIVE_ADDRESS_0xE } from "../utils/network";
+import { NATIVE_ADDRESS_0x0, NATIVE_ADDRESS_0xE } from "../utils/network";
 
 export interface TokenMetaData {
   address: string;
@@ -28,6 +28,7 @@ export type TokensMetaDataMap = {
 export class Tokens {
   tokensMap: TokensMetaDataMap = {
     [NATIVE_ADDRESS_0xE]: generateNativeTokenMetaData(),
+    [NATIVE_ADDRESS_0x0]: generateNativeTokenMetaData(),
   };
 
   get tokens() {

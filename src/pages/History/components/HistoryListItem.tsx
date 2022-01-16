@@ -1,7 +1,15 @@
-import { Badge, Box, Divider, Flex, Spinner, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { Collapse } from "react-collapse";
-import { Check, ChevronDown, Layers } from "react-feather";
+import { Check, ChevronDown, ExternalLink, Layers } from "react-feather";
 import { BatchItem } from "../../../components/BatchList/BatchItem";
 import { TransactionHistoryListItem } from "../../../store/history";
 import { shortenAddress } from "../../../utils/address";
@@ -65,11 +73,21 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
         <Flex w="full" gap={8} px={4} pb={4}>
           <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
             <Text fontSize="xs">Transaction info</Text>
-            <Flex>
+            <Flex alignItems="center" gap={2}>
               <Text fontWeight={600} fontSize="xs" color="gray.500">
                 Transaction Hash:
               </Text>
-              <Text ml="auto">{shortenAddress(item.transaction.hash)}</Text>
+              <Button
+                ml="auto"
+                fontWeight="normal"
+                variant="link"
+                size="sm"
+                colorScheme="primary"
+                onClick={openExplorer}
+                rightIcon={<ExternalLink size="1em" />}
+              >
+                {shortenAddress(item.transaction.hash)}
+              </Button>
             </Flex>
             <Flex>
               <Text fontWeight={600} fontSize="xs" color="gray.500">
