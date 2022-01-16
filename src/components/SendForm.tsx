@@ -38,7 +38,9 @@ export const SendForm: FC = observer(() => {
     tokenController,
     formState: { errors },
     sendTransaction,
-    approveAll
+    approveAll,
+    gasFee,
+    externalGasFee
   } = useSendForm();
 
   const { authenticate, isAuthenticated, isWeb3Enabled, account } =
@@ -257,7 +259,10 @@ export const SendForm: FC = observer(() => {
       >
         <BatchList />
         <Totals />
-        <EstimatedGas />
+        <EstimatedGas 
+          gasFee={gasFee}
+          externalGasFee={externalGasFee}
+        />
         <ApproveModal 
           isOpen={isApproveModalOpen} 
           onClose={() => setIsApproveModalOpen(false)}
