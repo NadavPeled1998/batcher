@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { decodeInput, DecodedTransfer } from "../abi";
 import { Batch, IBatchItem } from "./batch";
 import { tokensStore } from "./tokens";
+import Moralis from "moralis";
 
 export interface Transaction {
   hash: string;
@@ -38,18 +39,26 @@ const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
   const token = tokensStore.get(decodedTransfer.token_address);
   return {
     address: decodedTransfer.receiver,
-    amount: Number(decodedTransfer.amount),
+    amount: Moralis.Units.FromWei(
+      decodedTransfer.amount,
+      Number(token.decimals)
+    ),
     token,
   };
 };
 
 export class TransactionHistory {
   transactions: Transaction[] = [];
+  isFetching = false;
 
   constructor() {
     makeAutoObservable(this);
   }
 
+  setFetching(isFetching: boolean) {
+    this.isFetching = isFetching;
+  }
+  
   setTransactions(response: GetTransactionsResponse) {
     this.transactions = response.result || [];
   }

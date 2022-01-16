@@ -1,4 +1,11 @@
-import { Button, Divider, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { ChevronDown } from "react-feather";
 import { store } from "../../store";
@@ -29,11 +36,26 @@ export const History = observer(() => {
         </Flex>
       </Flex>
       <Flex
+        hidden={!store.history.isFetching}
+        direction="column"
+        alignItems="center"
+        bg="gray.900"
+        w="full"
+        p={[4, 8]}
+        gap="4"
+        overflow="auto"
+        rounded="lg"
+      >
+        <Spinner mx="auto" size="xl" />
+        <Text fontSize="sm">Fetching History...</Text>
+      </Flex>
+      <Flex
+        hidden={store.history.isFetching}
         direction="column"
         bg="gray.900"
         w="full"
         mx="auto"
-        p={[4,8]}
+        p={[4, 8]}
         gap="2"
         overflow="auto"
         rounded="lg"

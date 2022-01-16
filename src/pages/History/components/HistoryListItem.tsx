@@ -1,7 +1,8 @@
 import { Badge, Box, Divider, Flex, Spinner, Text } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { Collapse } from "react-collapse";
-import { ChevronDown, Layers } from "react-feather";
+import { Check, ChevronDown, Layers } from "react-feather";
+import { BatchItem } from "../../../components/BatchList/BatchItem";
 import { TransactionHistoryListItem } from "../../../store/history";
 import { shortenAddress } from "../../../utils/address";
 import { formatNumber } from "../../../utils/currency";
@@ -35,9 +36,13 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
             <Flex fontSize="lg" gap={2} alignItems="center">
               <Layers color="var(--chakra-colors-primary-200)" size="1.2em" />
               <Text>{formatNumber(item.batch.length)}</Text>
-              <Flex ml={[0, 2]} fontSize="xs" gap={2} alignItems="center">
+              {/* <Flex ml={[0, 2]} fontSize="xs" gap={2} alignItems="center">
                 <Spinner size="sm" speed="1s" />
                 <Text>Pending</Text>
+              </Flex> */}
+              <Flex ml={[0, 2]} fontSize="xs" gap={2} alignItems="center">
+                <Check size="1.2em" color="var(--chakra-colors-green-500)" />
+                <Text>Sent</Text>
               </Flex>
             </Flex>
           </Box>
@@ -55,14 +60,12 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
         </Flex>
       </Flex>
 
-      <Collapse isOpened={isOpen}>
-        {item.batch.map((batch) => (
-          <Flex fontSize="sm" gap={2} py={2} px={4} alignItems="center">
-            <Text>{shortenAddress(batch.address)}</Text>
-            <Text>{batch.amount}</Text>
-            <Badge colorScheme="primary">{batch.token.type}</Badge>
-          </Flex>
-        ))}
+      <Collapse isOpened={isOpen} >
+        <Flex w="full" fontSize="sm" direction="column" px={4} pb={2} gap={2}>
+          {item.batch.map((batch, i) => (
+            <BatchItem key={i} item={batch} readonly />
+          ))}
+        </Flex>
       </Collapse>
     </>
   );

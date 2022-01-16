@@ -55,6 +55,7 @@ export const useAccount = () => {
   const fetchTransfers = useCallback(() => {
     if (!account) return;
 
+    store.history.setFetching(true);
     api.account
       .getTransactions({
         address: account,
@@ -65,6 +66,7 @@ export const useAccount = () => {
         if (response.result?.length) {
           fetchTokensMetaData(store.history.transferredTokenAddresses);
         }
+        store.history.setFetching(false);
       });
   }, [account, chainId, api, fetchTokensMetaData]);
 

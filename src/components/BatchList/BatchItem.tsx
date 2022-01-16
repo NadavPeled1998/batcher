@@ -8,9 +8,10 @@ import { TokenIcon } from "../TokenPicker/TokenIcon";
 
 export interface BatchItemProps {
   item: IBatchItem;
+  readonly?: boolean;
 }
 
-export const BatchItem: FC<BatchItemProps> = ({ item }) => {
+export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
   return (
     <Flex fontSize="sm" alignItems="center" gap={2}>
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
@@ -25,6 +26,7 @@ export const BatchItem: FC<BatchItemProps> = ({ item }) => {
       />
       <Text>{shortenAddress(item.address)}</Text>
       <CloseButton
+        hidden={readonly}
         rounded="full"
         ml="auto"
         color="primary.200"
