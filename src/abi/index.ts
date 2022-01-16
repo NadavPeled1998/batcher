@@ -20,21 +20,21 @@ interface DecodedInput {
   params: Param[];
 }
 
-export interface SerializedItem {
+export interface DecodedTransfer {
   receiver: string;
   amount: string;
   token_address: string;
   type: TokenType;
 }
 
-const params: (keyof SerializedItem)[] = [
+const params: (keyof DecodedTransfer)[] = [
   "receiver",
   "amount",
   "token_address",
   "type",
 ];
 
-const serialize = (func: DecodedInput) => {
+const decodeTransfers = (func: DecodedInput) => {
   return func.params.reduce((acc, { value }, i) => {
     value.forEach((v, j) => {
       if (!acc[j]) acc[j] = { type: "native" } as any;
@@ -44,12 +44,13 @@ const serialize = (func: DecodedInput) => {
       };
     });
     return acc;
-  }, [] as SerializedItem[]);
+  }, [] as DecodedTransfer[]);
 };
 
-export const decodeInput = (input: string): SerializedItem[] | undefined => {
+export const decodeInput = (input: string): DecodedTransfer[] | undefined => {
   try {
-    return serialize(abiDecoder.decodeMethod(input));
+    const decoded = abiDecoder.decodeMethod(input);
+    return decodeTransfers(decoded);
   } catch (error) {
     return;
   }

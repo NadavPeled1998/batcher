@@ -1,4 +1,8 @@
-import { networkConfigs } from "./network";
+import {
+  NATIVE_ADDRESS_0x0,
+  NATIVE_ADDRESS_0xE,
+  networkConfigs,
+} from "./network";
 
 export const shortenAddress = (address: string, digits: number = 4): string => {
   const front = address.substring(0, digits + 2);
@@ -13,10 +17,7 @@ export const isValidAddress = (address?: string): boolean => {
 };
 
 export const isNative = (address: string) => {
-  return [
-    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    "0x0000000000000000000000000000000000000000",
-  ].includes(address);
+  return [NATIVE_ADDRESS_0x0, NATIVE_ADDRESS_0xE].includes(address);
 };
 
 export const getTokenAddressToFetch = (address: string) => {

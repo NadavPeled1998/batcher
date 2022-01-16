@@ -1,7 +1,7 @@
 import { Route } from "react-location";
 import { SendForm } from "../components/SendForm";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { History } from "../pages/History";
+import { History } from "../pages/History/History";
 
 export const routes: Route[] = [
   {

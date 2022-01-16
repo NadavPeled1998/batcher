@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { decodeInput, SerializedItem } from "../abi";
+import { decodeInput, DecodedTransfer } from "../abi";
 
 export interface Transaction {
   hash: string;
@@ -29,7 +29,7 @@ export interface GetTransactionsResponse {
 
 export interface TransactionHistoryListItem {
   transaction: Transaction;
-  batch: SerializedItem[];
+  batch: DecodedTransfer[];
 }
 
 export class TransactionHistory {
@@ -45,15 +45,14 @@ export class TransactionHistory {
 
   get list() {
     return this.transactions.reduce((acc, trx) => {
-      const decoded = decodeInput(trx.input);
-      if (decoded) {
+      const transfers = decodeInput(trx.input);
+      if (transfers) {
         acc.push({
           transaction: trx,
-          batch: decoded,
+          batch: transfers,
         });
       }
       return acc;
     }, [] as TransactionHistoryListItem[]);
   }
-
 }
