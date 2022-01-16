@@ -39,6 +39,8 @@ const createErrors = (errors: any) => {
 
 export const useSendForm = () => {
   const [errors, setErrors] = React.useState<ErrorShape>({});
+  const [gasFee, setGasFee] =  React.useState<string>('')
+  const [externalGasFee, setExternalGasFee] =  React.useState<string>('')
   const submitCount = useRef(0);
   const addressRef = useRef<any>();
   const amountRef = useRef<any>();
@@ -105,6 +107,224 @@ export const useSendForm = () => {
       });
   };
 
+  const getParams = () => {
+    let isSendERC20 = false;
+    let isSendERC721 = false;
+    let isSendNative = false;
+    let receivers: string[] = [];
+    let amounts: string[] = [];
+    let addresses: string[] = [];
+    let types: string[] = [];
+    let value = "";
+
+    if(web3) {
+      store.batch.items.forEach((item) => {
+        // push to receivers
+        receivers.push(item.address);
+  
+        // push to amounts
+        if (item.token.type === "erc721") {
+          isSendERC721 = true;
+          amounts.push(String(item.amount));
+        } else {
+          amounts.push(etherToWei(web3, item.amount, item.token.decimals));
+        }
+  
+        // push to addresses
+        if (item.token.type === "native") {
+          isSendNative = true;
+          value = String(+value + +etherToWei(web3, item.amount, item.token.decimals));
+          addresses.push("0x0000000000000000000000000000000000000000");
+        } else {
+          addresses.push(item.token.token_address);
+        }
+  
+        if (item.token.type === "erc20") {
+          isSendERC20 = true;
+        }
+        // push to types
+        if (item.token.type) {
+          types.push(item.token.type);
+        }
+      });
+    }
+    return {
+      isSendERC20, isSendERC721, isSendNative, receivers, amounts, addresses, types, value
+    }
+  }
+
+  const getMethodWithParamsAndSendPayload: () => {methodWithParams: any, sendPayload: any} = () => {
+    const { isSendERC20, isSendERC721, isSendNative, receivers, amounts, addresses, types, value } = getParams()
+    if(web3) {
+      const multiSendContract = new web3.eth.Contract(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        multiSendABI as any,
+        "0xa679356125A6d1EE8807904adF72ef3BDa2f9aD9"
+      );
+      if(isSendERC721 && isSendERC20) {
+        return {
+          methodWithParams: multiSendContract.methods.multiSendAll(
+            receivers,
+            amounts,
+            addresses,
+            types
+          ), 
+          sendPayload: { value }
+        }
+      }
+      if (isSendNative) {
+        if (isSendERC721) {
+          return {
+            methodWithParams: multiSendContract.methods.multiSendNativeAndERC721(
+            receivers,
+            amounts,
+            addresses
+            ), 
+            sendPayload: { value }
+          }
+        }
+        if (isSendERC20) {
+          return {
+            methodWithParams: multiSendContract.methods.multiSendNativeAndERC20(
+              receivers,
+              amounts,
+              addresses
+            ), 
+            sendPayload: { value }
+          }
+        }
+        return {
+          methodWithParams: multiSendContract.methods.multiSendNative(receivers, amounts), 
+          sendPayload: { value }
+        }
+      }
+      if (isSendERC20) {
+        return {
+          methodWithParams: multiSendContract.methods.multiSendERC20(
+            receivers,
+            amounts,
+            addresses
+          ), 
+          sendPayload: { value }
+        }
+      }
+      if (isSendERC721) {
+        return {
+          methodWithParams: multiSendContract.methods.multiSendERC721(
+            receivers,
+            amounts,
+            addresses
+          ), 
+          sendPayload: { value }
+        }
+      }
+    }
+    return {
+      methodWithParams: {}, 
+      sendPayload: { value }
+    }
+  };
+
+  const getGasLimit = async({ methodWithParams, value } : {methodWithParams: any, value: string}) => {
+    let gas = "1000000";
+    if(web3) {
+      const { toBN } = web3.utils;
+      try {
+        gas = toBN(await methodWithParams.estimateGas({ from: account, value }))
+          .mul(toBN(11))
+          .div(toBN(10))
+          .toString();
+      } catch (e) {
+        gas = "1000000";
+      } 
+    }
+    return gas
+  }
+
+ const getExternalGasLimit = async () => {
+  let gasLimit = 0
+  if(web3) {
+    for(let i = 0; i < store.batch.items.length; i++) {
+      const { token, address } = store.batch.items[i]
+      if(token.type === 'native') {
+        gasLimit += 21000
+      }
+      else if(token.type === 'erc20') {
+        const erc20Contract = new web3.eth.Contract(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          erc20ABI as any,
+          token.token_address
+        );
+        try {
+          console.log("blalance")
+          const balance = await erc20Contract.methods.balanceOf(address).call()
+          console.log({balance})
+          if(+balance) {
+            gasLimit += 37000
+          }
+          else {
+            gasLimit += 54000
+  
+          }
+        }
+        catch {
+          console.log("catch failed")
+          gasLimit += 37000
+        }
+
+      }
+      else if(token.type === 'erc721') {
+        const erc20Contract = new web3.eth.Contract(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          erc721ABI as any,
+          token.token_address
+        );
+        try {
+          const balance = await erc20Contract.methods.balanceOf(address).call()
+          if(+balance) {
+            gasLimit += 41500
+          }
+          else {
+            gasLimit += 63500
+          }
+        }
+        catch {
+          gasLimit += 41500
+        }
+      }
+    };
+  }
+  return String(gasLimit)
+ }
+
+ const calculateGasFeeByGasLimit = async (gasLimit: string) => {
+  let gasFee = ''
+  if(web3) {
+    const { toBN } = web3.utils;
+    const gasPrice = await web3.eth.getGasPrice()
+    console.log("gasPrice", {gasPrice})
+    gasFee = toBN(gasPrice)
+      .mul(toBN(gasLimit))
+      .toString();
+  }
+  return gasFee
+ }
+
+ const getExternalGasFee = async () => {
+  const gasLimit = await getExternalGasLimit()
+  const gasFee = await calculateGasFeeByGasLimit(gasLimit)
+  console.log("getExternalGasFee", {gasFee, gasLimit})
+  return gasFee
+ }
+
+  const getGasFee = async () => {
+    let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload();
+    const gasLimit = await getGasLimit({ methodWithParams, value: sendPayload.value});
+    const gasFee = await calculateGasFeeByGasLimit(gasLimit)
+    console.log("getGasFee", {gasFee, gasLimit})
+    return gasFee
+  }
+
   const checkIfNeedApprove = async (token: Token, amount?: string) => {
     if (web3) {
       const { setApproveToken, addToNeedsApproveMap, totals } = store.batch;
@@ -146,6 +366,20 @@ export const useSendForm = () => {
       }
     }
   };
+
+  useEffect(() => {
+    ;(async function setGasFees() {
+      let gasFee = ''
+      let externalGasFee = ''
+      if(store.batch.itemsLength) {
+        gasFee = await getGasFee();
+        externalGasFee = await getExternalGasFee();
+      }
+      setGasFee(gasFee)
+      console.log("externalGasFee", {externalGasFee})
+      setExternalGasFee(externalGasFee)
+    })()
+    }, [store.batch.itemsLength])
 
   const submit = async (ev: FormEvent) => {
     ev.preventDefault();
@@ -222,124 +456,16 @@ export const useSendForm = () => {
 
   const sendTransaction = async () => {
     if (web3) {
-      const multiSendContract = new web3.eth.Contract(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        multiSendABI as any,
-        "0xa679356125A6d1EE8807904adF72ef3BDa2f9aD9"
-      );
-      let isSendERC20 = false;
-      let isSendERC721 = false;
-      let isSendNative = false;
-      let receivers: string[] = [];
-      let amounts: string[] = [];
-      let addresses: string[] = [];
-      let types: string[] = [];
-      let value = "";
+      let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload();
+      const gas = getGasLimit({ methodWithParams, value: sendPayload.value});
 
-      store.batch.items.forEach((item) => {
-        // push to receivers
-        receivers.push(item.address);
-
-        // push to amounts
-        if (item.token.type === "erc721") {
-          isSendERC721 = true;
-          amounts.push(String(item.amount));
-        } else {
-          amounts.push(etherToWei(web3, item.amount, item.token.decimals));
-        }
-
-        // push to addresses
-        if (item.token.type === "native") {
-          isSendNative = true;
-          value = String(
-            +value + +etherToWei(web3, item.amount, item.token.decimals)
-          );
-          addresses.push("0x0000000000000000000000000000000000000000");
-        } else {
-          addresses.push(item.token.token_address);
-        }
-
-        if (item.token.type === "erc20") {
-          isSendERC20 = true;
-        }
-        // push to types
-        if (item.token.type) {
-          types.push(item.token.type);
-        }
-      });
-
-      console.log("SendTransaction 0", {
-        isSendERC721,
-        isSendERC20,
-        receivers,
-        amounts,
-        addresses,
-      });
-
-      const getMethodWithParams = () => {
-        if (isSendERC721 && isSendERC20) {
-          return multiSendContract.methods.multiSendAll(
-            receivers,
-            amounts,
-            addresses,
-            types
-          );
-        }
-        if (isSendNative) {
-          if (isSendERC721) {
-            return multiSendContract.methods.multiSendNativeAndERC721(
-              receivers,
-              amounts,
-              addresses
-            );
-          }
-          if (isSendERC20) {
-            return multiSendContract.methods.multiSendNativeAndERC20(
-              receivers,
-              amounts,
-              addresses
-            );
-          }
-          return multiSendContract.methods.multiSendNative(receivers, amounts);
-        }
-        if (isSendERC20) {
-          return multiSendContract.methods.multiSendERC20(
-            receivers,
-            amounts,
-            addresses
-          );
-        }
-        if (isSendERC721) {
-          return multiSendContract.methods.multiSendERC721(
-            receivers,
-            amounts,
-            addresses
-          );
-        }
-      };
-      let methodWithParams = getMethodWithParams();
-
-      const { toBN } = web3.utils;
-      let gas = "1000000";
-      try {
-        gas = toBN(await methodWithParams.estimateGas({ from: account, value }))
-          .mul(toBN(11))
-          .div(toBN(10))
-          .toString();
-      } catch (e) {
-        gas = "1000000";
-      }
-
-      const txid = await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         methodWithParams
-          .send({ from: account, value, gas })
+          .send({ from: account, ...sendPayload, gas })
           .on("transactionHash", (hash: string) => resolve(hash))
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .on("error", (err: any) => reject(err));
       });
-
-      alert(txid);
-      console.log("sendTransaction", store.batch.items);
 
       store.form.reset();
       store.batch.clear();
@@ -364,6 +490,8 @@ export const useSendForm = () => {
     submit,
     sendTransaction,
     approveAll,
+    gasFee,
+    externalGasFee,
     formState: {
       errors,
     },

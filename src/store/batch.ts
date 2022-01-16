@@ -35,6 +35,10 @@ export class Batch {
     return Boolean(Object.values(this.needsApproveMap).length)
   }
 
+  get itemsLength() {
+    return this.items.length
+  }
+
   add(item: IBatchItem) {
     console.log("add",this, { item: this?.items})
     this.items.push(item);
