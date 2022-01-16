@@ -1,5 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { decodeInput, DecodedTransfer } from "../abi";
+import { Batch, IBatchItem } from "./batch";
+import { tokensStore } from "./tokens";
 
 export interface Transaction {
   hash: string;
@@ -29,8 +31,17 @@ export interface GetTransactionsResponse {
 
 export interface TransactionHistoryListItem {
   transaction: Transaction;
-  batch: DecodedTransfer[];
+  batch: IBatchItem[];
 }
+
+const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
+  const token = tokensStore.get(decodedTransfer.token_address);
+  return {
+    address: decodedTransfer.receiver,
+    amount: Number(decodedTransfer.amount),
+    token,
+  };
+};
 
 export class TransactionHistory {
   transactions: Transaction[] = [];
@@ -49,10 +60,20 @@ export class TransactionHistory {
       if (transfers) {
         acc.push({
           transaction: trx,
-          batch: transfers,
+          batch: transfers.map(createBatchItem),
         });
       }
       return acc;
     }, [] as TransactionHistoryListItem[]);
+  }
+
+  get transferredTokenAddresses() {
+    const addresses = this.list.reduce((acc, item) => {
+      item.batch.forEach((batch) => {
+        acc.add(batch.token.address);
+      });
+      return acc;
+    }, new Set<string>());
+    return Array.from(addresses);
   }
 }

@@ -4,6 +4,7 @@ import { Token } from "../hooks/useERC20Balance";
 import { genDefaultETHToken } from "../utils/defaults";
 import { Batch } from "./batch";
 import { Tokens } from "./prices";
+import { tokensStore } from "./tokens";
 
 export class Form {
   constructor(public tokenStore: Tokens, public batchStore: Batch) {
@@ -83,15 +84,15 @@ export class Form {
   }
 
   clear() {
-    this.address = "";
-    this.amount = 0;
+    // this.address = "";
+    // this.amount = 0;
   }
 
   async submit() {
     this.batchStore.add({
       address: this.address,
       amount: Number(this.amount),
-      token: this.selectedToken,
+      token: tokensStore.get(this.selectedToken.token_address),
     });
     this.clear();
   }

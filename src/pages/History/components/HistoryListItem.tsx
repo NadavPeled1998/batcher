@@ -1,4 +1,4 @@
-import { Badge, Box, Divider, Flex, Text } from "@chakra-ui/react";
+import { Badge, Box, Divider, Flex, Spinner, Text } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { Collapse } from "react-collapse";
 import { ChevronDown, Layers } from "react-feather";
@@ -35,6 +35,10 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
             <Flex fontSize="lg" gap={2} alignItems="center">
               <Layers color="var(--chakra-colors-primary-200)" size="1.2em" />
               <Text>{formatNumber(item.batch.length)}</Text>
+              <Flex ml={[0, 2]} fontSize="xs" gap={2} alignItems="center">
+                <Spinner size="sm" speed="1s" />
+                <Text>Pending</Text>
+              </Flex>
             </Flex>
           </Box>
           <Box ml="auto" textAlign="right">
@@ -52,11 +56,11 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
       </Flex>
 
       <Collapse isOpened={isOpen}>
-        {item.batch.map((transaction) => (
-          <Flex fontSize='sm' gap={2} py={2} px={4} alignItems="center">
-            <Text>{shortenAddress(transaction.receiver)}</Text>
-            <Text>{transaction.amount}</Text>
-            <Badge colorScheme="primary">{transaction.type}</Badge>
+        {item.batch.map((batch) => (
+          <Flex fontSize="sm" gap={2} py={2} px={4} alignItems="center">
+            <Text>{shortenAddress(batch.address)}</Text>
+            <Text>{batch.amount}</Text>
+            <Badge colorScheme="primary">{batch.token.type}</Badge>
           </Flex>
         ))}
       </Collapse>

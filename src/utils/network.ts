@@ -2,6 +2,7 @@ import { ChainID } from "../hooks/useERC20Balance";
 
 export const NATIVE_ADDRESS_0xE: string =
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+  
 export const NATIVE_ADDRESS_0x0: string =
   "0x0000000000000000000000000000000000000000";
 

@@ -16,6 +16,12 @@ export const useAccount = () => {
   const { account, web3, chainId } = useMoralis();
   const api = useMoralisWeb3Api();
 
+  const fetchTokensMetaData = useCallback(
+    async (addresses: string[]) => {
+      tokensStore.fetchTokensMetaData(addresses, chainId as ChainID);
+    },
+    [chainId]
+  );
   const fetchBalances = useCallback(() => {
     if (!account) return;
 
@@ -35,19 +41,16 @@ export const useAccount = () => {
       }),
     ])
       .then((tokens) => {
-        store.tokens.set(tokens.flat());
+        const flat = tokens.flat();
+        store.tokens.set(flat);
         store.form.setToken(tokens[0]);
-        store.tokens.prices.multiFetch(tokens.flat());
-        tokensStore.fetchTokensMetaData(
-          tokens.flat().map((t) => t.token_address),
-          chainId as ChainID
-        );
-        console.log('tokensStore:', tokensStore)
+        store.tokens.prices.multiFetch(flat);
+        fetchTokensMetaData(flat.map((t) => t.token_address));
       })
       .catch((e) => {
         console.log("get tokens failed", { e });
       });
-  }, [account, chainId, api]);
+  }, [account, chainId, api, fetchTokensMetaData]);
 
   const fetchTransfers = useCallback(() => {
     if (!account) return;
@@ -59,9 +62,11 @@ export const useAccount = () => {
       })
       .then((response) => {
         store.history.setTransactions(response);
-        console.log(store.history.list);
+        if (response.result?.length) {
+          fetchTokensMetaData(store.history.transferredTokenAddresses);
+        }
       });
-  }, [account, chainId, api]);
+  }, [account, chainId, api, fetchTokensMetaData]);
 
   useEffect(fetchBalances, [account, fetchBalances, chainId]);
   useEffect(fetchTransfers, [account, fetchTransfers, chainId]);

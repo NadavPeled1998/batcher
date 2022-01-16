@@ -23,8 +23,7 @@ export const Totals: FC<FlexProps> = observer((props) => (
           <Text fontSize="xs">
             ($
             {formatNumber(
-              total * store.tokens.prices.get(token.token_address)?.usdPrice ||
-                0
+              total * store.tokens.prices.get(token.address)?.usdPrice || 0
             )}
             )
           </Text>

@@ -1,10 +1,11 @@
 import { makeAutoObservable } from "mobx";
 import { Token } from "../hooks/useERC20Balance";
+import { TokenMetaData } from "./tokens";
 
 export interface IBatchItem {
   address: string;
   amount: number;
-  token: Token;
+  token: TokenMetaData;
 }
 
 type NeedsApproveMap = { [key: string]: Token };
@@ -28,49 +29,48 @@ export class Batch {
 
       acc[item.token.symbol].total += item.amount;
       return acc;
-    }, {} as { [key: string]: { total: number; token: Token } });
+    }, {} as { [key: string]: { total: number; token: TokenMetaData } });
   }
 
   get isNeedsApprove() {
-    return Boolean(Object.values(this.needsApproveMap).length)
+    return Boolean(Object.values(this.needsApproveMap).length);
   }
 
   get itemsLength() {
-    return this.items.length
+    return this.items.length;
   }
 
   add(item: IBatchItem) {
-    console.log("add",this, { item: this?.items})
+    console.log("add", this, { item: this?.items });
     this.items.push(item);
   }
 
   addToNeedsApproveMap = (token_address: string, token: Token) => {
-    console.log("addToNeedsApproveMap", this)
-    this.needsApproveMap = {...this.needsApproveMap, [token_address]: token}
-  }
-  
-  
+    console.log("addToNeedsApproveMap", this);
+    this.needsApproveMap = { ...this.needsApproveMap, [token_address]: token };
+  };
+
   setNeedsApproveMap(needsApproveMap: NeedsApproveMap) {
-    console.log("setNeedsApproveMap", this)
-    this.needsApproveMap = needsApproveMap
+    console.log("setNeedsApproveMap", this);
+    this.needsApproveMap = needsApproveMap;
   }
 
   setApproveToken = (token_address: string) => {
-    console.log("setApproveToken", this)
-    const needsApprove = this.needsApproveMap
-    delete needsApprove[token_address]
-    this.needsApproveMap = needsApprove
-  } 
+    console.log("setApproveToken", this);
+    const needsApprove = this.needsApproveMap;
+    delete needsApprove[token_address];
+    this.needsApproveMap = needsApprove;
+  };
 
   remove(item: IBatchItem) {
     this.items = this.items.filter((i) => i !== item);
-    if(!(this.items.find(el => el.token.token_address === item.token.token_address))){
-      this.setApproveToken(item.token.token_address)
+    if (!this.items.find((el) => el.token.address === item.token.address)) {
+      this.setApproveToken(item.token.address);
     }
   }
 
   clear() {
     this.items = [];
-    this.needsApproveMap = {}
+    this.needsApproveMap = {};
   }
 }

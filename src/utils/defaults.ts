@@ -23,5 +23,6 @@ export const generateNativeTokenMetaData = (): TokenMetaData => {
     name: "Ethereum",
     logo: undefined,
     thumbnail: undefined,
+    type: "native",
   };
 };

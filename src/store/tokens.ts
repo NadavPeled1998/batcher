@@ -18,6 +18,7 @@ export interface TokenMetaData {
   thumbnail?: string;
   block_number?: string;
   validated?: string;
+  type?: "erc20" | "erc721" | "native";
 }
 
 export type TokensMetaDataMap = {

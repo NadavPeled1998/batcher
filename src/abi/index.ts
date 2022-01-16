@@ -1,5 +1,6 @@
 import abiDecoder from "abi-decoder";
 import { TokenType } from "../store/prices";
+import { NATIVE_ADDRESS_0xE } from "../utils/network";
 import erc20Abi from "./erc20.json";
 import erc721Abi from "./erc721.json";
 import multiSendAbi from "./multiSend.json";
@@ -27,20 +28,27 @@ export interface DecodedTransfer {
   type: TokenType;
 }
 
-const params: (keyof DecodedTransfer)[] = [
+const defaultTransfer = (): Partial<DecodedTransfer> => ({
+  type: "native",
+  token_address: NATIVE_ADDRESS_0xE,
+});
+
+const PARAMS: (keyof DecodedTransfer)[] = [
   "receiver",
   "amount",
   "token_address",
   "type",
 ];
 
+// native and erc20
+// TODO: add erc721
 const decodeTransfers = (func: DecodedInput) => {
   return func.params.reduce((acc, { value }, i) => {
     value.forEach((v, j) => {
-      if (!acc[j]) acc[j] = { type: "native" } as any;
+      if (!acc[j]) acc[j] = defaultTransfer() as DecodedTransfer;
       acc[j] = {
         ...acc[j],
-        [params[i]]: v,
+        [PARAMS[i]]: v,
       };
     });
     return acc;

@@ -2,9 +2,9 @@ import { CloseButton, Flex, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { ChevronRight, Send } from "react-feather";
 import { store } from "../../store";
+import { IBatchItem } from "../../store/batch";
 import { shortenAddress } from "../../utils/address";
 import { TokenIcon } from "../TokenPicker/TokenIcon";
-import { IBatchItem } from "./BatchList";
 
 export interface BatchItemProps {
   item: IBatchItem;

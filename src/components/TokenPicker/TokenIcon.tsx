@@ -1,7 +1,8 @@
 import { FC } from "react";
 import { Token } from "../../hooks/useERC20Balance";
+import { TokenMetaData } from "../../store/tokens";
 interface TokenIconProps {
-  token: Token | string;
+  token: TokenMetaData | Token | string;
   size?: string;
 }
 
