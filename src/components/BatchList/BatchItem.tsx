@@ -4,6 +4,7 @@ import { ChevronRight, Send } from "react-feather";
 import { store } from "../../store";
 import { IBatchItem } from "../../store/batch";
 import { shortenAddress } from "../../utils/address";
+import { formatNumber } from "../../utils/currency";
 import { TokenIcon } from "../TokenPicker/TokenIcon";
 
 export interface BatchItemProps {
@@ -16,7 +17,7 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
     <Flex fontSize="sm" alignItems="center" gap={2}>
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
       <Text>
-        {item.amount} {item.token.symbol}
+        {formatNumber(item.amount, 6)} {item.token.symbol}
       </Text>
       <TokenIcon token={item.token} size="20" />
       <ChevronRight

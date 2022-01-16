@@ -9,6 +9,7 @@ import { formatNumber } from "../../../utils/currency";
 interface Props {
   item: TransactionHistoryListItem;
 }
+
 export const HistoryListItem: FC<Props> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -60,11 +61,44 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
         </Flex>
       </Flex>
 
-      <Collapse isOpened={isOpen} >
-        <Flex w="full" fontSize="sm" direction="column" px={4} pb={2} gap={2}>
-          {item.batch.map((batch, i) => (
-            <BatchItem key={i} item={batch} readonly />
-          ))}
+      <Collapse isOpened={isOpen}>
+        <Flex w="full" gap={8} px={4} pb={4}>
+          <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
+            <Text fontSize="xs">Transaction info</Text>
+            <Flex>
+              <Text fontWeight={600} fontSize="xs" color="gray.500">
+                Transaction Hash:
+              </Text>
+              <Text ml="auto">{shortenAddress(item.transaction.hash)}</Text>
+            </Flex>
+            <Flex>
+              <Text fontWeight={600} fontSize="xs" color="gray.500">
+                Block number:
+              </Text>
+              <Text ml="auto">{item.transaction.block_number}</Text>
+            </Flex>
+            <Flex>
+              <Text fontWeight={600} fontSize="xs" color="gray.500">
+                Gas used:
+              </Text>
+              <Text ml="auto">{item.transaction.receipt_gas_used}</Text>
+            </Flex>
+          </Flex>
+          <Box borderRightWidth="1px"></Box>
+          <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
+            <Text fontSize="xs">Batch list</Text>
+            <Flex
+              fontSize="sm"
+              direction="column"
+              gap={2}
+              maxH="200px"
+              overflow="auto"
+            >
+              {item.batch.map((batch, i) => (
+                <BatchItem key={i} item={batch} readonly />
+              ))}
+            </Flex>
+          </Flex>
         </Flex>
       </Collapse>
     </>

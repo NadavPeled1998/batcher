@@ -61,6 +61,7 @@ export class Prices {
       .getTokenPrice({
         address: getTokenAddressToFetch(address),
         chain: "eth",
+        exchange: 'uniswap-v2'
       })
       .then(
         (price): TokenPrice => ({

@@ -36,12 +36,12 @@ export interface TransactionHistoryListItem {
 }
 
 const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
-  const token = tokensStore.get(decodedTransfer.token_address);
+  const token = tokensStore.get(decodedTransfer.token_address) || {};
   return {
     address: decodedTransfer.receiver,
     amount: Moralis.Units.FromWei(
       decodedTransfer.amount,
-      Number(token.decimals)
+      Number(token.decimals) || 18
     ),
     token,
   };
@@ -58,7 +58,7 @@ export class TransactionHistory {
   setFetching(isFetching: boolean) {
     this.isFetching = isFetching;
   }
-  
+
   setTransactions(response: GetTransactionsResponse) {
     this.transactions = response.result || [];
   }

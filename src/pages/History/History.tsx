@@ -1,10 +1,9 @@
 import {
-  Button,
   Divider,
   Flex,
   Heading,
   Spinner,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { ChevronDown } from "react-feather";
@@ -14,7 +13,7 @@ import { HistoryListItem } from "./components/HistoryListItem";
 export const History = observer(() => {
   const isLast = (index: number) => index === store.history.list.length - 1;
   return (
-    <Flex direction="column" w="786px" maxW="full" mx="auto">
+    <Flex direction="column" w="900px" maxW="full" mx="auto">
       <Flex
         direction="column"
         // bg="gray.900"
