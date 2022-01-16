@@ -13,12 +13,10 @@ import logo from "../assets/batcher.svg";
 
 enum TabNames {
   Send,
-  Manage,
   History,
 }
 const routeIndex: { [key: string]: TabNames } = {
   "/": TabNames.Send,
-  "/manage": TabNames.Manage,
   "/history": TabNames.History,
 };
 
@@ -53,15 +51,10 @@ export const Header: FC<FlexProps> = (props) => {
         onChange={handleTabChange}
       >
         <TabList>
-          <Tab w="33.33%">
+          <Tab w="50%">
             <Text color="white">Send</Text>
           </Tab>
-          <Tab w="33.33%">
-            <Text px={4} color="white">
-              Manage
-            </Text>
-          </Tab>
-          <Tab w="33.33%">
+          <Tab w="50%">
             <Text px={4} color="white">
               History
             </Text>
