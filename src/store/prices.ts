@@ -10,6 +10,8 @@ interface TokenPriceFetchStatus {
   error?: any;
 }
 
+export type TokenType = "native" | "erc20" | "erc721";
+
 export interface TokenPrice {
   fetchStatus?: TokenPriceFetchStatus;
   address: string;
@@ -105,8 +107,19 @@ export class Tokens {
   }
 
   set(tokens: Token[]) {
-    const checkIfIsNative = (address: string) => ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"].includes(address)
-    this.list = [...tokens.map((token: Token) => {return {...token, type: checkIfIsNative(token.token_address) ? 'native' : 'erc20'}})];
+    const checkIfIsNative = (address: string) =>
+      [
+        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      ].includes(address);
+    this.list = [
+      ...tokens.map((token: Token) => {
+        return {
+          ...token,
+          type: checkIfIsNative(token.token_address) ? "native" : "erc20",
+        };
+      }),
+    ];
   }
 
   fetch(walletAddress: string, chainId: ChainID) {

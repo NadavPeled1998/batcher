@@ -15,6 +15,7 @@
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@walletconnect/web3-provider": "^1.7.0",
+    "abi-decoder": "^2.4.0",
     "assert": "^2.0.0",
     "cryptocurrency-icons": "^0.18.0",
     "framer-motion": "^4.1.17",
@@ -53,7 +54,7 @@
     "generate-multi-send-types": "abi-types-generator './src/abi/multiSend.json' --output='./src/abi/types' --name=MultiSend",
     "generate-erc20-types": "abi-types-generator './src/abi/erc20.json' --output='./src/abi/types' --name=ERC20",
     "generate-erc721-types": "abi-types-generator './src/abi/erc721.json' --output='./src/abi/types' --name=ERC721",
-    "generate-abi-types": "npm run generate-multi-send-types && npm run generate-erc20-types && npm run generate-erc721-types"
+    "generate-abi-types": "npm run generate-multi-send-types"
   },
   "eslintConfig": {
     "extends": [
