@@ -91,7 +91,7 @@ export class Form {
   async submit() {
     this.batchStore.add({
       address: this.address,
-      amount: Number(this.amount),
+      amount: Number(this._amount),
       token: tokensStore.get(this.selectedToken.token_address),
     });
     this.clear();
