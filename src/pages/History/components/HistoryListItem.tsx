@@ -82,7 +82,13 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
       </Flex>
 
       <Collapse isOpened={isOpen}>
-        <Flex w="full" gap={8} px={4} pb={4}>
+        <Flex
+          direction={["column", "column", "row"]}
+          w="full"
+          gap={[4, 8]}
+          px={4}
+          pb={4}
+        >
           <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
             <Text fontSize="xs">Transaction info</Text>
             <Flex alignItems="center" gap={2}>
@@ -114,7 +120,11 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
               <Text ml="auto">{item.transaction.receipt_gas_used}</Text>
             </Flex>
           </Flex>
-          <Box borderRightWidth="1px"></Box>
+          <Box
+            width={["full", "full", "1px"]}
+            borderRightWidth={[0, 0, 1]}
+            // borderBottomWidth={[1, 1, 0]}
+          ></Box>
           <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
             <Text fontSize="xs">Batch list</Text>
             <Flex
