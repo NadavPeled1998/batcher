@@ -2,10 +2,7 @@ import { makeAutoObservable } from "mobx";
 import Moralis from "moralis";
 import { ChainID } from "../hooks/useERC20Balance";
 import { makePersistable } from "mobx-persist-store";
-import {
-  genDefaultETHToken,
-  generateNativeTokenMetaData,
-} from "../utils/defaults";
+import { generateNativeTokenMetaData } from "../utils/defaults";
 import { NATIVE_ADDRESS_0x0, NATIVE_ADDRESS_0xE } from "../utils/network";
 
 export interface TokenMetaData {
@@ -49,12 +46,12 @@ export class Tokens {
   }
 
   async fetchTokensMetaData(addresses: string[], chainId: ChainID) {
-    const filtered = this.filterUnFetched(addresses);
-    if (filtered.length === 0) return console.log("all tokens are fetched");
+    const unfetched = this.filterUnFetched(addresses);
+    if (unfetched.length === 0) return console.log("all tokens are fetched");
 
     await Moralis.Web3API.token
       .getTokenMetadata({
-        addresses: filtered,
+        addresses: unfetched,
         chain: chainId,
       })
       .then((data) => this.add(data))

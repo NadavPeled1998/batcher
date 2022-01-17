@@ -1,6 +1,10 @@
 import { makeAutoObservable } from "mobx";
+import Moralis from "moralis";
+import { createMultiSendContract } from "../contracts";
+import { MultiSend } from "../abi/types/MultiSend";
 import { Token } from "../hooks/useERC20Balance";
 import { TokenMetaData } from "./tokens";
+import Web3 from "web3";
 
 export interface IBatchItem {
   address: string;
@@ -30,6 +34,28 @@ export class Batch {
       acc[item.token.symbol].total += item.amount;
       return acc;
     }, {} as { [key: string]: { total: number; token: TokenMetaData } });
+  }
+
+  async estimateGas(web: Moralis.Web3, walletAddress: string) {
+    const MSContract = createMultiSendContract(web);
+
+    const [receivers, amounts, tokens] = this.items.reduce(
+      (acc, item) => {
+        acc[0].push(item.address);
+        acc[1].push(Web3.utils.toWei(item.amount.toString()));
+        acc[2].push(item.token.address);
+        return acc;
+      },
+      [[], [], [], []] as string[][]
+    );
+
+    MSContract.methods
+      .multiSendERC20(receivers, amounts, tokens)
+      .estimateGas({
+        from: walletAddress,
+      })
+      .then((gas) => console.log("gas", gas))
+      .catch((e) => console.log("gas", e));
   }
 
   get isNeedsApprove() {
