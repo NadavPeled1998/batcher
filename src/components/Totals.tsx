@@ -19,7 +19,7 @@ export const Totals: FC<FlexProps> = observer((props) => (
       {Object.values(store.batch.totals).map(({ token, total }) => (
         <Flex gap="1" fontSize="sm" alignItems="center" key={token.symbol}>
           <Text>{token.symbol}</Text>
-          <Text fontWeight="bold">{formatNumber(total, +token.decimals)}</Text>
+          <Text fontWeight="bold">{formatNumber(total, 6)}</Text>
           <Text fontSize="xs">
             ($
             {formatNumber(

@@ -10,10 +10,13 @@ import {
 import { FC, useState } from "react";
 import { Collapse } from "react-collapse";
 import { Check, ChevronDown, ExternalLink, Layers } from "react-feather";
+import { useMoralis } from "react-moralis";
 import { BatchItem } from "../../../components/BatchList/BatchItem";
+import { ChainID } from "../../../hooks/useERC20Balance";
 import { TransactionHistoryListItem } from "../../../store/history";
 import { shortenAddress } from "../../../utils/address";
 import { formatNumber } from "../../../utils/currency";
+import { getExplorer } from "../../../utils/network";
 interface Props {
   item: TransactionHistoryListItem;
 }
@@ -21,6 +24,15 @@ interface Props {
 export const HistoryListItem: FC<Props> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+  const { chainId } = useMoralis();
+
+  const openExplorer = () => {
+    const href = `${getExplorer(chainId as ChainID)}tx/${
+      item.transaction.hash
+    }`;
+    window.open(href, "_blank");
+  };
+
   return (
     <>
       <Flex

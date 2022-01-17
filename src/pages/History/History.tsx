@@ -1,12 +1,7 @@
-import {
-  Divider,
-  Flex,
-  Heading,
-  Spinner,
-  Text
-} from "@chakra-ui/react";
+import { Box, Divider, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { ChevronDown } from "react-feather";
+import { FeatherGasStation } from "../../assets/FeatherGasStation";
 import { store } from "../../store";
 import { HistoryListItem } from "./components/HistoryListItem";
 
@@ -59,12 +54,30 @@ export const History = observer(() => {
         overflow="auto"
         rounded="lg"
       >
-        {store.history.list.map((item, i) => (
+        {store.history.list.length ? (
+          store.history.list.map((item, i) => (
+            <>
+              <HistoryListItem item={item} />
+              {isLast(i) ? null : <Divider />}
+            </>
+          ))
+        ) : (
           <>
-            <HistoryListItem item={item} />
-            {isLast(i) ? null : <Divider />}
+            <Box mx="auto">
+              <FeatherGasStation
+                stroke="none"
+                size="45"
+                fill="var(--chakra-colors-primary-500)"
+              />
+            </Box>
+            <Text mx="auto" fontSize="xs" color="gray.500">
+              No history yet
+            </Text>
+            <Text mx="auto" fontSize="sm">
+              Go make some history!
+            </Text>
           </>
-        ))}
+        )}
       </Flex>
     </Flex>
   );
