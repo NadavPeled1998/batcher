@@ -12,6 +12,7 @@ import { Collapse } from "react-collapse";
 import { Check, ChevronDown, ExternalLink, Layers } from "react-feather";
 import { useMoralis } from "react-moralis";
 import { BatchItem } from "../../../components/BatchList/BatchItem";
+import { Totals } from "../../../components/Totals";
 import { ChainID } from "../../../hooks/useERC20Balance";
 import { TransactionHistoryListItem } from "../../../store/history";
 import { shortenAddress } from "../../../utils/address";
@@ -122,8 +123,12 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
           </Flex>
           <Box
             width={["full", "full", "1px"]}
-            borderRightWidth={[0, 0, 1]}
-            // borderBottomWidth={[1, 1, 0]}
+            my={4}
+            
+            borderRightWidth={[0, 0, 2]}
+            borderColor="gray.800"
+            // borderStyle="dashed"
+            borderBottomWidth={[1, 1, 0]}
           ></Box>
           <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
             <Text fontSize="xs">Batch list</Text>
@@ -138,6 +143,7 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
                 <BatchItem key={i} item={batch} readonly />
               ))}
             </Flex>
+            <Totals mt={4} totals={item.totals} />
           </Flex>
         </Flex>
       </Collapse>

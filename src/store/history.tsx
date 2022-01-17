@@ -1,8 +1,9 @@
 import { makeAutoObservable } from "mobx";
-import { decodeInput, DecodedTransfer } from "../abi";
-import { Batch, IBatchItem } from "./batch";
-import { tokensStore } from "./tokens";
 import Moralis from "moralis";
+import { store } from ".";
+import { DecodedTransfer, decodeInput } from "../abi";
+import { IBatchItem, TotalsMap } from "./batch";
+import { tokensStore } from "./tokens";
 
 export interface Transaction {
   hash: string;
@@ -33,6 +34,7 @@ export interface GetTransactionsResponse {
 export interface TransactionHistoryListItem {
   transaction: Transaction;
   batch: IBatchItem[];
+  totals: TotalsMap;
 }
 
 const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
@@ -67,9 +69,12 @@ export class TransactionHistory {
     return this.transactions.reduce((acc, trx) => {
       const transfers = decodeInput(trx.input);
       if (transfers) {
+        const batchItems = transfers.map(createBatchItem);
+        const totals = store.batch.generateTotals(batchItems);
         acc.push({
           transaction: trx,
-          batch: transfers.map(createBatchItem),
+          batch: batchItems,
+          totals,
         });
       }
       return acc;

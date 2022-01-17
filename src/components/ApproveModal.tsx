@@ -49,7 +49,7 @@ export const ApproveModal: FC<Props> = observer(
                   The permission needed only once
                 </Text> */}
               </Box>
-              <Divider />
+              <Divider borderColor="gray.700"/>
               {Object.values(store.batch.needsApproveMap).map((token) => (
                 <>
                   <Flex
@@ -75,7 +75,7 @@ export const ApproveModal: FC<Props> = observer(
                       Needs permission
                     </Text>
                   </Flex>
-                  <Divider />
+                  <Divider borderColor="gray.700"/>
                 </>
               ))}
             </Flex>

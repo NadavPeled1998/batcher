@@ -11,6 +11,9 @@ export interface IBatchItem {
   amount: number;
   token: TokenMetaData;
 }
+export interface TotalsMap {
+  [key: string]: { total: number; token: TokenMetaData };
+}
 
 type NeedsApproveMap = { [key: string]: Token };
 
@@ -23,7 +26,11 @@ export class Batch {
   }
 
   get totals() {
-    return this.items.reduce((acc, item) => {
+    return this.generateTotals(this.items);
+  }
+
+  generateTotals(items: IBatchItem[]) {
+    return items.reduce((acc, item) => {
       if (!acc[item.token.symbol]) {
         acc[item.token.symbol] = {
           total: 0,
@@ -33,7 +40,7 @@ export class Batch {
 
       acc[item.token.symbol].total += item.amount;
       return acc;
-    }, {} as { [key: string]: { total: number; token: TokenMetaData } });
+    }, {} as TotalsMap);
   }
 
   async estimateGas(web: Moralis.Web3, walletAddress: string) {

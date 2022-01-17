@@ -65,7 +65,7 @@ export const History = observer(() => {
             return (
               <>
                 <HistoryListItem item={item} />
-                {isLast(i) ? null : <Divider />}
+                {isLast(i) ? null : <Divider borderColor="gray.700"/>}
               </>
             );
           })

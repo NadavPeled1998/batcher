@@ -26,7 +26,7 @@ export const BatchList: FC = observer(() => {
         </Text>
         <ClearBatchButton />
       </Flex>
-      <Divider />
+      <Divider borderColor="gray.700" />
       <Flex direction="column" flex={1}>
         <Box h="full" maxH="160px" overflowY="scroll">
           {store.batch.items

@@ -28,6 +28,7 @@ import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
 import { FeatherWallet } from "../assets/FeatherWallet";
 import { ApproveModal } from "./ApproveModal";
+import { Permissable } from "./Permissable";
 
 export const SendForm: FC = observer(() => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
@@ -80,7 +81,7 @@ export const SendForm: FC = observer(() => {
             htmlFor="address"
             color="gray.500"
           >
-            {account} <br />
+            {/* {account} <br /> */}
             Recipient Address
           </FormLabel>
           <AddressInput {...addressController} />
@@ -150,20 +151,22 @@ export const SendForm: FC = observer(() => {
                 </Tab>
               </TabList>
             </Tabs>
-            <Text
-              mt="2"
-              d="flex"
-              gap={1}
-              alignItems="center"
-              hidden={store.form.canInputFiat}
-              fontSize="xs"
-            >
-              <AlertTriangle
-                color="var(--chakra-colors-orange-400)"
-                size="1em"
-              />{" "}
-              Couldn't fetch USD rate for {tokenController.value?.symbol}
-            </Text>
+            <Permissable>
+              <Text
+                mt="2"
+                d="flex"
+                gap={1}
+                alignItems="center"
+                hidden={store.form.canInputFiat}
+                fontSize="xs"
+              >
+                <AlertTriangle
+                  color="var(--chakra-colors-orange-400)"
+                  size="1em"
+                />{" "}
+                Couldn't fetch USD rate for {tokenController.value?.symbol}
+              </Text>
+            </Permissable>
           </Flex>
           <Flex
             direction="column"
@@ -172,7 +175,9 @@ export const SendForm: FC = observer(() => {
             mx="auto"
           >
             <TokenPicker {...tokenController} />
-            <SelectedTokenBalance />
+            <Permissable>
+              <SelectedTokenBalance />
+            </Permissable>
           </Flex>
           <Box gridArea="amount">
             <TokenAmountInput
@@ -195,13 +200,16 @@ export const SendForm: FC = observer(() => {
           </Box>
 
           <Text gridArea="usd" fontSize="sm" color="gray.500">
-            {store.form.amountInputType === InputType.Token
-              ? !store.form.canInputFiat
-                ? "unknown USD"
-                : formatNumber(store.form.usd) + " USD"
-              : formatNumber(store.form._amount, 6) +
-                " " +
-                tokenController.value?.symbol}
+            <Permissable>
+              {store.form.amountInputType === InputType.Token
+                ? !store.form.canInputFiat
+                  ? "unknown USD"
+                  : formatNumber(store.form.usd) + " USD"
+                : formatNumber(store.form._amount, 6) +
+                  " " +
+                  tokenController.value?.symbol}
+            </Permissable>
+            <Permissable condition="notConnected">0.00 USD</Permissable>
           </Text>
           <FormErrorMessage
             d="flex"
@@ -236,11 +244,12 @@ export const SendForm: FC = observer(() => {
             mt="auto"
             variant="ghost"
             rounded="full"
+            size="lg"
             disabled={Boolean(errors.address)}
-            leftIcon={<FeatherWallet />}
+            leftIcon={<FeatherWallet size="1.2em"/>}
             onClick={() => authenticate()}
           >
-            Connect Wallet
+            Connect wallet
           </Button>
         )}
       </Flex>
@@ -248,7 +257,7 @@ export const SendForm: FC = observer(() => {
         hidden={!store.batch.items.length}
         height={["0", "0", "0", "430px"]}
       >
-        <Divider orientation="vertical" h="full" />
+        <Divider orientation="vertical" h="full" borderColor="gray.700" />
       </Center>
       <Flex
         hidden={!store.batch.items.length}
