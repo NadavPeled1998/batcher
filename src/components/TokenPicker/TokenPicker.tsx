@@ -6,6 +6,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { ChevronDown } from "react-feather";
@@ -23,7 +24,6 @@ export const TokenPicker: FC<TokenPickerProps> = observer(
   ({ onChange, value }) => {
     const { isAuthenticated } = useMoralis();
     const modalController = useDisclosure();
-    const toast = useToast();
     const { prices } = store.tokens;
 
     const handleTokenSelect = (token: Token) => {
@@ -32,18 +32,10 @@ export const TokenPicker: FC<TokenPickerProps> = observer(
 
     const openModal = () => {
       if (!isAuthenticated) {
-        return toast({
-          title: "Please connect your wallet first.",
-          status: "info",
-          variant:'subtle',
-          isClosable: true,
-          containerStyle: {
-            borderRadius: "0.5rem",
-            padding: "1.5rem",
-          },
+        return toast.info("Connect wallet to see your tokens", {
+          hideProgressBar: true,
         });
       }
-
       modalController.onOpen();
     };
 

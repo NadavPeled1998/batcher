@@ -13,8 +13,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC, useEffect, useState } from "react";
-import { AlertTriangle, ArrowUp, Layers } from "react-feather";
+import { FC, useEffect, useRef, useState } from "react";
+import { AlertTriangle, ArrowUp, Layers, PlusCircle } from "react-feather";
 import { useMoralis } from "react-moralis";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { useSendForm } from "../hooks/useSendForm";
@@ -29,9 +29,15 @@ import { Totals } from "./Totals";
 import { FeatherWallet } from "../assets/FeatherWallet";
 import { ApproveModal } from "./ApproveModal";
 import { Permissable } from "./Permissable";
+import { useInView } from "react-intersection-observer";
+import { toast } from "react-toastify";
+import { BatchItem } from "./BatchList/BatchItem";
+import { useBatchListFocuser } from "../hooks/useBatchListFocuser";
 
 export const SendForm: FC = observer(() => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
+  const { batchListRef } = useBatchListFocuser();
+
   const {
     submit,
     amountController,
@@ -47,7 +53,7 @@ export const SendForm: FC = observer(() => {
   const { authenticate, isAuthenticated, isWeb3Enabled, account } =
     useMoralis();
 
-  const isConnected = isAuthenticated && isWeb3Enabled && account;
+  const isConnected = true || (isAuthenticated && isWeb3Enabled && account);
 
   useEffect(() => {
     if (store.commands.approveCommand.done) setIsApproveModalOpen(true);
@@ -246,7 +252,7 @@ export const SendForm: FC = observer(() => {
             rounded="full"
             size="lg"
             disabled={Boolean(errors.address)}
-            leftIcon={<FeatherWallet size="1.2em"/>}
+            leftIcon={<FeatherWallet size="1.2em" />}
             onClick={() => authenticate()}
           >
             Connect wallet
@@ -260,6 +266,7 @@ export const SendForm: FC = observer(() => {
         <Divider orientation="vertical" h="full" borderColor="gray.700" />
       </Center>
       <Flex
+        ref={batchListRef}
         hidden={!store.batch.items.length}
         direction="column"
         w={["full", "full", "full", "xs"]}

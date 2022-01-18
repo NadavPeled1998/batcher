@@ -14,12 +14,12 @@ export interface BatchItemProps {
 
 export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
   return (
-    <Flex fontSize="sm" alignItems="center" gap={2}>
+    <Flex fontSize="sm" alignItems="center" gap={2} w="full" flex={1}>
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
       <Text>
-        {formatNumber(item.amount, 6)} {item.token.symbol}
+        {formatNumber(item.amount, 6)} <Text d="inline" fontSize="xs">{item.token.symbol}</Text>
       </Text>
-      <TokenIcon token={item.token} size="20" />
+      <TokenIcon token={item.token} size="16 " />
       <ChevronRight
         size="0.8em"
         strokeWidth={4}
