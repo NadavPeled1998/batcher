@@ -28,6 +28,8 @@ import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
 import { FeatherWallet } from "../assets/FeatherWallet";
 import { ApproveModal } from "./ApproveModal";
+import { AssetType } from "../store/form";
+import { NFTPicker } from "./NFTPicker/NFTPicker";
 
 export const SendForm: FC = observer(() => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
@@ -36,6 +38,7 @@ export const SendForm: FC = observer(() => {
     amountController,
     addressController,
     tokenController,
+    nftController,
     formState: { errors },
     sendTransaction,
     approveAll,
@@ -90,7 +93,14 @@ export const SendForm: FC = observer(() => {
             </Text>
           </FormErrorMessage>
         </FormControl>
-
+        <Flex>
+          <Button onClick={() => store.form.setAssetType(AssetType.Token)}>
+            Select Token
+            </Button>
+          <Button onClick={() => store.form.setAssetType(AssetType.NFT)}>
+            Select NFT
+            </Button>
+        </Flex>
         <FormControl
           d="grid"
           alignContent="center"
@@ -109,6 +119,7 @@ export const SendForm: FC = observer(() => {
           fontWeight={500}
           isInvalid={Boolean(errors.amount)}
         >
+
           <FormLabel
             textAlign="center"
             gridArea="label"
@@ -116,8 +127,9 @@ export const SendForm: FC = observer(() => {
             htmlFor="address"
             color="gray.500"
           >
-            Select token
+            Select {store.form.assetType === AssetType.Token ? 'token' : 'NFT'}
           </FormLabel>
+          {store.form.assetType === AssetType.Token && (
 
           <Flex direction="column" alignItems="center" gridArea="toggle">
             <Tabs
@@ -129,9 +141,9 @@ export const SendForm: FC = observer(() => {
               style={
                 !store.form.canInputFiat
                   ? {
-                      pointerEvents: "none",
-                      opacity: 0.5,
-                    }
+                    pointerEvents: "none",
+                    opacity: 0.5,
+                  }
                   : {}
               }
               bg="gray.700"
@@ -164,45 +176,53 @@ export const SendForm: FC = observer(() => {
               />{" "}
               Couldn't fetch USD rate for {tokenController.value?.symbol}
             </Text>
-          </Flex>
+          </Flex>)}
           <Flex
             direction="column"
             alignItems="center"
             gridArea="picker"
             mx="auto"
           >
-            <TokenPicker {...tokenController} />
-            <SelectedTokenBalance />
+            {store.form.assetType === AssetType.Token ? (
+              <>
+                <TokenPicker {...tokenController} />
+                <SelectedTokenBalance /> 
+              </>
+            ) : <NFTPicker {...nftController} />
+          }
           </Flex>
-          <Box gridArea="amount">
-            <TokenAmountInput
-              placeholder={
-                store.form.amountInputType === InputType.Token
-                  ? "0.00"
-                  : "$0.00"
-              }
-              inputType={store.form.amountInputType}
-              {...amountController}
-              style={{
-                background: "none",
-                outline: "none",
-                fontSize: "2.5em",
-                flex: 1,
-                textAlign: "center",
-                width: "100%",
-              }}
-            />
-          </Box>
-
-          <Text gridArea="usd" fontSize="sm" color="gray.500">
-            {store.form.amountInputType === InputType.Token
-              ? !store.form.canInputFiat
-                ? "unknown USD"
-                : formatNumber(store.form.usd) + " USD"
-              : formatNumber(store.form._amount, 6) +
-                " " +
-                tokenController.value?.symbol}
-          </Text>
+          {store.form.assetType === AssetType.Token && (
+            <>
+              <Box gridArea="amount">
+                <TokenAmountInput
+                  placeholder={
+                    store.form.amountInputType === InputType.Token
+                      ? "0.00"
+                      : "$0.00"
+                  }
+                  inputType={store.form.amountInputType}
+                  {...amountController}
+                  style={{
+                    background: "none",
+                    outline: "none",
+                    fontSize: "2.5em",
+                    flex: 1,
+                    textAlign: "center",
+                    width: "100%",
+                  }}
+                />
+              </Box>
+              <Text gridArea="usd" fontSize="sm" color="gray.500">
+                {store.form.amountInputType === InputType.Token
+                  ? !store.form.canInputFiat
+                    ? "unknown USD"
+                    : formatNumber(store.form.usd) + " USD"
+                  : formatNumber(store.form._amount, 6) +
+                  " " +
+                  tokenController.value?.symbol}
+              </Text>
+            </>
+          )}
           <FormErrorMessage
             d="flex"
             flexDir="column"
@@ -230,19 +250,19 @@ export const SendForm: FC = observer(() => {
             Batch
           </Button>
         ) : (
-          <Button
-            colorScheme="primary"
-            mx="auto"
-            mt="auto"
-            variant="ghost"
-            rounded="full"
-            disabled={Boolean(errors.address)}
-            leftIcon={<FeatherWallet />}
-            onClick={() => authenticate()}
-          >
-            Connect Wallet
-          </Button>
-        )}
+            <Button
+              colorScheme="primary"
+              mx="auto"
+              mt="auto"
+              variant="ghost"
+              rounded="full"
+              disabled={Boolean(errors.address)}
+              leftIcon={<FeatherWallet />}
+              onClick={() => authenticate()}
+            >
+              Connect Wallet
+            </Button>
+          )}
       </Flex>
       <Center
         hidden={!store.batch.items.length}

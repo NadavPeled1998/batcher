@@ -20,14 +20,15 @@ import { FC } from "react";
 import { Search } from "react-feather";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
-import { TokenIcon } from "./TokenIcon";
+import { NFT } from "../../store/nfts";
+import { NFTImage } from "./NFTImage";
 
 interface TokenPickerModalProps extends ReturnType<typeof useDisclosure> {
-  onSelect: (token: Token) => void;
+  onSelect: (token: NFT) => void;
 }
 export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
   ({ onSelect, isOpen, onClose }) => {
-    const handleSelect = (token: Token) => {
+    const handleSelect = (token: NFT) => {
       onSelect(token);
       onClose?.();
     };
@@ -35,61 +36,53 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
       list: tokens,
       prices: { isFetching },
     } = store.tokens;
+    const { list: nfts } = store.nfts
+console.log("tokens", {tokens})
 
     return (
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm">
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm" >
         <ModalOverlay />
-        <ModalContent bg="gray.800" rounded={24} mx={4}>
-          <ModalHeader>Select token</ModalHeader>
+        <ModalContent bg="gray.800" rounded={24} mx={4} style={{height: "50vh", overflow: "hidden"}}>
+          <ModalHeader>Select NFT</ModalHeader>
           <ModalCloseButton rounded="full" />
-          <ModalBody>
-            <Flex direction="column" gap={3}>
-              <InputGroup size="lg" mb={6}>
+          <ModalBody style={{flex: 1, overflow: "hidden"}}>
+          <InputGroup size="lg" mb={6}>
                 <InputLeftElement children={<Search />} />
                 <Input rounded="full" />
               </InputGroup>
+            <Flex direction="column" gap={3} style={{flex: 1, overflow: "auto", height: "100%"}}>
               {isFetching ? (
                 <Spinner mx="auto" my={4} />
               ) : (
-                tokens.map((token, index) => (
+                nfts.map((nft, index) => (
                   <Flex
                     key={index}
-                    onClick={() => handleSelect(token)}
+                    onClick={() => { 
+                      console.log({nft})
+                      handleSelect(nft)
+                     }}
                     gap={2}
                     alignItems="center"
                     rounded="full"
                     p={1}
                     pr={4}
                     transition="all 0.2s"
-                    cursor="pointer"
                     _hover={{ bg: "gray.700" }}
+                    cursor="pointer"
                   >
-                    <TokenIcon token={token} />
+                    <NFTImage nft={nft} />
                     <Flex direction="column" alignItems="flex-start">
                       <Text fontSize="md" fontWeight={500}>
-                        {token.symbol}
+                        {nft.symbol}
                       </Text>
                       <Text fontSize="xs" color="gray.500">
-                        {token.name}
+                        {`${nft.name} #${nft.id}`}
                       </Text>
                     </Flex>
-                    <Text ml="auto" textAlign="right" fontWeight={500}>
-                      {parseFloat(
-                        Moralis.Units.FromWei(
-                          token.balance,
-                          Number(token.decimals)
-                        ).toFixed(6)
-                      )}
-                      <Text fontSize="xs">
-                        {store.tokens.prices
-                          .get(token.token_address)
-                          ?.usdPrice.toFixed(2) || 1}
-                      </Text>
-                    </Text>
                   </Flex>
                 ))
               )}
-            </Flex>
+              </Flex>
           </ModalBody>
 
           <ModalFooter>

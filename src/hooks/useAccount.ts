@@ -8,6 +8,7 @@ import erc20Abi from "../abi/erc20.json";
 import erc721Abi from "../abi/erc721.json";
 import * as abiDecoder from "abi-decoder";
 import { tokensStore } from "../store/tokens";
+import { ResNFT } from "../store/nfts";
 abiDecoder.addABI(multiSendAbi);
 abiDecoder.addABI(erc721Abi);
 abiDecoder.addABI(erc721Abi);
@@ -52,6 +53,18 @@ export const useAccount = () => {
       });
   }, [account, chainId, api, fetchTokensMetaData]);
 
+   
+ const fetchERC721Balances = useCallback(() => {
+  if (!account) return;
+
+  api.account.getNFTs({
+    address: account,
+    chain: chainId as ChainID,
+  }).then((NFTs) => {
+    store.nfts.set(NFTs.result as ResNFT[]);
+  })
+}, [account, chainId, api]);
+
   const fetchTransfers = useCallback(() => {
     if (!account) return;
 
@@ -72,4 +85,5 @@ export const useAccount = () => {
 
   useEffect(fetchBalances, [account, fetchBalances, chainId]);
   useEffect(fetchTransfers, [account, fetchTransfers, chainId]);
+  useEffect(fetchERC721Balances, [account, fetchTransfers, chainId])
 };

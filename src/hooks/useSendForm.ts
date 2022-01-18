@@ -3,6 +3,7 @@ import * as yup from "yup";
 import { AddressInput } from "../components/AddressInput";
 import { TokenAmountInput } from "../components/TokenAmountInput";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
+import { NFTPicker } from "../components/NFTPicker/NFTPicker";
 import { store } from "../store";
 import { isValidAddress } from "../utils/address";
 import { useMoralis } from "react-moralis";
@@ -11,13 +12,17 @@ import erc20ABI from "../abi/erc20.json";
 import erc721ABI from "../abi/erc721.json";
 import { etherToWei } from "../utils/ethereum";
 import { Token } from "./useERC20Balance";
+import { AssetType } from "../store/form";
+import { NFT } from "../store/nfts";
 
 const schema = yup
   .object({
     address: yup
       .string()
       .test("is-valid-address", "Invalid address", isValidAddress),
-    amount: yup.number().required().positive().default(0),
+    ...(store.form.assetType === AssetType.Token  && {
+      amount: yup.number().required().positive().default(0),
+    }),
   })
   .required();
 
@@ -51,8 +56,9 @@ export const useSendForm = () => {
       address: yup
         .string()
         .test("is-valid-address", "Invalid address", isValidAddress),
-      amount: yup.number().required().positive().default(0),
-    })
+      ...(store.form.assetType === AssetType.Token  && {
+        amount: yup.number().required().positive().default(0),
+      })    })
     .required();
 
   const addressController: React.ComponentProps<typeof AddressInput> = {
@@ -79,11 +85,16 @@ export const useSendForm = () => {
     onChange: (token) => store.form.setToken(token),
   };
 
+  const nftController: React.ComponentProps<typeof NFTPicker> = {
+    value: store.form.selectedNFT,
+    onChange: (nft) => store.form.setNFT(nft),
+  };
+
   const focusInput = (shapedErrors: ErrorShape) => {
     if (shapedErrors.address) {
       addressRef.current.focus();
-    } else if (shapedErrors.amount) {
-      amountRef.current.focus();
+    } else if (store.form.assetType === AssetType.Token && shapedErrors.amount) {
+      amountRef.current?.focus();
     }
   };
 
@@ -125,7 +136,7 @@ export const useSendForm = () => {
         // push to amounts
         if (item.token.type === "erc721") {
           isSendERC721 = true;
-          amounts.push(String(item.amount));
+          amounts.push((item.token as NFT).id);
         } else {
           amounts.push(etherToWei(web3, item.amount, item.token.decimals));
         }
@@ -353,43 +364,45 @@ export const useSendForm = () => {
     return gasFee;
   };
 
-  const checkIfNeedApprove = async (token: Token, amount?: string) => {
+  const checkIfNeedApprove = async (token: Token | NFT, amount?: string) => {
     if (web3) {
       const { setApproveToken, addToNeedsApproveMap, totals } = store.batch;
       console.log("batch", store.batch);
       if (token.type === "erc20") {
+        const erc20 = token as Token
         const erc20Contract = new web3.eth.Contract(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           erc20ABI as any,
-          token.token_address
+          erc20.token_address
         );
         const allowance = await erc20Contract.methods
           .allowance(account, MULTI_SEND_CONTRACT_ADDRESS)
           .call();
 
         const total =
-          (totals[token.symbol]?.total || 0) + (Number(amount) || 0);
+          (totals[erc20.symbol]?.total || 0) + (Number(amount) || 0);
         console.log("checkIfNeedApprove", { total, allowance });
-        if (+allowance < +etherToWei(web3, total, token.decimals)) {
-          addToNeedsApproveMap(token.token_address, token);
+        if (+allowance < +etherToWei(web3, total, erc20.decimals)) {
+          addToNeedsApproveMap(erc20.token_address, erc20);
         } else {
-          setApproveToken(token.token_address);
+          setApproveToken(erc20.token_address);
         }
       }
       if (token.type === "erc721") {
+        const erc721 = token as NFT
         const erc721Contract = new web3.eth.Contract(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           erc721ABI as any,
-          token.token_address
+          erc721.token_address
         );
         const isApprovedForAll = await erc721Contract.methods
           .isApprovedForAll(account, MULTI_SEND_CONTRACT_ADDRESS)
           .call();
 
         if (!isApprovedForAll) {
-          addToNeedsApproveMap(token.token_address, token);
+          addToNeedsApproveMap(erc721.token_address, erc721);
         } else {
-          setApproveToken(token.token_address);
+          setApproveToken(erc721.token_address);
         }
       }
     }
@@ -415,7 +428,7 @@ export const useSendForm = () => {
     const errs = await validate();
     if (errs) return;
     if (web3) {
-      const token = store.form.selectedToken;
+      const token = store.form.assetType === AssetType.Token ? (store.form.selectedToken as Token) : (store.form.selectedNFT as NFT)
       checkIfNeedApprove(token, String(store.form.amount));
     }
     submitCount.current = 0;
@@ -486,7 +499,13 @@ export const useSendForm = () => {
     if (web3) {
       let { methodWithParams, sendPayload } =
         getMethodWithParamsAndSendPayload();
-      const gas = getGasLimit({ methodWithParams, value: sendPayload.value });
+      let gas = '1000000'
+      try {
+        gas = await getGasLimit({ methodWithParams, value: sendPayload.value });
+      }
+      catch(err) {
+        gas = '1000000'
+      }
 
       await new Promise((resolve, reject) => {
         methodWithParams
@@ -516,6 +535,7 @@ export const useSendForm = () => {
     amountController,
     addressController,
     tokenController,
+    nftController,
     submit,
     sendTransaction,
     approveAll,

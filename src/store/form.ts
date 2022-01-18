@@ -3,18 +3,28 @@ import { InputType } from "../components/TokenAmountInput";
 import { Token } from "../hooks/useERC20Balance";
 import { genDefaultETHToken } from "../utils/defaults";
 import { Batch } from "./batch";
+import { NFT } from "./nfts";
 import { Tokens } from "./prices";
 import { tokensStore } from "./tokens";
 
+
+export enum AssetType {
+  Token,
+  NFT,
+}
 export class Form {
   constructor(public tokenStore: Tokens, public batchStore: Batch) {
     makeAutoObservable(this);
     this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
   }
 
+
+
   selectedToken: Token;
+  selectedNFT?: NFT;
   address = "";
 
+  assetType: AssetType = AssetType.Token;
   amountInputType: InputType = InputType.Token;
   usd: number = 0;
   _amount: number = 0;
@@ -60,11 +70,19 @@ export class Form {
     this.address = address;
   }
 
+  setAssetType(assetType: AssetType){
+    this.assetType = assetType
+  }
+
   setToken(token: Token) {
     this.selectedToken = token;
     if (!this.canInputFiat) {
       this.amountInputType = InputType.Token;
     }
+  }
+
+  setNFT(nft: NFT) {
+    this.selectedNFT = nft;
   }
 
   setAmount(amount: string) {
@@ -89,11 +107,16 @@ export class Form {
   }
 
   async submit() {
-    this.batchStore.add({
-      address: this.address,
-      amount: Number(this._amount),
-      token: tokensStore.get(this.selectedToken.token_address),
-    });
+    const token = this.assetType === AssetType.Token 
+      ? tokensStore.get(this.selectedToken.token_address)
+      : this.selectedNFT
+    if(token) {
+      this.batchStore.add({
+        address: this.address,
+        amount: Number(this._amount),
+        token: token,
+      });
+    }
     this.clear();
   }
 }

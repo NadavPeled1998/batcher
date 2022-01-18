@@ -21,6 +21,10 @@ interface Props {
 export const HistoryListItem: FC<Props> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+
+  const openExplorer = () => {
+    console.log("open explorer")
+  }
   return (
     <>
       <Flex

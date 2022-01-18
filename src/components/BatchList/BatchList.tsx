@@ -3,13 +3,14 @@ import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
+import { NFT } from "../../store/nfts";
 import { ClearBatchButton } from "../Dialogs/ClearBatchButton";
 import { BatchItem } from "./BatchItem";
 
 export interface IBatchItem {
   address: string;
   amount: number;
-  token: Token;
+  token: Token | NFT;
 }
 
 export const BatchList: FC = observer(() => {
