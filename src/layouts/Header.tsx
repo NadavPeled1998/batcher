@@ -8,16 +8,18 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import { useRouter, useNavigate, useMatch, useLocation } from "react-location";
+import { useLocation, useNavigate } from "react-location";
 import logo from "../assets/batcher.svg";
 
 enum TabNames {
   Send,
   History,
+  Playground,
 }
 const routeIndex: { [key: string]: TabNames } = {
   "/": TabNames.Send,
   "/history": TabNames.History,
+  "/playground": TabNames.Playground,
 };
 
 // invert keys and values of routeIndex
@@ -57,6 +59,11 @@ export const Header: FC<FlexProps> = (props) => {
           <Tab w="50%">
             <Text px={4} color="white">
               History
+            </Text>
+          </Tab>
+          <Tab w="50%">
+            <Text px={4} color="white">
+              Playground
             </Text>
           </Tab>
         </TabList>
