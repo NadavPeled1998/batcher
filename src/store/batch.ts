@@ -74,22 +74,22 @@ export class Batch {
   }
 
   add(item: IBatchItem) {
-    console.log("add", this, { item: this?.items });
+    
     this.items.push(item);
   }
 
   addToNeedsApproveMap = (token_address: string, token: Token) => {
-    console.log("addToNeedsApproveMap", this);
+    
     this.needsApproveMap = { ...this.needsApproveMap, [token_address]: token };
   };
 
   setNeedsApproveMap(needsApproveMap: NeedsApproveMap) {
-    console.log("setNeedsApproveMap", this);
+    
     this.needsApproveMap = needsApproveMap;
   }
 
   setApproveToken = (token_address: string) => {
-    console.log("setApproveToken", this);
+    
     const needsApprove = this.needsApproveMap;
     delete needsApprove[token_address];
     this.needsApproveMap = needsApprove;

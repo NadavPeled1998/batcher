@@ -61,11 +61,10 @@ export const History = observer(() => {
       >
         {store.history.list.length ? (
           store.history.list.map((item, i) => {
-            console.log("item:", item);
             return (
               <>
-                <HistoryListItem item={item} />
-                {isLast(i) ? null : <Divider borderColor="gray.700"/>}
+                <HistoryListItem item={item} key={i} />
+                {isLast(i) ? null : <Divider borderColor="gray.700" key={i+'d'} />}
               </>
             );
           })

@@ -66,6 +66,7 @@ export class Form {
   }
 
   setToken(token: Token) {
+    
     this.selectedToken = token;
     if (!this.canInputFiat) {
       this.amountInputType = InputType.Token;
@@ -85,7 +86,7 @@ export class Form {
   reset() {
     this.clear();
     this.amountInputType = InputType.Token;
-    this.selectedToken = genDefaultETHToken();
+    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
   }
 
   clear() {
