@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import Moralis from "moralis";
 import { InputType } from "../components/TokenAmountInput";
 import { Token } from "../hooks/useERC20Balance";
 import { genDefaultETHToken } from "../utils/defaults";
@@ -27,7 +28,11 @@ export class Form {
   assetType: AssetType = AssetType.Token;
   amountInputType: InputType = InputType.Token;
   usd: number = 0;
-  _amount: number = 0;
+  _amount: number = 0.001;
+
+  checkAddress(web3: Moralis.Web3, address: string) {
+    return web3.eth.getBalance(address);
+  }
 
   get amount() {
     if (this.amountInputType === InputType.Token) {
@@ -75,6 +80,7 @@ export class Form {
   }
 
   setToken(token: Token) {
+    
     this.selectedToken = token;
     if (!this.canInputFiat) {
       this.amountInputType = InputType.Token;
@@ -98,7 +104,7 @@ export class Form {
   reset() {
     this.clear();
     this.amountInputType = InputType.Token;
-    this.selectedToken = genDefaultETHToken();
+    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
   }
 
   clear() {

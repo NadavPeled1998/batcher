@@ -1,7 +1,16 @@
-import { Box, Flex, Spinner, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Spinner,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
+import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { ChevronDown } from "react-feather";
+import { useMoralis } from "react-moralis";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { TokenIcon } from "./TokenIcon";
@@ -13,11 +22,21 @@ export interface TokenPickerProps {
 }
 export const TokenPicker: FC<TokenPickerProps> = observer(
   ({ onChange, value }) => {
+    const { isAuthenticated } = useMoralis();
     const modalController = useDisclosure();
     const { prices } = store.tokens;
 
     const handleTokenSelect = (token: Token) => {
       onChange?.(token);
+    };
+
+    const openModal = () => {
+      if (!isAuthenticated) {
+        return toast.info("Connect wallet to see your tokens", {
+          hideProgressBar: true,
+        });
+      }
+      modalController.onOpen();
     };
 
     return (
@@ -39,7 +58,7 @@ export const TokenPicker: FC<TokenPickerProps> = observer(
             cursor="pointer"
             alignItems="center"
             gap={2}
-            onClick={modalController.onOpen}
+            onClick={openModal}
             rounded="full"
             pr={2}
             py={1}

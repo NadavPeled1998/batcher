@@ -2,7 +2,7 @@ import { ChainID } from "../hooks/useERC20Balance";
 
 export const NATIVE_ADDRESS_0xE: string =
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-  
+
 export const NATIVE_ADDRESS_0x0: string =
   "0x0000000000000000000000000000000000000000";
 
@@ -18,11 +18,11 @@ export const networkConfigs: { [key: string]: any } = {
   },
   "0x4": {
     currencySymbol: "ETH",
-    blockExplorerUrl: "https://kovan.etherscan.io/",
+    blockExplorerUrl: "https://rinkeby.etherscan.io/",
   },
   "0x2a": {
     currencySymbol: "ETH",
-    blockExplorerUrl: "https://rinkeby.etherscan.io/",
+    blockExplorerUrl: "https://kovan.etherscan.io/",
   },
   "0x5": {
     currencySymbol: "ETH",

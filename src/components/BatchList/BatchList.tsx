@@ -1,6 +1,6 @@
 import { Box, Divider, Flex, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { NFT } from "../../store/nfts";
@@ -14,7 +14,9 @@ export interface IBatchItem {
 }
 
 export const BatchList: FC = observer(() => {
+  const listRef = useRef<HTMLDivElement>(null);
   if (!store.batch.items.length) return null;
+  listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
     <Flex direction="column" gap={2} flex={1}>
@@ -27,15 +29,23 @@ export const BatchList: FC = observer(() => {
         </Text>
         <ClearBatchButton />
       </Flex>
-      <Divider />
+      <Divider borderColor="gray.700" />
       <Flex direction="column" flex={1}>
-        <Box h="full" maxH="160px" overflowY="scroll">
+        <Box
+          ref={listRef}
+          h="full"
+          maxH={["160px", "220px"]}
+          overflowY="scroll"
+        >
           {store.batch.items
             .slice()
-            .reverse()
             .map((item, index) => (
-              <BatchItem key={index} item={item} />
-            ))}
+              <Flex alignItems="center" w="full">
+                <Text fontSize="xs">{index + 1}.</Text>
+                <BatchItem key={index} item={item} />
+              </Flex>
+            ))
+            .reverse()}
         </Box>
       </Flex>
     </Flex>

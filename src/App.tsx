@@ -6,6 +6,9 @@ import "./App.css";
 import { routes } from "./routes";
 import { Fonts } from "./theme/Fonts";
 import theme from "./theme/theme";
+import { ToastContainer, Slide, } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./theme/react-toastify.css";
 
 // const serverUrl = process.env.REACT_APP_MORALIS_SERVER_URL!;
 // const appId = process.env.REACT_APP_MORALIS_APP_ID!;
@@ -17,6 +20,13 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
+      <ToastContainer
+        hideProgressBar
+        draggablePercent={20}
+        theme="dark"
+        position="top-center"
+        // transition={Slide}
+      />
       <MoralisProvider appId={appId} serverUrl={serverUrl}>
         <Router location={location} routes={routes}>
           <Outlet />

@@ -10,10 +10,14 @@ import {
 import { FC, useState } from "react";
 import { Collapse } from "react-collapse";
 import { Check, ChevronDown, ExternalLink, Layers } from "react-feather";
+import { useMoralis } from "react-moralis";
 import { BatchItem } from "../../../components/BatchList/BatchItem";
+import { Totals } from "../../../components/Totals";
+import { ChainID } from "../../../hooks/useERC20Balance";
 import { TransactionHistoryListItem } from "../../../store/history";
 import { shortenAddress } from "../../../utils/address";
 import { formatNumber } from "../../../utils/currency";
+import { getExplorer } from "../../../utils/network";
 interface Props {
   item: TransactionHistoryListItem;
 }
@@ -21,10 +25,15 @@ interface Props {
 export const HistoryListItem: FC<Props> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+  const { chainId } = useMoralis();
 
   const openExplorer = () => {
-    console.log("open explorer")
-  }
+    const href = `${getExplorer(chainId as ChainID)}tx/${
+      item.transaction.hash
+    }`;
+    window.open(href, "_blank");
+  };
+
   return (
     <>
       <Flex
@@ -74,7 +83,13 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
       </Flex>
 
       <Collapse isOpened={isOpen}>
-        <Flex w="full" gap={8} px={4} pb={4}>
+        <Flex
+          direction={["column", "column", "row"]}
+          w="full"
+          gap={[4, 8]}
+          px={4}
+          pb={4}
+        >
           <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
             <Text fontSize="xs">Transaction info</Text>
             <Flex alignItems="center" gap={2}>
@@ -106,7 +121,15 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
               <Text ml="auto">{item.transaction.receipt_gas_used}</Text>
             </Flex>
           </Flex>
-          <Box borderRightWidth="1px"></Box>
+          <Box
+            width={["full", "full", "1px"]}
+            my={4}
+            
+            borderRightWidth={[0, 0, 2]}
+            borderColor="gray.800"
+            // borderStyle="dashed"
+            borderBottomWidth={[1, 1, 0]}
+          ></Box>
           <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
             <Text fontSize="xs">Batch list</Text>
             <Flex
@@ -120,6 +143,7 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
                 <BatchItem key={i} item={batch} readonly />
               ))}
             </Flex>
+            <Totals mt={4} totals={item.totals} />
           </Flex>
         </Flex>
       </Collapse>

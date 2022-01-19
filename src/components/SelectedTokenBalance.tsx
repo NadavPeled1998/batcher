@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { store } from "../store";
 import Moralis from "moralis";
@@ -8,6 +8,7 @@ import { useMoralis } from "react-moralis";
 
 export const SelectedTokenBalance = observer(() => {
   const { balance } = store.form.selectedToken;
+
   const { web3 } = useMoralis();
   const formattedBalance = formatNumber(Moralis.Units.FromWei(balance, 18), 6);
 
@@ -23,7 +24,7 @@ export const SelectedTokenBalance = observer(() => {
   };
 
   return (
-    <Text fontSize="xs" gap={2}>
+    <Box fontSize="xs" gap={2}>
       <Text color="gray.500" d="inline">
         Balance:
       </Text>{" "}
@@ -36,6 +37,6 @@ export const SelectedTokenBalance = observer(() => {
       >
         <ArrowUp size="1em" /> <Text>Max</Text>
       </Flex>
-    </Text>
+    </Box>
   );
 });

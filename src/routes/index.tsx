@@ -2,6 +2,7 @@ import { Route } from "react-location";
 import { SendForm } from "../components/SendForm";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { History } from "../pages/History/History";
+import Playground from "../pages/Playground";
 
 export const routes: Route[] = [
   {
@@ -15,6 +16,10 @@ export const routes: Route[] = [
       {
         path: "/history",
         element: <History />,
+      },
+      {
+        path: "/playground",
+        element: <Playground />,
       },
     ],
   },

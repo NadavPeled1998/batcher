@@ -1,12 +1,7 @@
-import {
-  Divider,
-  Flex,
-  Heading,
-  Spinner,
-  Text
-} from "@chakra-ui/react";
+import { Box, Divider, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { ChevronDown } from "react-feather";
+import { ChevronDown, Clock, Layers } from "react-feather";
+import { FeatherGasStation } from "../../assets/FeatherGasStation";
 import { store } from "../../store";
 import { HistoryListItem } from "./components/HistoryListItem";
 
@@ -25,14 +20,19 @@ export const History = observer(() => {
         overflow="auto"
         rounded="lg"
       >
-        <Heading size="lg">History</Heading>
-        <Flex gap={2} fontSize="sm" alignItems="center">
-          <Text>Filter by date</Text>
+        <Flex alignItems="center" gap={2}>
+          <Clock />
+          <Heading size="lg">History</Heading>
+        </Flex>
+        <Text color="gray.500" fontSize="xs">
+          Here you can see all the batches you have sent
+        </Text>
+        {/* <Flex gap={2} fontSize="sm" alignItems="center">
           <Text rounded="full" color="primary.200">
             10/15/21
           </Text>
           <ChevronDown color="var(--chakra-colors-primary-200)" size="1.2em" />
-        </Flex>
+        </Flex> */}
       </Flex>
       <Flex
         hidden={!store.history.isFetching}
@@ -59,12 +59,28 @@ export const History = observer(() => {
         overflow="auto"
         rounded="lg"
       >
-        {store.history.list.map((item, i) => (
-          <>
-            <HistoryListItem item={item} />
-            {isLast(i) ? null : <Divider />}
-          </>
-        ))}
+        {store.history.list.length ? (
+          store.history.list.map((item, i) => {
+            return (
+              <>
+                <HistoryListItem item={item} key={i} />
+                {isLast(i) ? null : <Divider borderColor="gray.700" key={i+'d'} />}
+              </>
+            );
+          })
+        ) : (
+          <Flex direction="column" alignItems="center" p={4}>
+            <Box mx="auto">
+              <Layers color="var(--chakra-colors-primary-200)" />
+            </Box>
+            <Text mt={3} mx="auto" fontSize="xs" color="gray.500">
+              No history yet
+            </Text>
+            <Text mx="auto" fontSize="sm">
+              Go make some history!
+            </Text>
+          </Flex>
+        )}
       </Flex>
     </Flex>
   );
