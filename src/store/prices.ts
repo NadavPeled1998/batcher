@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Moralis } from "moralis";
 import { ChainID, Token } from "../hooks/useERC20Balance";
-import { getTokenAddressToFetch } from "../utils/address";
+import { getTokenAddressToFetch, isNative } from "../utils/address";
 import { genDefaultETHToken } from "../utils/defaults";
 
 interface TokenPriceFetchStatus {
@@ -108,16 +108,11 @@ export class Tokens {
   }
 
   set(tokens: Token[]) {
-    const checkIfIsNative = (address: string) =>
-      [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      ].includes(address);
     this.list = [
       ...tokens.map((token: Token) => {
         return {
           ...token,
-          type: checkIfIsNative(token.token_address) ? "native" : "erc20",
+          type: isNative(token.token_address) ? "native" : "erc20",
         };
       }),
     ];

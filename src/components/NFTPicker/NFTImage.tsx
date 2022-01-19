@@ -1,13 +1,40 @@
-import { FC } from "react";
-import { Token } from "../../hooks/useERC20Balance";
+import { Flex, Image, ImageProps, Spinner } from "@chakra-ui/react";
+import { FC, useState } from "react";
 import { NFT } from "../../store/nfts";
-import { TokenMetaData } from "../../store/tokens";
 import { DEFAULT_IMAGE } from "../../utils/nft";
-interface NFTImageProps {
+interface NFTImageProps extends ImageProps {
   nft?: NFT;
-  size?: string;
 }
 
-export const NFTImage: FC<NFTImageProps> = ({ nft, size = "40" }) => {
-  return  <img src={nft?.iconUrl || DEFAULT_IMAGE} width={size} height={size} className="p-2" alt="token icon url" />
+export const NFTImage: FC<NFTImageProps> = ({
+  nft,
+  boxSize = "40px",
+  ...props
+}) => {
+  const [isLoading, setIsLoading] = useState(true);
+  return (
+    <>
+      <Image
+        position={isLoading ? "absolute" : undefined}
+        opacity={isLoading ? 0 : 1}
+        borderRadius="4px"
+        boxSize={boxSize}
+        src={nft?.iconUrl || DEFAULT_IMAGE}
+        alt="NFT image"
+        onLoad={() => setIsLoading(false)}
+        {...props}
+      />
+      <Flex
+        alignItems="center"
+        justifyContent="center"
+        hidden={!isLoading}
+        boxSize={boxSize}
+        w={props.w}
+        h={props.h}
+        borderRadius="4px"
+      >
+        <Spinner speed="1s" />
+      </Flex>
+    </>
+  );
 };

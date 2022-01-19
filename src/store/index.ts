@@ -15,4 +15,5 @@ class Store {
 }
 
 export const store = new Store();
-// ts-ignore
+// @ts-ignore
+window.store = store;

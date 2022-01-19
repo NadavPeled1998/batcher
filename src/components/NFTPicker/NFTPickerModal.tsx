@@ -1,9 +1,11 @@
 import {
+  Box,
   Button,
   Flex,
   Input,
   InputGroup,
-  InputLeftElement, Modal,
+  InputLeftElement,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -12,83 +14,98 @@ import {
   ModalOverlay,
   Spinner,
   Text,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { Moralis } from "moralis";
 import { FC } from "react";
 import { Search } from "react-feather";
+import { useMap } from "react-use";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { NFT } from "../../store/nfts";
 import { NFTImage } from "./NFTImage";
+import { NFTItem } from "./NFTItem";
 
 interface TokenPickerModalProps extends ReturnType<typeof useDisclosure> {
   onSelect: (token: NFT) => void;
 }
 export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
   ({ onSelect, isOpen, onClose }) => {
-    const handleSelect = (token: NFT) => {
-      onSelect(token);
-      onClose?.();
+    const [selectedMap, { set, remove }] = useMap<{ [key: string]: NFT }>({});
+    const handleSelect = (nft: NFT) => {
+      // onSelect(token);
+      // onClose?.();
+      if (selectedMap[nft.id]) {
+        remove(nft.id);
+      } else {
+        set(nft.id, nft);
+      }
     };
     const {
       list: tokens,
       prices: { isFetching },
     } = store.tokens;
-    const { list: nfts } = store.nfts
-console.log("tokens", {tokens})
+    const { list: nfts } = store.nfts;
 
     return (
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm" >
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        size="full"
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
-        <ModalContent bg="gray.800" rounded={24} mx={4} style={{height: "50vh", overflow: "hidden"}}>
+        <ModalContent bg="gray.800" h="full" rounded="0">
           <ModalHeader>Select NFT</ModalHeader>
           <ModalCloseButton rounded="full" />
-          <ModalBody style={{flex: 1, overflow: "hidden"}}>
-          <InputGroup size="lg" mb={6}>
+          <ModalBody p={[1, 2, 6]}>
+            <Flex direction="column" h="full">
+              <InputGroup size="lg" mb={6} maxW="xl" mx="auto">
                 <InputLeftElement children={<Search />} />
-                <Input rounded="full" />
+                <Input rounded="full" placeholder="Search NFT" />
               </InputGroup>
-            <Flex direction="column" gap={3} style={{flex: 1, overflow: "auto", height: "100%"}}>
-              {isFetching ? (
-                <Spinner mx="auto" my={4} />
-              ) : (
-                nfts.map((nft, index) => (
-                  <Flex
-                    key={index}
-                    onClick={() => { 
-                      console.log({nft})
-                      handleSelect(nft)
-                     }}
-                    gap={2}
-                    alignItems="center"
-                    rounded="full"
-                    p={1}
-                    pr={4}
-                    transition="all 0.2s"
-                    _hover={{ bg: "gray.700" }}
-                    cursor="pointer"
-                  >
-                    <NFTImage nft={nft} />
-                    <Flex direction="column" alignItems="flex-start">
-                      <Text fontSize="md" fontWeight={500}>
-                        {nft.symbol}
-                      </Text>
-                      <Text fontSize="xs" color="gray.500">
-                        {`${nft.name} #${nft.id}`}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                ))
-              )}
+              <Flex
+                // bg="gray.900"
+                gap={3}
+                p={[1, 4]}
+                maxH="full"
+                flexWrap="wrap"
+                justifyContent="center"
+                overflowY="auto"
+              >
+                {isFetching ? (
+                  <Spinner mx="auto" my={4} />
+                ) : (
+                  nfts.map((nft, index) => (
+                    <NFTItem
+                      selected={!!selectedMap[nft.id]}
+                      key={index}
+                      w={["45%", "45%", "300px"]}
+                      imageProps={{ h: ["140px", "240px", "300px"] }}
+                      nft={nft}
+                      onSelect={handleSelect}
+                    />
+                  ))
+                )}
               </Flex>
+            </Flex>
           </ModalBody>
 
           <ModalFooter>
-            <Button size="sm" variant="ghost" mx="auto" onClick={onClose}>
+            <Button size="sm" color="gray.400" variant="ghost" mx="auto" onClick={onClose}>
               Close
             </Button>
+            <Text
+              rounded="full"
+              colorScheme="primary"
+              mx="auto"
+              fontWeight="bold"
+              onClick={onClose}
+            >
+              Ok
+            </Text>
           </ModalFooter>
         </ModalContent>
       </Modal>

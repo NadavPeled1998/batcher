@@ -1,4 +1,4 @@
-import { CloseButton, Flex, Text } from "@chakra-ui/react";
+import { Badge, CloseButton, Flex, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { ChevronRight, Send } from "react-feather";
 import { store } from "../../store";
@@ -19,16 +19,22 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
   return (
     <Flex fontSize="sm" alignItems="center" gap={2} w="full" flex={1}>
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
-      {item.token.type === 'erc721' ? (
-        <NFTImage nft={item.token as NFT} />
+      {item.token.type === "erc721" ? (
+        <>
+          <Badge colorScheme="teal">NFT</Badge>
+          <NFTImage boxSize="5" nft={item.token as NFT} />
+        </>
       ) : (
-          <>
-            <Text>
-              {formatNumber(item.amount, 6)} <Text d="inline" fontSize="xs">{item.token.symbol}</Text>
+        <>
+          <Text>
+            {formatNumber(item.amount, 6)}{" "}
+            <Text d="inline" fontSize="xs">
+              {item.token.symbol}
             </Text>
-            <TokenIcon token={item.token as TokenMetaData} size="16" />
-          </>
-        )}
+          </Text>
+          <TokenIcon token={item.token as TokenMetaData} size="16" />
+        </>
+      )}
       <ChevronRight
         size="0.8em"
         strokeWidth={4}

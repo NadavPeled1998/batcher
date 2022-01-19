@@ -13,7 +13,7 @@ export interface IBatchItem {
   token: TokenMetaData | NFT;
 }
 export interface TotalsMap {
-  [key: string]: { total: number; token: TokenMetaData | NFT };
+  [key: string]: { total: number; token?: TokenMetaData | NFT };
 }
 
 type NeedsApproveMap = { [key: string]: Token | NFT };
@@ -32,15 +32,18 @@ export class Batch {
 
   generateTotals(items: IBatchItem[]) {
     return items.reduce((acc, item) => {
-      if (!acc[item.token.symbol]) {
+      if (item.token.type === "erc721") {
+        if (!acc.nft) acc.nft = { total: 0 };
+        acc.nft.total += 1;
+      } else if (!acc[item.token.symbol]) {
         acc[item.token.symbol] = {
           total: 0,
           token: item.token,
         };
       }
 
-      if(item.token.type === 'erc721') acc[item.token.symbol].total = 1;
-      else acc[item.token.symbol].total += item.amount;
+      // if (item.token.type === "erc721") acc[item.token.symbol].total = 1;
+      // else acc[item.token.symbol].total += item.amount;
       return acc;
     }, {} as TotalsMap);
   }
@@ -84,12 +87,10 @@ export class Batch {
   };
 
   setNeedsApproveMap(needsApproveMap: NeedsApproveMap) {
-    
     this.needsApproveMap = needsApproveMap;
   }
 
   setApproveToken = (token_address: string) => {
-    
     const needsApprove = this.needsApproveMap;
     delete needsApprove[token_address];
     this.needsApproveMap = needsApprove;

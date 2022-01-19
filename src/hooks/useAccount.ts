@@ -9,6 +9,7 @@ import erc721Abi from "../abi/erc721.json";
 import * as abiDecoder from "abi-decoder";
 import { tokensStore } from "../store/tokens";
 import { ResNFT } from "../store/nfts";
+import { createERC721Contract } from "../contracts";
 abiDecoder.addABI(multiSendAbi);
 abiDecoder.addABI(erc721Abi);
 abiDecoder.addABI(erc721Abi);
@@ -53,17 +54,26 @@ export const useAccount = () => {
       });
   }, [account, chainId, api, fetchTokensMetaData]);
 
-   
- const fetchERC721Balances = useCallback(() => {
-  if (!account) return;
+  const fetchERC721Balances = useCallback(() => {
+    if (!account) return;
 
-  api.account.getNFTs({
-    address: account,
-    chain: chainId as ChainID,
-  }).then((NFTs) => {
-    store.nfts.set(NFTs.result as ResNFT[]);
-  })
-}, [account, chainId, api]);
+    api.account
+      .getNFTs({
+        address: "0x299c92988198a5965111537797cc1789a5d7e336" || account,
+        chain: chainId as ChainID,
+      })
+      .then((NFTs) => {
+        console.log('NFTs:', NFTs)
+        // get all erc721 token addresses
+        const erc721Addresses = NFTs.result?.filter((nft) => {
+          if (nft.contract_type === "ERC721") return nft;
+        });
+
+        console.log('erc721Addresses:', erc721Addresses)
+    
+        store.nfts.set(NFTs.result as ResNFT[]);
+      });
+  }, [account, chainId, api]);
 
   const fetchTransfers = useCallback(() => {
     if (!account) return;
@@ -85,5 +95,5 @@ export const useAccount = () => {
 
   useEffect(fetchBalances, [account, fetchBalances, chainId]);
   useEffect(fetchTransfers, [account, fetchTransfers, chainId]);
-  useEffect(fetchERC721Balances, [account, fetchTransfers, chainId])
+  useEffect(fetchERC721Balances, [account, fetchTransfers, chainId]);
 };
