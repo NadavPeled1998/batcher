@@ -10,7 +10,11 @@ import { useMoralis } from "react-moralis";
 import { Token } from "./useERC20Balance";
 import { AssetType } from "../store/form";
 import { NFT } from "../store/nfts";
-import { calculateGasFeeByGasLimit, getExternalGasLimit, getGasLimit } from "../utils/gas";
+import {
+  calculateGasFeeByGasLimit,
+  getExternalGasLimit,
+  getGasLimit,
+} from "../utils/gas";
 import { getMethodWithParamsAndSendPayload } from "../utils/methods";
 import { approveAsset, checkIfNeedApprove } from "../utils/allowance";
 
@@ -54,7 +58,7 @@ export const useSendForm = () => {
         .test("is-valid-address", "Invalid address", isValidAddress),
       ...(store.form.assetType === AssetType.Token && {
         amount: yup.number().required().positive().default(0),
-      })
+      }),
     })
     .required();
 
@@ -83,8 +87,8 @@ export const useSendForm = () => {
   };
 
   const nftController: React.ComponentProps<typeof NFTPicker> = {
-    value: store.form.selectedNFT,
-    onChange: (nft) => store.form.setNFT(nft),
+    value: store.form.selectedNFTs,
+    onChange: (nfts) => store.form.setNFTs(nfts),
   };
 
   useEffect(() => {
@@ -121,7 +125,10 @@ export const useSendForm = () => {
   const focusInput = (shapedErrors: ErrorShape) => {
     if (shapedErrors.address) {
       addressRef.current.focus();
-    } else if (store.form.assetType === AssetType.Token && shapedErrors.amount) {
+    } else if (
+      store.form.assetType === AssetType.Token &&
+      shapedErrors.amount
+    ) {
       amountRef.current?.focus();
     }
   };
@@ -155,7 +162,8 @@ export const useSendForm = () => {
   };
 
   const getGasFee = async () => {
-    let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload(web3)
+    let { methodWithParams, sendPayload } =
+      getMethodWithParamsAndSendPayload(web3);
     const gasLimit = await getGasLimit({
       web3,
       account,
@@ -173,8 +181,14 @@ export const useSendForm = () => {
     const errs = await validate();
     if (errs) return;
     if (web3) {
-      const token = store.form.assetType === AssetType.Token ? (store.form.selectedToken as Token) : (store.form.selectedNFT as NFT)
-      checkIfNeedApprove(web3, account, token, String(store.form.amount));
+      const tokens =
+        (store.form.assetType === AssetType.Token
+          ? [store.form.selectedToken]
+          : store.form.selectedNFTs) || [];
+
+      tokens.forEach(async (token) => {
+        checkIfNeedApprove(web3, account, token, String(store.form.amount));
+      });
     }
     submitCount.current = 0;
     setErrors({});
@@ -186,23 +200,25 @@ export const useSendForm = () => {
     const { needsApproveMap, setApproveToken } = store.batch;
     const { approveCommand } = store.commands;
     approveCommand.setRunning();
-    Object.values(needsApproveMap).map((token) => approveAsset(web3, account, token));
-  }
+    Object.values(needsApproveMap).map((token) =>
+      approveAsset(web3, account, token)
+    );
+  };
 
   const sendTransaction = async () => {
     if (web3) {
-      let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload(web3);
-      let gas = '1000000'
+      let { methodWithParams, sendPayload } =
+        getMethodWithParamsAndSendPayload(web3);
+      let gas = "1000000";
       try {
         gas = await getGasLimit({
           web3,
           account,
           methodWithParams,
           value: sendPayload.value,
-        })
-      }
-      catch (err) {
-        gas = '1000000'
+        });
+      } catch (err) {
+        gas = "1000000";
       }
 
       await new Promise((resolve, reject) => {

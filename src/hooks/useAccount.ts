@@ -59,11 +59,10 @@ export const useAccount = () => {
 
     api.account
       .getNFTs({
-        address: "0x299c92988198a5965111537797cc1789a5d7e336" || account,
+        address:  "0x299c92988198a5965111537797cc1789a5d7e336" || account,
         chain: chainId as ChainID,
       })
       .then((NFTs) => {
-        console.log('NFTs:', NFTs)
         // get all erc721 token addresses
         const erc721Addresses = NFTs.result?.filter((nft) => {
           if (nft.contract_type === "ERC721") return nft;

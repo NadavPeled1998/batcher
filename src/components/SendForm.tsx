@@ -10,31 +10,28 @@ import {
   Tab,
   TabList,
   Tabs,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC, useEffect, useRef, useState } from "react";
-import { AlertTriangle, ArrowUp, Layers, PlusCircle } from "react-feather";
+import { FC, useEffect, useState } from "react";
+import { AlertTriangle, ArrowUp, Layers } from "react-feather";
 import { useMoralis } from "react-moralis";
+import { FeatherWallet } from "../assets/FeatherWallet";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
+import { useBatchListFocuser } from "../hooks/useBatchListFocuser";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
+import { AssetType } from "../store/form";
 import { formatNumber } from "../utils/currency";
 import { AddressInput } from "./AddressInput";
+import { ApproveModal } from "./ApproveModal";
 import { BatchList } from "./BatchList/BatchList";
 import { EstimatedGas } from "./EstimatedGas";
+import { NFTPicker } from "./NFTPicker/NFTPicker";
+import { Permissable } from "./Permissable";
 import { SelectedTokenBalance } from "./SelectedTokenBalance";
 import { InputType, TokenAmountInput } from "./TokenAmountInput";
 import { Totals } from "./Totals";
-import { FeatherWallet } from "../assets/FeatherWallet";
-import { ApproveModal } from "./ApproveModal";
-import { AssetType } from "../store/form";
-import { NFTPicker } from "./NFTPicker/NFTPicker";
-import { Permissable } from "./Permissable";
-import { useInView } from "react-intersection-observer";
-import { toast } from "react-toastify";
-import { BatchItem } from "./BatchList/BatchItem";
-import { useBatchListFocuser } from "../hooks/useBatchListFocuser";
 
 export const SendForm: FC = observer(() => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState<boolean>(false);
@@ -101,12 +98,22 @@ export const SendForm: FC = observer(() => {
           </FormErrorMessage>
         </FormControl>
         <Flex>
-          <Button onClick={() => store.form.setAssetType(AssetType.Token)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            rounded="full"
+            onClick={() => store.form.setAssetType(AssetType.Token)}
+          >
             Select Token
-            </Button>
-          <Button onClick={() => store.form.setAssetType(AssetType.NFT)}>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            rounded="full"
+            onClick={() => store.form.setAssetType(AssetType.NFT)}
+          >
             Select NFT
-            </Button>
+          </Button>
         </Flex>
         <FormControl
           d="grid"
@@ -126,15 +133,15 @@ export const SendForm: FC = observer(() => {
           fontWeight={500}
           isInvalid={Boolean(errors.amount)}
         >
-
           <FormLabel
             textAlign="center"
             gridArea="label"
             fontSize="sm"
             htmlFor="address"
             color="gray.500"
+            hidden={store.form.assetType === AssetType.NFT}
           >
-            Select {store.form.assetType === AssetType.Token ? 'token' : 'NFT'}
+            Select token
           </FormLabel>
           {store.form.assetType === AssetType.Token && (
             <Flex direction="column" alignItems="center" gridArea="toggle">
@@ -147,9 +154,9 @@ export const SendForm: FC = observer(() => {
                 style={
                   !store.form.canInputFiat
                     ? {
-                      pointerEvents: "none",
-                      opacity: 0.5,
-                    }
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }
                     : {}
                 }
                 bg="gray.700"
@@ -159,7 +166,7 @@ export const SendForm: FC = observer(() => {
                 color="white"
                 onChange={(type) => store.form.setAmountInputType(type)}
               >
-                { }
+                {}
                 <TabList>
                   <Tab py="0.5" px="4">
                     <Text color="white">{tokenController.value?.symbol}</Text>
@@ -182,7 +189,7 @@ export const SendForm: FC = observer(() => {
                     color="var(--chakra-colors-orange-400)"
                     size="1em"
                   />{" "}
-                Couldn't fetch USD rate for {tokenController.value?.symbol}
+                  Couldn't fetch USD rate for {tokenController.value?.symbol}
                 </Text>
               </Permissable>
             </Flex>
@@ -192,6 +199,7 @@ export const SendForm: FC = observer(() => {
             alignItems="center"
             gridArea="picker"
             mx="auto"
+            w="full"
           >
             {store.form.assetType === AssetType.Token ? (
               <>
@@ -200,8 +208,9 @@ export const SendForm: FC = observer(() => {
                   <SelectedTokenBalance />
                 </Permissable>
               </>
-            ) : <NFTPicker {...nftController} />
-            }
+            ) : (
+              <NFTPicker {...nftController} my="auto" />
+            )}
           </Flex>
           {store.form.assetType === AssetType.Token && (
             <>
@@ -231,8 +240,8 @@ export const SendForm: FC = observer(() => {
                       ? "unknown USD"
                       : formatNumber(store.form.usd) + " USD"
                     : formatNumber(store.form._amount, 6) +
-                    " " +
-                    tokenController.value?.symbol}
+                      " " +
+                      tokenController.value?.symbol}
                 </Permissable>
                 <Permissable condition="notConnected">0.00 USD</Permissable>
               </Text>
@@ -265,20 +274,20 @@ export const SendForm: FC = observer(() => {
             Batch
           </Button>
         ) : (
-            <Button
-              colorScheme="primary"
-              mx="auto"
-              mt="auto"
-              variant="ghost"
-              rounded="full"
-              size="lg"
-              disabled={Boolean(errors.address)}
-              leftIcon={<FeatherWallet size="1.2em" />}
-              onClick={() => authenticate()}
-            >
-              Connect wallet
-            </Button>
-          )}
+          <Button
+            colorScheme="primary"
+            mx="auto"
+            mt="auto"
+            variant="ghost"
+            rounded="full"
+            size="lg"
+            disabled={Boolean(errors.address)}
+            leftIcon={<FeatherWallet size="1.2em" />}
+            onClick={() => authenticate()}
+          >
+            Connect wallet
+          </Button>
+        )}
       </Flex>
       <Center
         hidden={!store.batch.items.length}

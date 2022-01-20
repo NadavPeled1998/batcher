@@ -8,7 +8,6 @@ import { NFT } from "./nfts";
 import { Tokens } from "./prices";
 import { tokensStore } from "./tokens";
 
-
 export enum AssetType {
   Token,
   NFT,
@@ -19,10 +18,8 @@ export class Form {
     this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
   }
 
-
-
   selectedToken: Token;
-  selectedNFT?: NFT;
+  selectedNFTs?: NFT[];
   address = "";
 
   assetType: AssetType = AssetType.Token;
@@ -75,20 +72,19 @@ export class Form {
     this.address = address;
   }
 
-  setAssetType(assetType: AssetType){
-    this.assetType = assetType
+  setAssetType(assetType: AssetType) {
+    this.assetType = assetType;
   }
 
   setToken(token: Token) {
-    
     this.selectedToken = token;
     if (!this.canInputFiat) {
       this.amountInputType = InputType.Token;
     }
   }
 
-  setNFT(nft: NFT) {
-    this.selectedNFT = nft;
+  setNFTs(nfts: NFT[]) {
+    this.selectedNFTs = nfts;
   }
 
   setAmount(amount: string) {
@@ -110,18 +106,30 @@ export class Form {
   clear() {
     // this.address = "";
     // this.amount = 0;
+    this.selectedNFTs = [];
   }
 
   async submit() {
-    const token = this.assetType === AssetType.Token 
-      ? tokensStore.get(this.selectedToken.token_address)
-      : this.selectedNFT
-    if(token) {
-      this.batchStore.add({
-        address: this.address,
-        amount: Number(this._amount),
-        token: token,
-      });
+    const token =
+      this.assetType === AssetType.Token
+        ? tokensStore.get(this.selectedToken.token_address)
+        : this.selectedNFTs;
+    if (token) {
+      if (Array.isArray(token)) {
+        token.forEach(async (t) => {
+          this.batchStore.add({
+            address: this.address,
+            amount: Number(this._amount),
+            token: t,
+          });
+        });
+      } else {
+        this.batchStore.add({
+          address: this.address,
+          amount: Number(this._amount),
+          token: token,
+        });
+      }
     }
     this.clear();
   }

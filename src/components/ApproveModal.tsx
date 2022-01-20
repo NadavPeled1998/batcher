@@ -17,6 +17,7 @@ import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { Check, X } from "react-feather";
 import { store } from "../store";
+import { Ellipsis } from "./Ellipsis";
 import { TokenIcon } from "./TokenPicker/TokenIcon";
 
 interface Props {
@@ -27,29 +28,40 @@ interface Props {
 export const ApproveModal: FC<Props> = observer(
   ({ onClose, isOpen, onSubmit }) => {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm">
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        size="sm"
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
-        <ModalContent bg="gray.800" rounded={24} mx={4}>
+        <ModalContent
+          bg="gray.800"
+          rounded={24}
+          mx={4}
+          h="fit-content"
+          maxH="100%"
+        >
           <ModalHeader></ModalHeader>
           <ModalCloseButton rounded="full" />
-          <ModalBody d="flex" flexDirection="column" gap={2}>
+          <ModalBody
+            d="flex"
+            flexDirection="column"
+            overflow="hidden"
+            maxH="full"
+            gap={3}
+            maxHeight={600}
+          >
             <Heading size="lg" my={2}>
               Give permission to access your tokens
             </Heading>
-            <Flex direction="column" gap={3}>
-              <Box>
-                {/* <Text>
-                  Give permission to our smart contract to transfer your tokens
-                </Text> */}
-                <Text>
-                  By granting permission, you are allowing our smart contract to
-                  transfer your funds
-                </Text>
-                {/* <Text fontSize="xs" color="gray.500">
-                  The permission needed only once
-                </Text> */}
-              </Box>
-              <Divider borderColor="gray.700"/>
+            <Text>
+              By granting permission, you are allowing our smart contract to
+              transfer your funds
+            </Text>
+            <Divider borderColor="gray.700" />
+            <Flex direction="column" overflowY="auto" flex={1} gap={3}>
               {Object.values(store.batch.needsApproveMap).map((token) => (
                 <>
                   <Flex
@@ -57,13 +69,15 @@ export const ApproveModal: FC<Props> = observer(
                     alignItems="center"
                     key={token.token_address}
                     fontSize="sm"
+                    maxW="full"
+                    overflow="hidden"
                   >
                     <TokenIcon token={token.symbol} size="30" />
-                    <Box>
+                    <Box overflow="hidden">
                       <Text>{token.symbol}</Text>
-                      <Text mt="-0.5" fontSize="xs" color="gray.500">
+                      <Ellipsis mt="-0.5" fontSize="xs" color="gray.500">
                         {token.name}
-                      </Text>
+                      </Ellipsis>
                     </Box>
                     <Text
                       fontSize="xs"
@@ -71,11 +85,12 @@ export const ApproveModal: FC<Props> = observer(
                       d="flex"
                       gap={2}
                       ml="auto"
+                      whiteSpace="nowrap"
                     >
                       Needs permission
                     </Text>
                   </Flex>
-                  <Divider borderColor="gray.700"/>
+                  <Divider borderColor="gray.700" />
                 </>
               ))}
             </Flex>

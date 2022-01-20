@@ -1,30 +1,49 @@
-import { Box, Flex, Spinner, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  BoxProps,
+  Button,
+  CloseButton,
+  Divider,
+  Flex,
+  Spinner,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC } from "react";
-import { ChevronDown } from "react-feather";
+import { FC, useState } from "react";
+import { PlusCircle, X } from "react-feather";
 import { store } from "../../store";
+import { NFT } from "../../store/nfts";
 import { NFTImage } from "./NFTImage";
 import { TokenPickerModal } from "./NFTPickerModal";
-import { NFT } from "../../store/nfts";
 
-export interface NFTPickerProps {
-  onChange?: (token: NFT) => void;
-  value?: NFT;
+export interface NFTPickerProps extends Omit<BoxProps, "onChange"> {
+  onChange?: (nfts: NFT[]) => void;
+  value?: NFT[];
 }
+
 export const NFTPicker: FC<NFTPickerProps> = observer(
-  ({ onChange, value }) => {
+  ({ onChange, value: selectedNFTs = [], ...props }) => {
     const modalController = useDisclosure();
     const { prices } = store.tokens;
 
-    const handleTokenSelect = (token: NFT) => {
-      onChange?.(token);
+    const removeNFT = (nft: NFT) => {
+      onChange?.(selectedNFTs.filter((n) => nft.id !== n.id));
+    };
+
+    const clearNFTs = () => {
+      onChange?.([]);
     };
 
     return (
       <>
-        <TokenPickerModal onSelect={handleTokenSelect} {...modalController} />
+        <TokenPickerModal
+          selectedNFTs={selectedNFTs}
+          onSelect={(nfts) => onChange?.(nfts)}
+          {...modalController}
+        />
 
-        <Box position="relative">
+        <Box position="relative" w="full" {...props}>
           <Box
             hidden={!prices.isFetching}
             position="absolute"
@@ -35,26 +54,92 @@ export const NFTPicker: FC<NFTPickerProps> = observer(
             <Spinner />
           </Box>
           <Flex
+            direction="column"
             opacity={prices.isFetching ? 0 : 1}
-            cursor="pointer"
             alignItems="center"
             gap={2}
-            onClick={modalController.onOpen}
+            w="full"
             rounded="full"
-            pr={2}
-            py={1}
-            pl={1}
-            borderColor="gray.700"
-            transition="all 0.2s"
-            _hover={{
-              bg: "gray.600",
-            }}
           >
-            <NFTImage nft={value} />
-            <Text>{value?.symbol}</Text>
-            <Box boxSize="24px" d="flex" alignItems="center">
-              <ChevronDown color="white" size="1em" strokeWidth={4} />
-            </Box>
+            {selectedNFTs.length ? (
+              <>
+                <Flex
+                  w="full"
+                  bg="gray.800"
+                  px={3}
+                  py={1}
+                  rounded="full"
+                  alignItems="center"
+                  mb={2}
+                >
+                  <Text fontSize="sm" color="gray.400">
+                    Selected NFTs ({selectedNFTs.length})
+                  </Text>
+                  <Button
+                    size="xs"
+                    colorScheme="primary"
+                    variant="ghost"
+                    rounded="full"
+                    ml="auto"
+                    leftIcon={<X size="1.2em" />}
+                    onClick={clearNFTs}
+                  >
+                    Clear all
+                  </Button>
+                </Flex>
+                <Flex flexWrap="wrap" gap={2} justifyContent="center">
+                  {selectedNFTs.map((nft, index) => (
+                    <Box position="relative">
+                      <Box
+                        rounded="full"
+                        position="absolute"
+                        bg="gray.800"
+                        top="0"
+                        right="0"
+                        transform="translate(30%, -30%)"
+                        borderWidth={1}
+                        boxShadow="dark-lg"
+                        borderColor="gray.600"
+                        size="xs"
+                        p="3px"
+                        children={<X size="14" />}
+                        zIndex={10}
+                        // pointerEvents="none"
+                        cursor="pointer"
+                        onClick={() => removeNFT(nft)}
+                      />
+                      <NFTImage
+                        key={index}
+                        nft={nft}
+                        boxSize="60px"
+                        rounded="lg"
+                        boxShadow="dark-lg"
+                      />
+                    </Box>
+                  ))}
+                </Flex>
+                <Button
+                  variant="ghost"
+                  leftIcon={<PlusCircle />}
+                  mt="4"
+                  rounded="full"
+                  onClick={modalController.onOpen}
+                >
+                  Add More
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  leftIcon={<PlusCircle />}
+                  rounded="full"
+                  onClick={modalController.onOpen}
+                >
+                  Select NFT
+                </Button>
+              </>
+            )}
           </Flex>
         </Box>
       </>
