@@ -4,7 +4,7 @@ import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
 import multiSendABI from '../abi/multiSend.json'
 
-const getParams = (web3: MoralisType.Web3 | null) => {
+export const getParams = (web3: MoralisType.Web3 | null) => {
     let isSendERC20 = false;
     let isSendERC721 = false;
     let isSendNative = false;

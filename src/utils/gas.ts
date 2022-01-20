@@ -3,6 +3,132 @@ import { store } from "../store";
 import erc20ABI from '../abi/erc20.json'
 import erc721ABI from '../abi/erc721.json'
 
+export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, methodWithParams: any) => {
+    let gasLimit = 0;
+    let existNative = 0
+    let unExistNative = 0
+    let firstTokenAddition = 0;
+    let existToken = 0
+    let unExistToken = 0
+    let firstNFTAddition = 0;
+    let existNFT = 0
+    let unExistNFT = 0
+    let isThereToken = false;
+    let isThereNFT = false;
+
+
+    if(methodWithParams._method.name === 'multiSendNative') {
+        gasLimit = 23000
+        existNative = 10000
+        unExistNative = 35000
+    }
+    ////////////
+    if(methodWithParams._method.name === 'multiSendERC20') {
+        gasLimit = 39000
+        existToken = 12000
+        unExistToken = 30000
+
+    }
+    if(methodWithParams._method.name === 'multiSendERC721') {
+        gasLimit = 33000
+        existNFT = 23500
+        unExistNFT = 40500
+
+    }
+    if(methodWithParams._method.name === 'multiSendNativeAndERC20') {
+        console.log("getEstimatedGasLimit okk")
+        gasLimit = 24000
+        existNative = 11000
+        unExistNative = 36000
+        firstTokenAddition = 14000
+        existToken = 14500
+        unExistToken = 31500
+    }
+    if(methodWithParams._method.name === 'multiSendNativeAndERC721') {
+        gasLimit = 24000
+        existNative = 11000
+        unExistNative = 36000
+        firstNFTAddition = 19000
+        existNFT = 23500
+        unExistNFT = 40500
+    }
+    if(methodWithParams._method.name === 'multiSendAll') {
+        gasLimit = 26000
+        existNative = 13000
+        unExistNative = 38000
+        firstTokenAddition = 14000
+        existToken = 16000
+        unExistToken = 33000
+        firstNFTAddition = 9000
+        existNFT = 25500
+        unExistNFT = 42500
+    }
+    if (web3) {
+        console.log("getEstimatedGasLimit there is a web3")
+
+        for (let i = 0; i < store.batch.items.length; i++) {
+            const { token, address } = store.batch.items[i];
+            if (token.type === "native") {
+                const balance = await web3.eth.getBalance(address)
+                if(balance) {
+                    gasLimit += existNative;
+                }
+                else {
+                    gasLimit += unExistNative;
+                }
+            } else if (token.type === "erc20") {
+                const erc20Contract = new web3.eth.Contract(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    erc20ABI as any,
+                    token.address
+                );
+                console.log("getEstimatedGasLimit 2 erc20", {address: token.address})
+                if(!isThereToken) {
+                    isThereToken = true
+                    gasLimit += firstTokenAddition
+                }
+                try {
+                    const balance = await erc20Contract.methods
+                        .balanceOf(address)
+                        .call();
+                        console.log("getEstimatedGasLimit 3 erc20", {balance})
+
+                    console.log({ balance });
+                    if (+balance) {
+                        gasLimit += existToken;
+                    } else {
+                        gasLimit += unExistToken;
+                    }
+                } catch {
+                    gasLimit += existToken;
+                }
+            } else if (token.type === "erc721") {
+                if(!isThereNFT) {
+                    isThereNFT = true
+                    gasLimit += firstNFTAddition
+                }
+                const erc721Contract = new web3.eth.Contract(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    erc721ABI as any,
+                    token.address
+                );
+                try {
+                    const balance = await erc721Contract.methods
+                        .balanceOf(address)
+                        .call();
+                    if (+balance) {
+                        gasLimit += existNFT;
+                    } else {
+                        gasLimit += unExistNFT;
+                    }
+                } catch {
+                    gasLimit += existNFT;
+                }
+            }
+        }
+    }
+    return String(gasLimit);
+}
 
 export const getGasLimit = async ({
     web3,
@@ -20,11 +146,12 @@ export const getGasLimit = async ({
         const { toBN } = web3.utils;
         try {
             gas = toBN(await methodWithParams.estimateGas({ from: account, value }))
-                .mul(toBN(11))
-                .div(toBN(10))
+                .mul(toBN(105))
+                .div(toBN(100))
                 .toString();
-        } catch (e) {
-            gas = "1000000";
+        }
+        catch {
+            throw Error
         }
     }
     return gas;
@@ -47,7 +174,6 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
                     const balance = await erc20Contract.methods
                         .balanceOf(address)
                         .call();
-                    console.log({ balance });
                     if (+balance) {
                         gasLimit += 37000;
                     } else {
@@ -57,13 +183,13 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
                     gasLimit += 37000;
                 }
             } else if (token.type === "erc721") {
-                const erc20Contract = new web3.eth.Contract(
+                const erc721Contract = new web3.eth.Contract(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     erc721ABI as any,
                     token.address
                 );
                 try {
-                    const balance = await erc20Contract.methods
+                    const balance = await erc721Contract.methods
                         .balanceOf(address)
                         .call();
                     if (+balance) {

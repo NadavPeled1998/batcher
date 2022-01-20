@@ -4,6 +4,7 @@ import { ChainID } from "../hooks/useERC20Balance";
 import { makePersistable } from "mobx-persist-store";
 import { generateNativeTokenMetaData } from "../utils/defaults";
 import { NATIVE_ADDRESS_0x0, NATIVE_ADDRESS_0xE } from "../utils/network";
+import { isNative } from "../utils/address";
 
 export interface TokenMetaData {
   address: string;
@@ -62,7 +63,7 @@ export class Tokens {
     if (Array.isArray(token)) {
       token.forEach((t) => this.add(t));
     } else {
-      this.tokensMap[token.address] = token;
+      this.tokensMap[token.address] = {  ...token, type: isNative(token.address) ? 'native' : 'erc20'  };
     }
   }
 
