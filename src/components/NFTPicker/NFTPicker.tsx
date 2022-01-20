@@ -130,14 +130,32 @@ export const NFTPicker: FC<NFTPickerProps> = observer(
               </>
             ) : (
               <>
-                <Button
+                <Box
                   variant="ghost"
-                  leftIcon={<PlusCircle />}
-                  rounded="full"
                   onClick={modalController.onOpen}
+                  d="flex"
+                  rounded="3xl"
+                  alignItems="center"
+                  flexDirection="column"
+                  transition="all 0.2s"
+                  cursor="pointer"
+                  gap={2}
+                  borderWidth="1px"
+                  borderStyle="dashed"
+                  borderColor="gray.700"
+                  p={4}
+                  py={5}
+                  _hover={{
+                    bg: "gray.700",
+                  }}
                 >
-                  Select NFT
-                </Button>
+                  <PlusCircle
+                    size={40}
+                    strokeWidth={1}
+                    color="var(--chakra-colors-primary-200)"
+                  />
+                  <Text>Select NFT</Text>
+                </Box>
               </>
             )}
           </Flex>

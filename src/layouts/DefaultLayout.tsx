@@ -35,10 +35,17 @@ export const DefaultLayout = () => {
       h="100vh"
       p={[2, 8]}
       pt={10}
-      pb={10}
+      pb={4}
       overflow="auto"
     >
-      <Flex direction="column" mx="auto" gap={4} maxW="1200px" w="full">
+      <Flex
+        flex="1"
+        direction="column"
+        mx="auto"
+        gap={4}
+        maxW="1200px"
+        w="full"
+      >
         <Header zIndex={1} />
         <Flex flex={1} alignItems="flex-start">
           <Outlet key={location.current.pathname} />

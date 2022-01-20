@@ -25,7 +25,7 @@ export class Form {
   assetType: AssetType = AssetType.Token;
   amountInputType: InputType = InputType.Token;
   usd: number = 0;
-  _amount: number = 0.001;
+  _amount: number = 0.0;
 
   checkAddress(web3: Moralis.Web3, address: string) {
     return web3.eth.getBalance(address);

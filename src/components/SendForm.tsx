@@ -10,7 +10,7 @@ import {
   Tab,
   TabList,
   Tabs,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
@@ -97,24 +97,30 @@ export const SendForm: FC = observer(() => {
             </Text>
           </FormErrorMessage>
         </FormControl>
-        <Flex>
-          <Button
-            variant="ghost"
-            size="sm"
-            rounded="full"
-            onClick={() => store.form.setAssetType(AssetType.Token)}
-          >
-            Select Token
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            rounded="full"
-            onClick={() => store.form.setAssetType(AssetType.NFT)}
-          >
-            Select NFT
-          </Button>
-        </Flex>
+        <Tabs
+          w="auto"
+          colorScheme="primary"
+          rounded="full"
+          size="sm"
+          bg="gray.800"
+          p="1"
+          borderWidth="1px"
+          borderColor="gray.700"
+          index={store.form.assetType}
+          variant="solid-rounded"
+          color="white"
+          onChange={(index) => store.form.setAssetType(index)}
+        >
+          <TabList>
+            <Tab py={1}>
+              <Text color="white">Token</Text>
+            </Tab>
+            <Tab py={1}>
+              <Text color="white">NFT</Text>
+            </Tab>
+          </TabList>
+        </Tabs>
+
         <FormControl
           d="grid"
           alignContent="center"
@@ -133,7 +139,7 @@ export const SendForm: FC = observer(() => {
           fontWeight={500}
           isInvalid={Boolean(errors.amount)}
         >
-          <FormLabel
+          {/* <FormLabel
             textAlign="center"
             gridArea="label"
             fontSize="sm"
@@ -142,7 +148,7 @@ export const SendForm: FC = observer(() => {
             hidden={store.form.assetType === AssetType.NFT}
           >
             Select token
-          </FormLabel>
+          </FormLabel> */}
           {store.form.assetType === AssetType.Token && (
             <Flex direction="column" alignItems="center" gridArea="toggle">
               <Tabs
@@ -200,6 +206,7 @@ export const SendForm: FC = observer(() => {
             gridArea="picker"
             mx="auto"
             w="full"
+            gap={2}
           >
             {store.form.assetType === AssetType.Token ? (
               <>

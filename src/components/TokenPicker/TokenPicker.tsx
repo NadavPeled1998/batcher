@@ -63,10 +63,10 @@ export const TokenPicker: FC<TokenPickerProps> = observer(
             pr={2}
             py={1}
             pl={1}
-            borderColor="gray.700"
+            bg="gray.800"
             transition="all 0.2s"
             _hover={{
-              bg: "gray.600",
+              bg: "gray.700",
             }}
           >
             <TokenIcon token={value} />

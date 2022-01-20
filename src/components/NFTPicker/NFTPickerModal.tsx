@@ -18,12 +18,13 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { Moralis } from "moralis";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Search } from "react-feather";
 import { useMap } from "react-use";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { NFT } from "../../store/nfts";
+import { NFTList } from "../NFTList/NFTList";
 import { NFTImage } from "./NFTImage";
 import { NFTItem } from "./NFTItem";
 
@@ -53,6 +54,8 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
       prices: { isFetching },
     } = store.tokens;
 
+    const [search, setSearch] = useState("");
+
     const [selectedMap, { set, remove, setAll }] = useMap<SelectedMap>(
       createSelectedMap(selectedNFTs)
     );
@@ -60,6 +63,19 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
     const reset = () => setAll(createSelectedMap(selectedNFTs));
     useEffect(reset, [selectedNFTs.length, setAll]);
     const { list: nfts } = store.nfts;
+    // get 20 random indexed nfts
+    // const nfts = store.nfts.list.slice(0, 20);
+    const filteredNfts = !search
+      ? nfts
+      : nfts.filter((nft) => {
+          const reg = new RegExp(search, "i");
+          return (
+            nft.name.match(reg) ||
+            nft.symbol.match(reg) ||
+            nft.id.match(reg) ||
+            nft.token_address.match(reg)
+          );
+        });
 
     const handleSelect = (nft: NFT) => {
       const key = nftKey(nft);
@@ -75,7 +91,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
       reset();
     };
 
-    const nftList = nfts.map((nft) => ({
+    const nftList = filteredNfts.map((nft) => ({
       isSelected: !!selectedMap[nftKey(nft)],
       nft,
     }));
@@ -101,13 +117,19 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
             <Flex direction="column" h="full">
               <InputGroup size="lg" mb={6} maxW="xl" mx="auto">
                 <InputLeftElement children={<Search />} />
-                <Input rounded="full" placeholder="Search NFT" />
+                <Input
+                  rounded="full"
+                  value={search}
+                  placeholder="Search NFT"
+                  onInput={(ev) => setSearch(ev.currentTarget.value)}
+                />
               </InputGroup>
               <Flex
                 // bg="gray.900"
                 gap={3}
                 p={[1, 4]}
                 maxH="full"
+                h="full"
                 flexWrap="wrap"
                 justifyContent="center"
                 overflowY="auto"
@@ -119,12 +141,25 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                     <NFTItem
                       selected={isSelected}
                       key={index}
-                      w={["45%", "45%", "300px"]}
-                      imageProps={{ h: ["140px", "240px", "300px"] }}
+                      w={["45%", "45%", "240px"]}
+                      imageProps={{ h: ["140px", "240px", "240px"] }}
                       nft={nft}
                       onSelect={handleSelect}
                     />
                   ))
+                  // <NFTList
+                  //   items={nftList}
+                  //   renderer={({ key, style, item: { isSelected, nft } }) => (
+                  //     <NFTItem
+                  //     m={2}
+                  //       key={key}
+                  //       style={style}
+                  //       nft={nft}
+                  //       selected={isSelected}
+                  //       onSelect={handleSelect}
+                  //     />
+                  //   )}
+                  // />
                 )}
               </Flex>
             </Flex>

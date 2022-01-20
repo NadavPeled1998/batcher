@@ -23,7 +23,7 @@ export const AddressInput = forwardRef<HTMLInputElement, Props>(
         <Input
           id="address"
           variant="outline"
-          colorScheme="primary.200"
+          colorScheme="gray"
           rounded="full"
           fontSize="md"
           ref={ref}
