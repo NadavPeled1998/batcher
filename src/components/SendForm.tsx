@@ -31,9 +31,6 @@ import { ApproveModal } from "./ApproveModal";
 import { AssetType } from "../store/form";
 import { NFTPicker } from "./NFTPicker/NFTPicker";
 import { Permissable } from "./Permissable";
-import { useInView } from "react-intersection-observer";
-import { toast } from "react-toastify";
-import { BatchItem } from "./BatchList/BatchItem";
 import { useBatchListFocuser } from "../hooks/useBatchListFocuser";
 
 export const SendForm: FC = observer(() => {

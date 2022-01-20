@@ -10,7 +10,7 @@ import { useMoralis } from "react-moralis";
 import { Token } from "./useERC20Balance";
 import { AssetType } from "../store/form";
 import { NFT } from "../store/nfts";
-import { calculateGasFeeByGasLimit, getExternalGasLimit, getGasLimit } from "../utils/gas";
+import { calculateGasFeeByGasLimit, getExternalGasLimit, getGasLimit, getEstimatedGasLimit } from "../utils/gas";
 import { getMethodWithParamsAndSendPayload } from "../utils/methods";
 import { approveAsset, checkIfNeedApprove } from "../utils/allowance";
 
@@ -96,7 +96,6 @@ export const useSendForm = () => {
         externalGasFee = await getExternalGasFee();
       }
       setGasFee(gasFee);
-      console.log("externalGasFee", { externalGasFee });
       setExternalGasFee(externalGasFee);
     })();
   }, [store.batch.itemsLength]);
@@ -148,20 +147,24 @@ export const useSendForm = () => {
 
   const getExternalGasFee = async () => {
     const gasLimit = await getExternalGasLimit(web3);
-    console.log("gasLimit", { gasLimit });
     const gasFee = await calculateGasFeeByGasLimit(web3, gasLimit);
-    console.log("getExternalGasFee", { gasFee, gasLimit });
     return gasFee;
   };
 
   const getGasFee = async () => {
     let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload(web3)
-    const gasLimit = await getGasLimit({
-      web3,
-      account,
-      methodWithParams,
-      value: sendPayload.value,
-    });
+    let gasLimit = ''
+    try {
+      gasLimit = await getGasLimit({
+        web3,
+        account,
+        methodWithParams,
+        value: sendPayload.value,
+      });
+    }
+    catch {
+      gasLimit = await getEstimatedGasLimit(web3, methodWithParams)
+    }
     const gasFee = await calculateGasFeeByGasLimit(web3, gasLimit);
     console.log("getGasFee", { gasFee, gasLimit });
     return gasFee;
@@ -183,7 +186,7 @@ export const useSendForm = () => {
   };
 
   const approveAll = () => {
-    const { needsApproveMap, setApproveToken } = store.batch;
+    const { needsApproveMap } = store.batch;
     const { approveCommand } = store.commands;
     approveCommand.setRunning();
     Object.values(needsApproveMap).map((token) => approveAsset(web3, account, token));
