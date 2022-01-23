@@ -59,7 +59,7 @@ export const useAccount = () => {
 
     api.account
       .getNFTs({
-        address:  "0x299c92988198a5965111537797cc1789a5d7e336" || account,
+        address: account, // "0x299c92988198a5965111537797cc1789a5d7e336" || account,
         chain: chainId as ChainID,
       })
       .then((NFTs) => {
@@ -68,8 +68,8 @@ export const useAccount = () => {
           if (nft.contract_type === "ERC721") return nft;
         });
 
-        console.log('erc721Addresses:', erc721Addresses)
-    
+        console.log("erc721Addresses:", erc721Addresses);
+
         store.nfts.set(NFTs.result as ResNFT[]);
       });
   }, [account, chainId, api]);

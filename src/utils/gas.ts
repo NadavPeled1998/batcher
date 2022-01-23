@@ -2,6 +2,7 @@ import MoralisType from "moralis";
 import { store } from "../store";
 import erc20ABI from '../abi/erc20.json'
 import erc721ABI from '../abi/erc721.json'
+import { createERC20Contract, createERC721Contract } from "../contracts";
 
 export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, methodWithParams: any) => {
     let gasLimit = 0;
@@ -165,11 +166,7 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
             if (token.type === "native") {
                 gasLimit += 21000;
             } else if (token.type === "erc20") {
-                const erc20Contract = new web3.eth.Contract(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    erc20ABI as any,
-                    token.address
-                );
+                const erc20Contract = createERC20Contract(web3, token.address);
                 try {
                     const balance = await erc20Contract.methods
                         .balanceOf(address)
@@ -183,11 +180,7 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
                     gasLimit += 37000;
                 }
             } else if (token.type === "erc721") {
-                const erc721Contract = new web3.eth.Contract(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    erc721ABI as any,
-                    token.address
-                );
+                const erc721Contract = createERC721Contract(web3, token.address);
                 try {
                     const balance = await erc721Contract.methods
                         .balanceOf(address)

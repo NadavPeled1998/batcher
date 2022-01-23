@@ -130,6 +130,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                 p={[1, 4]}
                 maxH="full"
                 h="full"
+                alignItems="flex-start"
                 flexWrap="wrap"
                 justifyContent="center"
                 overflowY="auto"

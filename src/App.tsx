@@ -6,10 +6,18 @@ import "./App.css";
 import { routes } from "./routes";
 import { Fonts } from "./theme/Fonts";
 import theme from "./theme/theme";
-import { ToastContainer, Slide, } from "react-toastify";
+import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./theme/react-toastify.css";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "react-query";
 
+const queryClient = new QueryClient();
 // const serverUrl = process.env.REACT_APP_MORALIS_SERVER_URL!;
 // const appId = process.env.REACT_APP_MORALIS_APP_ID!;
 const serverUrl = "https://zbqogacyxxx7.usemoralis.com:2053/server";
@@ -27,11 +35,13 @@ function App() {
         position="top-center"
         // transition={Slide}
       />
-      <MoralisProvider appId={appId} serverUrl={serverUrl}>
-        <Router location={location} routes={routes}>
-          <Outlet />
-        </Router>
-      </MoralisProvider>
+      <QueryClientProvider client={queryClient}>
+        <MoralisProvider appId={appId} serverUrl={serverUrl}>
+          <Router location={location} routes={routes}>
+            <Outlet />
+          </Router>
+        </MoralisProvider>
+      </QueryClientProvider>
     </ChakraProvider>
   );
 }

@@ -64,17 +64,25 @@ export const NFTPicker: FC<NFTPickerProps> = observer(
             {selectedNFTs.length ? (
               <>
                 <Flex
+                  // bg="gray.800"
                   w="full"
-                  bg="gray.800"
                   px={3}
                   py={1}
                   rounded="full"
                   alignItems="center"
                   mb={2}
+                  gap={2}
                 >
                   <Text fontSize="sm" color="gray.400">
                     Selected NFTs ({selectedNFTs.length})
                   </Text>
+                  <Box
+                    h="1px"
+                    borderBottomWidth={1}
+                    borderStyle="dashed"
+                    borderColor="gray.600"
+                    flex="1"
+                  ></Box>
                   <Button
                     size="xs"
                     colorScheme="primary"

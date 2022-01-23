@@ -22,11 +22,13 @@ import { useBatchListFocuser } from "../hooks/useBatchListFocuser";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
 import { AssetType } from "../store/form";
+import { convertBatchToCSV } from "../utils/csv";
 import { formatNumber } from "../utils/currency";
 import { AddressInput } from "./AddressInput";
 import { ApproveModal } from "./ApproveModal";
 import { BatchList } from "./BatchList/BatchList";
 import { EstimatedGas } from "./EstimatedGas";
+import { ImportCSVButton } from "./ImportCSV/ImportCSVButton";
 import { NFTPicker } from "./NFTPicker/NFTPicker";
 import { Permissable } from "./Permissable";
 import { SelectedTokenBalance } from "./SelectedTokenBalance";
@@ -50,7 +52,7 @@ export const SendForm: FC = observer(() => {
     externalGasFee,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account } =
+  const { authenticate, isAuthenticated, isWeb3Enabled, account, web3 } =
     useMoralis();
 
   const isConnected = true || (isAuthenticated && isWeb3Enabled && account);
@@ -78,8 +80,10 @@ export const SendForm: FC = observer(() => {
         w="sm"
         maxW="full"
         gap={8}
+        position="relative"
         bg="gray.900"
       >
+        <ImportCSVButton alignSelf="flex-end" position="absolute" top={0} right={0} />
         <FormControl colorScheme="primary" isInvalid={Boolean(errors.address)}>
           <FormLabel
             fontSize="sm"

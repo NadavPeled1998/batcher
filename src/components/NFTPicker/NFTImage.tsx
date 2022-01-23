@@ -2,6 +2,7 @@ import { Flex, Image, ImageProps, Spinner } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { NFT } from "../../store/nfts";
 import { DEFAULT_IMAGE } from "../../utils/nft";
+import fallBackImg from "../../assets/image.svg";
 interface NFTImageProps extends ImageProps {
   nft?: NFT;
 }
@@ -12,6 +13,7 @@ export const NFTImage: FC<NFTImageProps> = ({
   ...props
 }) => {
   const [isLoading, setIsLoading] = useState(true);
+  console.log('nft:', nft)
   return (
     <>
       <Image
@@ -19,7 +21,7 @@ export const NFTImage: FC<NFTImageProps> = ({
         opacity={isLoading ? 0 : 1}
         borderRadius="4px"
         boxSize={boxSize}
-        src={nft?.iconUrl || DEFAULT_IMAGE}
+        src={ nft?.iconUrl || fallBackImg}
         alt="NFT image"
         onLoad={() => setIsLoading(false)}
         {...props}

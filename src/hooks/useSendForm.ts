@@ -12,6 +12,7 @@ import { AssetType } from "../store/form";
 import { NFT } from "../store/nfts";
 import {
   calculateGasFeeByGasLimit,
+  getEstimatedGasLimit,
   getExternalGasLimit,
   getGasLimit,
 } from "../utils/gas";
@@ -170,6 +171,7 @@ export const useSendForm = () => {
       });
     }
     catch {
+      console.log('methodWithParams:', methodWithParams)
       gasLimit = await getEstimatedGasLimit(web3, methodWithParams)
     }
     const gasFee = await calculateGasFeeByGasLimit(web3, gasLimit);
@@ -211,6 +213,7 @@ export const useSendForm = () => {
     if (web3) {
       let { methodWithParams, sendPayload } =
         getMethodWithParamsAndSendPayload(web3);
+        console.log('methodWithParams:', methodWithParams)
       let gas = "1000000";
       try {
         gas = await getGasLimit({
