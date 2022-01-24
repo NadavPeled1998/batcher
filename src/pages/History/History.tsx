@@ -1,7 +1,6 @@
 import { Box, Divider, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { ChevronDown, Clock, Layers } from "react-feather";
-import { FeatherGasStation } from "../../assets/FeatherGasStation";
+import { Clock, Layers } from "react-feather";
 import { store } from "../../store";
 import { HistoryListItem } from "./components/HistoryListItem";
 
