@@ -1,22 +1,27 @@
 import { Box, Divider, Flex, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC, useRef } from "react";
+import { CSVDownload, CSVLink } from "react-csv";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { NFT } from "../../store/nfts";
+import { TokenMetaData } from "../../store/tokens";
+import { convertBatchToCSV } from "../../utils/csv";
 import { ClearBatchButton } from "../Dialogs/ClearBatchButton";
 import { BatchItem } from "./BatchItem";
 
 export interface IBatchItem {
   address: string;
   amount: number;
-  token: Token | NFT;
+  token: TokenMetaData | NFT;
 }
 
-export const BatchList: FC = observer(() => {
+export const BatchList: FC<{ batch?: IBatchItem[] }> = observer(({ batch }) => {
+  const items = batch || store.batch.items;
   const listRef = useRef<HTMLDivElement>(null);
-  if (!store.batch.items.length) return null;
+  if (!items.length) return null;
   listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  const csvData = convertBatchToCSV(items);
 
   return (
     <Flex direction="column" gap={2} flex={1}>
@@ -24,7 +29,7 @@ export const BatchList: FC = observer(() => {
         <Text fontSize="sm" color="gray.400">
           Batch{" "}
           <Text fontSize="xs" d="inline">
-            ({store.batch.items.length})
+            ({items.length})
           </Text>
         </Text>
         <ClearBatchButton />
@@ -37,7 +42,7 @@ export const BatchList: FC = observer(() => {
           maxH={["160px", "220px"]}
           overflowY="scroll"
         >
-          {store.batch.items
+          {items
             .slice()
             .map((item, index) => (
               <Flex alignItems="center" w="full">
@@ -47,6 +52,9 @@ export const BatchList: FC = observer(() => {
             ))
             .reverse()}
         </Box>
+        <CSVLink data={csvData} filename="batch.csv">
+          Download me
+        </CSVLink>
       </Flex>
     </Flex>
   );

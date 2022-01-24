@@ -11,6 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
@@ -43,24 +44,20 @@ export const ApproveModal: FC<Props> = observer(
           h="fit-content"
           maxH="100%"
         >
-          <ModalHeader></ModalHeader>
+          <ModalHeader>
+            <Stack>
+              <Heading size="lg" my={2}>
+                Give permission to access your tokens
+              </Heading>
+              <Text fontSize="md" fontWeight={300}>
+                By granting permission, you are allowing our smart contract to
+                transfer your funds
+              </Text>
+            </Stack>
+          </ModalHeader>
           <ModalCloseButton rounded="full" />
-          <ModalBody
-            d="flex"
-            flexDirection="column"
-            overflow="hidden"
-            maxH="full"
-            gap={3}
-            maxHeight={600}
-          >
-            <Heading size="lg" my={2}>
-              Give permission to access your tokens
-            </Heading>
-            <Text>
-              By granting permission, you are allowing our smart contract to
-              transfer your funds
-            </Text>
-            <Divider borderColor="gray.700" />
+          <ModalBody>
+            <Divider borderColor="gray.700" mb={2}/>
             <Flex direction="column" overflowY="auto" flex={1} gap={3}>
               {Object.values(store.batch.needsApproveMap).map((token) => (
                 <>

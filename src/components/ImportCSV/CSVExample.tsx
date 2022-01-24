@@ -20,25 +20,36 @@ export const CSVExample = () => {
   const { isOpen, onToggle } = useDisclosure();
   return (
     <>
-      <Stack w="full" bg="gray.900" p={4} px={4} rounded="lg" spacing={4}>
-        <HStack onClick={onToggle}>
+      <Box w="full" bg="gray.900" p={4} px={4} rounded="lg">
+        <Flex alignItems="center" onClick={onToggle} cursor="pointer">
           <Box flex="1">
             <Text fontSize="xl" fontWeight={500}>
               How should it look?
             </Text>
           </Box>
-          <Box ml="auto" as={ChevronDown} />
-        </HStack>
+          <Box
+            ml="auto"
+            transition="all 0.2s"
+            transform={isOpen ? "rotate(180deg)" : ""}
+            as={ChevronDown}
+            rotate="12deg"
+          />
+        </Flex>
         <Collapse in={isOpen} animateOpacity>
-          <Box overflowX="auto" rounded="xl" borderColor="gray.700">
+          <Box
+            overflowX="auto"
+            mt={isOpen ? 4 : 0}
+            transition="margin 0.2s"
+            rounded="xl"
+            borderColor="gray.700"
+          >
             <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
                   <Th>Recipient Address</Th>
                   <Th>Amount</Th>
-                  <Th>ERC20 Address</Th>
-                  <Th>ERC721 Contract Address</Th>
-                  <Th>ERC721 Token ID</Th>
+                  <Th>Token Address</Th>
+                  <Th>Token ID</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -54,7 +65,6 @@ export const CSVExample = () => {
                   <Td>1.5</Td>
                   <Td></Td>
                   <Td></Td>
-                  <Td></Td>
                 </Tr>
                 <Tr>
                   <Td>
@@ -65,14 +75,13 @@ export const CSVExample = () => {
                       "0xAf4364fC3605B2a6c188ca94775d8E2B6F34C405"
                     )}
                   </Td>
-                  <Td>120</Td>
+                  <Td>121</Td>
                   <Td>
                     {" "}
                     {shortenAddress(
                       "0x3605B2a6Af4364fC3605B2a6c188ca94775d8E2B6F34C405188ca94"
                     )}
                   </Td>
-                  <Td></Td>
                   <Td></Td>
                 </Tr>
                 <Tr>
@@ -84,7 +93,6 @@ export const CSVExample = () => {
                       "0xAf4364fC3605B2a6c188ca94775d8E2B6F34C405"
                     )}
                   </Td>
-                  <Td></Td>
                   <Td></Td>
                   <Td>
                     {shortenAddress(
@@ -102,7 +110,7 @@ export const CSVExample = () => {
             </Table>
           </Box>
         </Collapse>
-      </Stack>
+      </Box>
     </>
   );
 };

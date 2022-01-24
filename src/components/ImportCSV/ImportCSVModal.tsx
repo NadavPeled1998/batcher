@@ -1,10 +1,10 @@
 import {
   Box,
-  Button,
   Center,
+  Code,
   Divider,
   Flex,
-  Input,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,23 +13,18 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
-  useBoolean,
   useDisclosure,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { DownloadCloud, Plus } from "react-feather";
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
+import { useMutation } from "react-query";
 import { toast } from "react-toastify";
-import { useDropArea, useEvent } from "react-use";
-import { shortenAddress } from "../../utils/address";
-import { isCSV } from "../../utils/csv";
+import { useDropArea } from "react-use";
+import { convertCSVToBatch, isCSV } from "../../utils/csv";
+import { BatchList } from "../BatchList/BatchList";
 import { CSVExample } from "./CSVExample";
 import { InputFileButton } from "./InputFileButton";
 
@@ -37,40 +32,42 @@ interface ImportCSVModalProps extends ReturnType<typeof useDisclosure> {}
 
 export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
   ({ isOpen, onClose }) => {
+    const api = useMoralisWeb3Api();
+
     const [file, setFile] = useState<File>();
-    console.log("file:", file);
+
+    const { data, mutate, reset } = useMutation(() => {
+      return convertCSVToBatch(file!);
+    });
 
     const [dropAreaEvents, { over: isDragOver }] = useDropArea({
       onFiles: (files) => {
         const file = files.find((f) => isCSV(f));
-        if (!file) return toast.error("Please select a CSV file");
-        if (!isCSV(file)) return toastError();
+        if (!file || !isCSV(file))
+          return toast.error("Please select a CSV file");
         setFile(file);
       },
     });
 
-    const stop = (fn: (...args: any) => void) => (ev: any) => {
-      ev.stopPropagation();
-      ev.preventDefault();
-      fn(ev);
-    };
 
-    const toastError = () => {};
+    useEffect(() => {
+      if (!file) return;
+      mutate();
+    }, [file, mutate]);
 
     return (
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        isCentered
         size="4xl"
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent bg="gray.800" rounded={24} mx={4}>
+        <ModalContent bg="gray.800" rounded={24} maxW={["90%", "4xl"]}>
           <ModalHeader>Import CSV</ModalHeader>
           <ModalCloseButton rounded="full" />
-          <ModalBody px={[5, 10]}>
-            <Stack hidden={!!file}>
+          <ModalBody>
+            <Stack hidden={Boolean(data)} p={[2, 8]} spacing={[4, 8]}>
               <Stack
                 position="relative"
                 borderStyle="dashed"
@@ -119,9 +116,9 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
           </ModalBody>
 
           <ModalFooter>
-            <Button size="sm" variant="ghost" mx="auto" onClick={onClose}>
+            {/* <Button size="sm" variant="ghost" mx="auto" onClick={onClose}>
               Close
-            </Button>
+            </Button> */}
           </ModalFooter>
         </ModalContent>
       </Modal>

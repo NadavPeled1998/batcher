@@ -169,7 +169,9 @@ export const SendForm: FC = observer(() => {
                       }
                     : {}
                 }
-                bg="gray.700"
+                bg="gray.800"
+                borderWidth="1px"
+                borderColor="gray.700"
                 rounded="full"
                 variant="solid-rounded"
                 size="sm"
