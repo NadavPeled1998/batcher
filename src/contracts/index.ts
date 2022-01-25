@@ -5,6 +5,7 @@ import MultiSendAbi from "../abi/multiSend.json";
 import { ContractContext as ERC20Contract } from "../abi/types/ERC20";
 import { ContractContext as ERC721Contract } from "../abi/types/ERC721";
 import { ContractContext as MultiSendContract } from "../abi/types/MultiSend";
+import { MULTI_SEND_CONTRACT_ADDRESSES } from "../utils/multiSendContractAddress";
 
 
 export const createContract = <TContract>(
@@ -15,8 +16,8 @@ export const createContract = <TContract>(
   return new web3.eth.Contract(abi as any, address) as unknown as TContract;
 };
 
-export const createMultiSendContract = (web3: Moralis.Web3) => {
-  const MULTI_SEND_CONTRACT_ADDRESS = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS as string
+export const createMultiSendContract = async (web3: Moralis.Web3, chainId: string) => {
+  const MULTI_SEND_CONTRACT_ADDRESS = MULTI_SEND_CONTRACT_ADDRESSES[chainId]
   return createContract<MultiSendContract>(
     web3,
     MultiSendAbi,

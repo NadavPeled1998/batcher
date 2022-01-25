@@ -5,13 +5,14 @@ import erc721ABI from '../abi/erc721.json'
 import { Token } from "../hooks/useERC20Balance";
 import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
+import { MULTI_SEND_CONTRACT_ADDRESSES } from "./multiSendContractAddress";
 
 
-export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account: string | null, token: Token | NFT, amount?: string) => {
-    const MULTI_SEND_CONTRACT_ADDRESS = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS
-    if (web3) {
+export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account: string | null, chainId: string | null, token: Token | NFT, amount?: string) => {
+    if (web3 && chainId) {
+        const MULTI_SEND_CONTRACT_ADDRESS = MULTI_SEND_CONTRACT_ADDRESSES[chainId];
+
         const { setApproveToken, addToNeedsApproveMap, totals } = store.batch;
-        console.log("batch", store.batch);
         if (token.type === "erc20") {
             const erc20 = token as Token
             const erc20Contract = new web3.eth.Contract(

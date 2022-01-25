@@ -4,12 +4,12 @@ import { store } from "../store";
 import { genDefaultETHToken } from "../utils/defaults";
 import { ChainID } from "./useERC20Balance";
 import multiSendAbi from "../abi/multiSend.json";
-import erc20Abi from "../abi/erc20.json";
 import erc721Abi from "../abi/erc721.json";
 import * as abiDecoder from "abi-decoder";
 import { tokensStore } from "../store/tokens";
 import { ResNFT } from "../store/nfts";
-import { createERC721Contract } from "../contracts";
+import { getAssetInfo } from "../utils/assets";
+
 abiDecoder.addABI(multiSendAbi);
 abiDecoder.addABI(erc721Abi);
 abiDecoder.addABI(erc721Abi);
@@ -34,7 +34,7 @@ export const useAccount = () => {
           chain: chainId as ChainID,
         })
         .then(({ balance }) => ({
-          ...genDefaultETHToken(),
+          ...genDefaultETHToken(chainId),
           balance,
         })),
       api.account.getTokenBalances({
@@ -42,11 +42,26 @@ export const useAccount = () => {
         chain: chainId as ChainID,
       }),
     ])
-      .then((tokens) => {
+      .then(async (tokens) => {
         const flat = tokens.flat();
+        for(let i = 0; i< flat.length; i++) {
+          try {
+            const assetInfo = await getAssetInfo({name: flat[i].name.toLowerCase()})
+            flat[i].logo = assetInfo.image.large
+          }
+          catch {
+            try {
+              const assetInfo = await getAssetInfo({name: flat[i].symbol.toLowerCase()})
+              flat[i].logo = assetInfo.image.large
+            }
+            catch {
+              console.log("failed to get assetsInfo")
+            }
+          }
+        }
         store.tokens.set(flat);
         store.form.setToken(tokens[0]);
-        store.tokens.prices.multiFetch(flat);
+        store.tokens.prices.multiFetch(flat, chainId);
         fetchTokensMetaData(flat.map((t) => t.token_address));
       })
       .catch((e) => {
@@ -59,7 +74,7 @@ export const useAccount = () => {
 
     api.account
       .getNFTs({
-        address:  "0x299c92988198a5965111537797cc1789a5d7e336" || account,
+        address: "0x299c92988198a5965111537797cc1789a5d7e336" || account,
         chain: chainId as ChainID,
       })
       .then((NFTs) => {

@@ -3,7 +3,10 @@ import { store } from "../store";
 import erc20ABI from '../abi/erc20.json'
 import erc721ABI from '../abi/erc721.json'
 
-export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, methodWithParams: any) => {
+export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params: any) => {
+
+    const { isSendERC20, isSendERC721, isSendNative } = params
+
     let gasLimit = 0;
     let existNative = 0
     let unExistNative = 0
@@ -16,61 +19,58 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, method
     let isThereToken = false;
     let isThereNFT = false;
 
-
-    if(methodWithParams._method.name === 'multiSendNative') {
+    if (isSendERC20) {
+        if (isSendERC721) {
+            gasLimit = 26000
+            existNative = 13000
+            unExistNative = 38000
+            firstTokenAddition = 14000
+            existToken = 16000
+            unExistToken = 33000
+            firstNFTAddition = 9000
+            existNFT = 25500
+            unExistNFT = 42500
+        }
+        else if (isSendNative) {
+            gasLimit = 24000
+            existNative = 11000
+            unExistNative = 36000
+            firstTokenAddition = 14000
+            existToken = 14500
+            unExistToken = 31500
+        }
+        else {
+            gasLimit = 39000
+            existToken = 12000
+            unExistToken = 30000
+        }
+    }
+    else if (isSendERC721) {
+        if (isSendNative) {
+            gasLimit = 24000
+            existNative = 11000
+            unExistNative = 36000
+            firstNFTAddition = 19000
+            existNFT = 23500
+            unExistNFT = 40500
+        }
+        else {
+            gasLimit = 33000
+            existNFT = 23500
+            unExistNFT = 40500
+        }
+    }
+    else {
         gasLimit = 23000
         existNative = 10000
         unExistNative = 35000
     }
-    ////////////
-    if(methodWithParams._method.name === 'multiSendERC20') {
-        gasLimit = 39000
-        existToken = 12000
-        unExistToken = 30000
-
-    }
-    if(methodWithParams._method.name === 'multiSendERC721') {
-        gasLimit = 33000
-        existNFT = 23500
-        unExistNFT = 40500
-
-    }
-    if(methodWithParams._method.name === 'multiSendNativeAndERC20') {
-        console.log("getEstimatedGasLimit okk")
-        gasLimit = 24000
-        existNative = 11000
-        unExistNative = 36000
-        firstTokenAddition = 14000
-        existToken = 14500
-        unExistToken = 31500
-    }
-    if(methodWithParams._method.name === 'multiSendNativeAndERC721') {
-        gasLimit = 24000
-        existNative = 11000
-        unExistNative = 36000
-        firstNFTAddition = 19000
-        existNFT = 23500
-        unExistNFT = 40500
-    }
-    if(methodWithParams._method.name === 'multiSendAll') {
-        gasLimit = 26000
-        existNative = 13000
-        unExistNative = 38000
-        firstTokenAddition = 14000
-        existToken = 16000
-        unExistToken = 33000
-        firstNFTAddition = 9000
-        existNFT = 25500
-        unExistNFT = 42500
-    }
     if (web3) {
-        console.log("getEstimatedGasLimit there is a web3")
-
         for (let i = 0; i < store.batch.items.length; i++) {
             const { token, address } = store.batch.items[i];
             if (token.type === "native") {
                 const balance = await web3.eth.getBalance(address)
-                if(balance) {
+                if (balance) {
                     gasLimit += existNative;
                 }
                 else {
@@ -82,8 +82,8 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, method
                     erc20ABI as any,
                     token.address
                 );
-                console.log("getEstimatedGasLimit 2 erc20", {address: token.address})
-                if(!isThereToken) {
+                console.log("getEstimatedGasLimit 2 erc20", { address: token.address })
+                if (!isThereToken) {
                     isThereToken = true
                     gasLimit += firstTokenAddition
                 }
@@ -91,7 +91,7 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, method
                     const balance = await erc20Contract.methods
                         .balanceOf(address)
                         .call();
-                        console.log("getEstimatedGasLimit 3 erc20", {balance})
+                    console.log("getEstimatedGasLimit 3 erc20", { balance })
 
                     console.log({ balance });
                     if (+balance) {
@@ -103,7 +103,7 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, method
                     gasLimit += existToken;
                 }
             } else if (token.type === "erc721") {
-                if(!isThereNFT) {
+                if (!isThereNFT) {
                     isThereNFT = true
                     gasLimit += firstNFTAddition
                 }
@@ -206,12 +206,11 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
     return String(gasLimit);
 };
 
-export const calculateGasFeeByGasLimit = async (web3: MoralisType.Web3 | null,gasLimit: string) => {
+export const calculateGasFeeByGasLimit = async (web3: MoralisType.Web3 | null, gasLimit: string) => {
     let gasFee = "";
     if (web3) {
         const { toBN } = web3.utils;
         const gasPrice = await web3.eth.getGasPrice();
-        console.log("gasPrice", { gasPrice });
         gasFee = toBN(gasPrice).mul(toBN(gasLimit)).toString();
     }
     return gasFee;
