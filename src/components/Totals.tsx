@@ -11,7 +11,6 @@ interface TotalProps extends FlexProps {
 
 export const Totals: FC<TotalProps> = observer(({ totals, ...props }) => {
   const items = Object.entries(totals || store.batch.totals);
-
   return (
     <Flex direction="column" gap={1} {...props}>
       <Text fontSize="sm" color="gray.400">

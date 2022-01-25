@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { Moralis } from "moralis";
 import { ChainID, Token } from "../hooks/useERC20Balance";
 import { getTokenAddressToFetch, isNative } from "../utils/address";
+import { CHAINS } from "../utils/chain";
 import { genDefaultETHToken } from "../utils/defaults";
 
 interface TokenPriceFetchStatus {
@@ -16,13 +17,13 @@ export interface TokenPrice {
   fetchStatus?: TokenPriceFetchStatus;
   address: string;
   nativePrice?:
-    | {
-        value: string;
-        decimals: number;
-        name: string;
-        symbol: string;
-      }
-    | undefined;
+  | {
+    value: string;
+    decimals: number;
+    name: string;
+    symbol: string;
+  }
+  | undefined;
   usdPrice: number;
   exchangeAddress?: string | undefined;
   exchangeName?: string | undefined;
@@ -56,12 +57,44 @@ export class Prices {
     }
   }
 
-  async fetch(address: string) {
+  async fetchViaExternalAPI(tokens: Token[]) {
+    const ids = tokens.map(token => {
+      return `${token.name},${token.symbol}`
+    }).join(',')
+    try {
+      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`)
+      const res: any = await response.json()
+
+      const tokenPrices: TokenPrice[] = []
+
+      tokens.map(token => {
+        console.log("prices on run", res[token.name], res[token.name.toLowerCase()]?.usd, token.name, token)
+        const usdPrice = +res[token.name.toLowerCase()]?.usd || +res[token.symbol.toLowerCase()]?.usd
+        if (usdPrice) {
+          tokenPrices.push({
+            address: token.token_address,
+            nativePrice: undefined,
+            usdPrice,
+            fetchStatus: {
+              succeed: true,
+            }
+          })
+        }
+      })
+      return tokenPrices
+    }
+    catch {
+      console.log("prices fetch failed")
+      return []
+    }
+  }
+  /// i need to add here options to get the tokens rate from avalanche
+  async fetch(address: string, chainId: string | null) {
     const price: TokenPrice = await Moralis.Web3API.token
       .getTokenPrice({
         address: getTokenAddressToFetch(address),
-        chain: "eth",
-        exchange: 'uniswap-v2'
+        chain: CHAINS[chainId || '0xa869'],
+        // ,exchange: 'uniswap-v2'
       })
       .then(
         (price): TokenPrice => ({
@@ -80,7 +113,7 @@ export class Prices {
           fetchStatus: {
             failed: true,
             error: err,
-          },
+          }
         })
       );
 
@@ -88,10 +121,22 @@ export class Prices {
     return price;
   }
 
-  async multiFetch(tokens: Token[]) {
+  async multiFetch(tokens: Token[], chainId: string | null) {
     this.isFetching = true;
-    const promises = tokens.map((token) => this.fetch(token.token_address));
-    const prices = await Promise.all(promises);
+    const promises = tokens.map((token) => this.fetch(token.token_address, chainId));
+    const pricesFromMoralis = await Promise.all(promises);
+    const failedTokens = tokens.filter(token => pricesFromMoralis.find(price => price.address === token.token_address)?.fetchStatus?.failed)
+    const pricesFromAPI = await this.fetchViaExternalAPI(failedTokens)
+
+    const prices = pricesFromMoralis.map(price => {
+      if (price.fetchStatus?.failed) {
+        const priceFromAPI = pricesFromAPI.find(priceFromAPI => priceFromAPI.address === price.address)
+        if (priceFromAPI) {
+          return priceFromAPI
+        }
+      }
+      return price
+    })
     this.add(prices);
     this.isFetching = false;
   }
@@ -99,7 +144,7 @@ export class Prices {
 
 export class Tokens {
   prices: Prices = new Prices();
-  native: Token = genDefaultETHToken();
+  native: Token = genDefaultETHToken("0xa869");
   list: Token[] = [];
   isFetching: boolean = false;
 
