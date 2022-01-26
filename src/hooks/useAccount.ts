@@ -59,7 +59,7 @@ export const useAccount = () => {
 
     api.account
       .getNFTs({
-        address: "0x299c92988198a5965111537797cc1789a5d7e336" || account,
+        address: account, // "0x299c92988198a5965111537797cc1789a5d7e336" || account,
         chain: chainId as ChainID,
       })
       .then((NFTs) => {
