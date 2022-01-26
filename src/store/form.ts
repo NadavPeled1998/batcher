@@ -15,7 +15,7 @@ export enum AssetType {
 export class Form {
   constructor(public tokenStore: Tokens, public batchStore: Batch) {
     makeAutoObservable(this);
-    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
+    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken('0xa869');
   }
 
   selectedToken: Token;
@@ -100,7 +100,7 @@ export class Form {
   reset() {
     this.clear();
     this.amountInputType = InputType.Token;
-    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken();
+    this.selectedToken = this.tokenStore.list[0] || genDefaultETHToken("0xa869");
   }
 
   clear() {

@@ -25,8 +25,8 @@ export type TokensMetaDataMap = {
 
 export class Tokens {
   tokensMap: TokensMetaDataMap = {
-    [NATIVE_ADDRESS_0xE]: generateNativeTokenMetaData(),
-    [NATIVE_ADDRESS_0x0]: generateNativeTokenMetaData(),
+    [NATIVE_ADDRESS_0xE]: generateNativeTokenMetaData('0xa869'),
+    [NATIVE_ADDRESS_0x0]: generateNativeTokenMetaData('0xa869'),
   };
 
   get tokens() {
@@ -47,15 +47,23 @@ export class Tokens {
   }
 
   async fetchTokensMetaData(addresses: string[], chainId: ChainID) {
-    const unfetched = this.filterUnFetched(addresses);
-    if (unfetched.length === 0) return console.log("all tokens are fetched");
+    // const unfetched = this.filterUnFetched(addresses);
+    // if (unfetched.length === 0) return console.log("all tokens are fetched");
 
     await Moralis.Web3API.token
       .getTokenMetadata({
-        addresses: unfetched,
+        addresses,
         chain: chainId,
       })
-      .then((data) => this.add(data))
+      .then((data) => {
+        const defaultToken = generateNativeTokenMetaData(chainId)
+        const defaultToken2 = generateNativeTokenMetaData(chainId)
+        defaultToken2.address = NATIVE_ADDRESS_0x0
+
+        console.log("fetchTokensMetaData", [...data, defaultToken, defaultToken2])
+        console.log("fetchTokensMetaData")
+        this.add([...data, defaultToken, defaultToken2])
+      })
       .catch((e) => console.error("fetch tokens metadata failed", e));
   }
 
@@ -63,11 +71,13 @@ export class Tokens {
     if (Array.isArray(token)) {
       token.forEach((t) => this.add(t));
     } else {
+      console.log("add to thissssss", token.address, {token})
       this.tokensMap[token.address] = {  ...token, type: isNative(token.address) ? 'native' : 'erc20'  };
     }
   }
 
   get(address: string) {
+    console.log("add to this gertttttt", this.tokensMap, address)
     return this.tokensMap[address];
   }
 

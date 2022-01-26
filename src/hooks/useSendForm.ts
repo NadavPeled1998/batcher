@@ -7,16 +7,14 @@ import { NFTPicker } from "../components/NFTPicker/NFTPicker";
 import { store } from "../store";
 import { isValidAddress } from "../utils/address";
 import { useMoralis } from "react-moralis";
-import { Token } from "./useERC20Balance";
 import { AssetType } from "../store/form";
-import { NFT } from "../store/nfts";
 import {
   calculateGasFeeByGasLimit,
   getEstimatedGasLimit,
   getExternalGasLimit,
   getGasLimit,
 } from "../utils/gas";
-import { getMethodWithParamsAndSendPayload } from "../utils/methods";
+import { getMethodWithParamsAndSendPayload, getParams } from "../utils/methods";
 import { approveAsset, checkIfNeedApprove } from "../utils/allowance";
 
 const schema = yup
@@ -171,11 +169,10 @@ export const useSendForm = () => {
       });
     }
     catch {
-      console.log('methodWithParams:', methodWithParams)
-      gasLimit = await getEstimatedGasLimit(web3, methodWithParams)
+      const params = getParams(web3)
+      gasLimit = await getEstimatedGasLimit(web3, params)
     }
     const gasFee = await calculateGasFeeByGasLimit(web3, gasLimit);
-    console.log("getGasFee", { gasFee, gasLimit });
     return gasFee;
   };
 
@@ -191,7 +188,7 @@ export const useSendForm = () => {
           : store.form.selectedNFTs) || [];
 
       tokens.forEach(async (token) => {
-        checkIfNeedApprove(web3, account, token, String(store.form.amount));
+        checkIfNeedApprove(web3, account, chainId, token, String(store.form.amount));
       });
     }
     submitCount.current = 0;

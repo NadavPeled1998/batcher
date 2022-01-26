@@ -35,40 +35,41 @@ export class Batch {
       if (item.token.type === "erc721") {
         if (!acc.nft) acc.nft = { total: 0 };
         acc.nft.total += 1;
-      } else if (!acc[item.token.symbol]) {
-        acc[item.token.symbol] = {
-          total: 0,
-          token: item.token,
-        };
+      } else {
+        if (!acc[item.token.symbol]) {
+          acc[item.token.symbol] = {
+            total: 0,
+            token: item.token,
+          };
+        }
+        acc[item.token.symbol].total += item.amount
       }
 
-      // if (item.token.type === "erc721") acc[item.token.symbol].total = 1;
-      // else acc[item.token.symbol].total += item.amount;
       return acc;
     }, {} as TotalsMap);
   }
 
-  async estimateGas(web: Moralis.Web3, walletAddress: string) {
-    const MSContract = createMultiSendContract(web);
+  // async estimateGas(web: Moralis.Web3, walletAddress: string) {
+  //   const MSContract = createMultiSendContract(web);
 
-    const [receivers, amounts, tokens] = this.items.reduce(
-      (acc, item) => {
-        acc[0].push(item.address);
-        acc[1].push(Web3.utils.toWei(item.amount.toString()));
-        acc[2].push(item.token.address);
-        return acc;
-      },
-      [[], [], [], []] as string[][]
-    );
+  //   const [receivers, amounts, tokens] = this.items.reduce(
+  //     (acc, item) => {
+  //       acc[0].push(item.address);
+  //       acc[1].push(Web3.utils.toWei(item.amount.toString()));
+  //       acc[2].push(item.token.address);
+  //       return acc;
+  //     },
+  //     [[], [], [], []] as string[][]
+  //   );
 
-    MSContract.methods
-      .multiSendERC20(receivers, amounts, tokens)
-      .estimateGas({
-        from: walletAddress,
-      })
-      .then((gas) => console.log("gas", gas))
-      .catch((e) => console.log("gas", e));
-  }
+  //   MSContract.methods
+  //     .multiSendERC20(receivers, amounts, tokens)
+  //     .estimateGas({
+  //       from: walletAddress,
+  //     })
+  //     .then((gas) => console.log("gas", gas))
+  //     .catch((e) => console.log("gas", e));
+  // }
 
   get isNeedsApprove() {
     return Boolean(Object.values(this.needsApproveMap).length);
@@ -79,6 +80,7 @@ export class Batch {
   }
 
   add(item: IBatchItem) {
+    console.log("batch add", item)
     this.items.push(item);
   }
 
