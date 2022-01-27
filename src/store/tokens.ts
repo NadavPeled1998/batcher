@@ -71,13 +71,11 @@ export class Tokens {
     if (Array.isArray(token)) {
       token.forEach((t) => this.add(t));
     } else {
-      console.log("add to thissssss", token.address, {token})
       this.tokensMap[token.address] = {  ...token, type: isNative(token.address) ? 'native' : 'erc20'  };
     }
   }
 
   get(address: string) {
-    console.log("add to this gertttttt", this.tokensMap, address)
     return this.tokensMap[address];
   }
 

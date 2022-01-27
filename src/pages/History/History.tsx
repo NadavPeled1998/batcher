@@ -61,10 +61,14 @@ export const History = observer(() => {
         {store.history.list.length ? (
           store.history.list.map((item, i) => {
             return (
-              <>
-                <HistoryListItem item={item} key={i} />
-                {isLast(i) ? null : <Divider borderColor="gray.700" key={i+'d'} />}
-              </>
+              <Flex 
+                key={item.transaction.hash} 
+                direction="column"
+                gap="2"
+              >
+                <HistoryListItem item={item} />
+                {isLast(i) ? null : <Divider borderColor="gray.700"/>}
+              </Flex>
             );
           })
         ) : (

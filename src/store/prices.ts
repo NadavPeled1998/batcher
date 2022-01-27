@@ -29,6 +29,8 @@ export interface TokenPrice {
   exchangeName?: string | undefined;
 }
 
+export type AddressWithBalanceMap = { [key: string]: string };
+
 type PriceMap = { [key: string]: TokenPrice };
 
 export class Prices {
@@ -94,7 +96,6 @@ export class Prices {
       .getTokenPrice({
         address: getTokenAddressToFetch(address),
         chain: CHAINS[chainId || '0xa869'],
-        // ,exchange: 'uniswap-v2'
       })
       .then(
         (price): TokenPrice => ({
@@ -122,7 +123,15 @@ export class Prices {
   }
 
   async multiFetch(tokens: Token[], chainId: string | null) {
-    this.isFetching = true;
+    const oldTokens = Object.values(this.map);
+    for(let oldToken of oldTokens) {
+      if(tokens.find(token => token.token_address === oldToken.address)) {
+        continue;
+      }
+      this.isFetching = true
+      break;
+    }
+    
     const promises = tokens.map((token) => this.fetch(token.token_address, chainId));
     const pricesFromMoralis = await Promise.all(promises);
     const failedTokens = tokens.filter(token => pricesFromMoralis.find(price => price.address === token.token_address)?.fetchStatus?.failed)
@@ -161,6 +170,17 @@ export class Tokens {
         };
       }),
     ];
+  }
+
+  setBalances(addressWithBalance: AddressWithBalanceMap) {
+    const newList = this.list.map(token => {
+      if(addressWithBalance[token.token_address]) {
+        token.balance = addressWithBalance[token.token_address]
+      }
+      console.log("setBalances", {address: token.token_address,token})
+      return token
+    })
+    this.list = newList
   }
 
   fetch(walletAddress: string, chainId: ChainID) {

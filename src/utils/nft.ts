@@ -18,25 +18,19 @@ const ipfsToHttps = (uri: string) => {
 };
 
 export const tryGetImage = ({ url }: { url: string }) => {
-    console.log("tryGetImage -1")
     return axios
       .get(`${ipfsToHttps(url)}`)
       .then(response => {
-        console.log("tryGetImage ok 0", {response});
 
         const image = response.data.image;
-        console.log("image", {image})
         if (image) {
-        console.log("tryGetImage ok", {image})
           return ipfsToHttps(image);
         }
   
         return DEFAULT_IMAGE;
       })
       .catch((e) => {
-    
-        console.log("tryGetImage failed", {e, url})
-        return DEFAULT_IMAGE;
+            return DEFAULT_IMAGE;
       });
   };
 
