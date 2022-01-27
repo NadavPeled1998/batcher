@@ -1,10 +1,8 @@
 import {
   Box,
   Center,
-  Code,
   Divider,
   Flex,
-  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -23,8 +21,14 @@ import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 import { useDropArea } from "react-use";
-import { convertCSVToBatch, isCSV } from "../../utils/csv";
-import { BatchList } from "../BatchList/BatchList";
+import { store } from "../../store";
+import {
+  BatchItemFromCSV,
+  convertCSVToBatch,
+  CSVError,
+  CSVErrors,
+  isCSV,
+} from "../../utils/csv";
 import { CSVExample } from "./CSVExample";
 import { InputFileButton } from "./InputFileButton";
 
@@ -32,12 +36,52 @@ interface ImportCSVModalProps extends ReturnType<typeof useDisclosure> {}
 
 export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
   ({ isOpen, onClose }) => {
+    const { account, chainId } = useMoralis();
+
     const api = useMoralisWeb3Api();
 
     const [file, setFile] = useState<File>();
 
-    const { data, mutate, reset } = useMutation(() => {
+    const {
+      data,
+      mutate,
+      isError: isReadingCSVError,
+      error: readingCSVError,
+      reset,
+    } = useMutation(async () => {
       return convertCSVToBatch(file!);
+    });
+
+    const {
+      data: batchItems,
+      isLoading,
+      isError,
+      error,
+      mutate: generateBatchItems,
+    } = useMutation(async () => {
+      const getToken = (item: BatchItemFromCSV) => {
+        if (item.type === "native") return store.tokens.list[0];
+        if (item.type === "erc20")
+          return store.tokens.list.find(
+            (token) => token.token_address === item.token_address
+          );
+        if (item.type === "erc721")
+          return store.nfts.get(item.token_address, item.token_id!);
+      };
+
+      return data?.baseBatch!.map((item) => {
+        const token = getToken(item);
+
+        return {
+          batchItem: {
+            address: item.recipient_address,
+            amount: item.amount,
+            token,
+          },
+          hasToken: !!token,
+          csvRow: item.row,
+        };
+      });
     });
 
     const [dropAreaEvents, { over: isDragOver }] = useDropArea({
@@ -49,6 +93,11 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
       },
     });
 
+    useEffect(() => {
+      if (data?.baseBatch) {
+        generateBatchItems();
+      }
+    }, [data]);
 
     useEffect(() => {
       if (!file) return;
@@ -66,8 +115,16 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
         <ModalContent bg="gray.800" rounded={24} maxW={["90%", "4xl"]}>
           <ModalHeader>Import CSV</ModalHeader>
           <ModalCloseButton rounded="full" />
-          <ModalBody>
-            <Stack hidden={Boolean(data)} p={[2, 8]} spacing={[4, 8]}>
+          <ModalBody p={0}>
+            <Stack
+              hidden={Boolean(data) && !isError && !isReadingCSVError}
+              p={[4, 8]}
+              spacing={[4, 8]}
+            >
+              {isReadingCSVError && <Text>Filename: {file?.name}</Text>}
+              {isReadingCSVError &&
+                (readingCSVError as CSVErrors).errors.map((err) => err.jsx)}
+
               <Stack
                 position="relative"
                 borderStyle="dashed"
@@ -115,11 +172,11 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
             </Stack>
           </ModalBody>
 
-          <ModalFooter>
-            {/* <Button size="sm" variant="ghost" mx="auto" onClick={onClose}>
+          {/* <ModalFooter>
+            <Button size="sm" variant="ghost" mx="auto" onClick={onClose}>
               Close
-            </Button> */}
-          </ModalFooter>
+            </Button>
+          </ModalFooter> */}
         </ModalContent>
       </Modal>
     );

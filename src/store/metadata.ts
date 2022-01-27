@@ -85,7 +85,6 @@ export class NFTs {
   get list() {
     return Object.values(this.nftsMap).map((nft) => Object.values(nft));
   }
-  a: ResNFT
 }
 export class MetaData {
   constructor() {

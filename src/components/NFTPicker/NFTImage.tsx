@@ -13,7 +13,6 @@ export const NFTImage: FC<NFTImageProps> = ({
   ...props
 }) => {
   const [isLoading, setIsLoading] = useState(true);
-  console.log('nft:', nft)
   return (
     <>
       <Image

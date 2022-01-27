@@ -67,8 +67,10 @@ export class NFTs {
     });
   }
 
-  get(nftId: string) {
-    return this.list.find((nft) => nft.id === nftId);
+  get(token_address: string, token_id: string) {
+    return this.list.find(
+      (nft) => nft.token_address === token_address && nft.id === token_id
+    );
   }
 
   setIconUrl(address: string, id: string, iconUrl: string) {
