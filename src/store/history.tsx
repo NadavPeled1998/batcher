@@ -61,30 +61,50 @@ export class TransactionHistory {
     this.isFetching = isFetching;
   }
 
-  setTransactions(response: GetTransactionsResponse) {
-    this.transactions = response.result || [];
+  setTransactions(transactions?: Transaction[]) {
+    const pendingTransactions = this.transactions.filter(
+      transaction => 
+        transaction.receipt_status === '' && !transactions?.find(newTransaction => newTransaction.hash === transaction.hash)
+      )
+    this.transactions = transactions ? [...pendingTransactions, ...transactions] : [...pendingTransactions];
+  }
+
+  addTransaction(transaction: Transaction) {
+    this.transactions = [transaction, ...this.transactions];
+  }
+
+  setPendingTransactionStatus({hash, receipt_status}: Transaction) {
+    const index = this.transactions.findIndex(transaction => transaction.hash === hash)
+    this.transactions[index].receipt_status = receipt_status
   }
 
   get list() {
-    return this.transactions.reduce((acc, trx) => {
+    const transactionsList =  this.transactions.reduce((acc, trx) => {
       const transfers = decodeInput(trx.input);
+      const transaction: { transaction: Transaction, batch: IBatchItem[], totals: TotalsMap } = {
+        transaction: trx,
+        batch: [], 
+        totals: {}
+      }
       if (transfers) {
         const batchItems = transfers.map(createBatchItem);
         const totals = store.batch.generateTotals(batchItems);
-        acc.push({
-          transaction: trx,
-          batch: batchItems,
-          totals,
-        });
+        transaction.batch = batchItems;
+        transaction.totals = totals
       }
+
+      acc.push(transaction);
       return acc;
     }, [] as TransactionHistoryListItem[]);
+    return transactionsList
   }
 
   get transferredTokenAddresses() {
     const addresses = this.list.reduce((acc, item) => {
       item.batch.forEach((batch) => {
-        acc.add(batch.token.address);
+        if(batch.token.address) {
+          acc.add(batch.token.address);
+        }
       });
       return acc;
     }, new Set<string>());

@@ -80,7 +80,6 @@ export class Batch {
   }
 
   add(item: IBatchItem) {
-    console.log("batch add", item)
     this.items.push(item);
   }
 

@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { Collapse } from "react-collapse";
-import { Check, ChevronDown, ExternalLink, Layers } from "react-feather";
+import { Check, ChevronDown, ExternalLink, Layers, XCircle } from "react-feather";
 import { useMoralis } from "react-moralis";
 import { BatchItem } from "../../../components/BatchList/BatchItem";
 import { Totals } from "../../../components/Totals";
@@ -28,9 +28,7 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
   const { chainId } = useMoralis();
 
   const openExplorer = () => {
-    const href = `${getExplorer(chainId as ChainID)}tx/${
-      item.transaction.hash
-    }`;
+    const href = `${getExplorer(chainId as ChainID)}tx/${item.transaction.hash}`;
     window.open(href, "_blank");
   };
 
@@ -58,13 +56,25 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
             <Flex fontSize="lg" gap={2} alignItems="center">
               <Layers color="var(--chakra-colors-primary-200)" size="1.2em" />
               <Text>{formatNumber(item.batch.length)}</Text>
-              {/* <Flex ml={[0, 2]} fontSize="xs" gap={2} alignItems="center">
-                <Spinner size="sm" speed="1s" />
-                <Text>Pending</Text>
-              </Flex> */}
               <Flex ml={[0, 2]} fontSize="xs" gap={2} alignItems="center">
-                <Check size="1.2em" color="var(--chakra-colors-green-500)" />
-                <Text>Sent</Text>
+                {item.transaction.receipt_status === "1" && (
+                  <>
+                    <Check size="1.2em" color="var(--chakra-colors-green-500)" />
+                    <Text>Sent</Text>
+                  </>
+                )}
+                {item.transaction.receipt_status === "0" && (
+                  <>
+                    <XCircle size="1.2em" color="var(--chakra-colors-red-500)" />
+                    <Text>Failed</Text>
+                  </>
+                )}
+                {item.transaction.receipt_status === "" && (
+                  <>
+                    <Spinner size="sm" speed="1s" />
+                <Text>Pending</Text>
+                  </>
+                )}
               </Flex>
             </Flex>
           </Box>
@@ -124,27 +134,28 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
           <Box
             width={["full", "full", "1px"]}
             my={4}
-            
             borderRightWidth={[0, 0, 2]}
             borderColor="gray.800"
             // borderStyle="dashed"
             borderBottomWidth={[1, 1, 0]}
           ></Box>
-          <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
-            <Text fontSize="xs">Batch list</Text>
-            <Flex
-              fontSize="sm"
-              direction="column"
-              gap={2}
-              maxH="200px"
-              overflow="auto"
-            >
-              {item.batch.map((batch, i) => (
-                <BatchItem key={i} item={batch} readonly />
-              ))}
+          {item.transaction.receipt_status !== "0" && (
+            <Flex direction="column" gap={2} w="full" fontSize="sm" flex="1">
+              <Text fontSize="xs">Batch list</Text>
+              <Flex
+                fontSize="sm"
+                direction="column"
+                gap={2}
+                maxH="200px"
+                overflow="auto"
+              >
+                {item.batch.map((batch, i) => (
+                  <BatchItem key={i} item={batch} readonly />
+                ))}
+              </Flex>
+              <Totals mt={4} totals={item.totals} />
             </Flex>
-            <Totals mt={4} totals={item.totals} />
-          </Flex>
+          )}
         </Flex>
       </Collapse>
     </>

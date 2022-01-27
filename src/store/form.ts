@@ -5,7 +5,7 @@ import { Token } from "../hooks/useERC20Balance";
 import { genDefaultETHToken } from "../utils/defaults";
 import { Batch } from "./batch";
 import { NFT } from "./nfts";
-import { Tokens } from "./prices";
+import { AddressWithBalanceMap, Tokens } from "./prices";
 import { tokensStore } from "./tokens";
 
 export enum AssetType {
@@ -80,6 +80,12 @@ export class Form {
     this.selectedToken = token;
     if (!this.canInputFiat) {
       this.amountInputType = InputType.Token;
+    }
+  }
+
+  setTokenBalance(addressWithBalance: AddressWithBalanceMap) {
+    if(addressWithBalance[this.selectedToken.token_address]){
+      this.selectedToken.balance = addressWithBalance[this.selectedToken.token_address]
     }
   }
 

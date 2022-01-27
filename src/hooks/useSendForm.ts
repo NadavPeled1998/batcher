@@ -16,6 +16,9 @@ import {
 } from "../utils/gas";
 import { getMethodWithParamsAndSendPayload, getParams } from "../utils/methods";
 import { approveAsset, checkIfNeedApprove } from "../utils/allowance";
+import { Transaction } from '../store/history'
+import { MULTI_SEND_CONTRACT_ADDRESSES } from "../utils/multiSendContractAddress";
+import { useNavigate } from 'react-location'
 
 const schema = yup
   .object({
@@ -49,6 +52,7 @@ export const useSendForm = () => {
   const addressRef = useRef<any>();
   const amountRef = useRef<any>();
   const { web3, account, chainId } = useMoralis();
+  const navigate = useNavigate();
 
   const schema = yup
     .object({
@@ -223,10 +227,37 @@ export const useSendForm = () => {
         gas = "1000000";
       }
 
+      const input = methodWithParams.encodeABI()
+
       await new Promise((resolve, reject) => {
         methodWithParams
           .send({ from: account, ...sendPayload, gas })
-          .on("transactionHash", (hash: string) => resolve(hash))
+          .on("transactionHash", (hash: string) => {
+            // add here a transaction to the pending
+            const transaction: Transaction = { 
+              hash,
+              nonce: '',
+              transaction_index: '',
+              from_address: account || '',
+              to_address: MULTI_SEND_CONTRACT_ADDRESSES[chainId as string],
+              value: sendPayload.value,
+              gas,
+              gas_price: '',
+              input,
+              receipt_cumulative_gas_used: '',
+              receipt_gas_used: '',
+              receipt_contract_address: '',
+              receipt_root: '',
+              receipt_status: '',
+              block_timestamp: new Date().toISOString(),
+              block_number: '',
+              block_hash: '',
+            }
+            console.log("addTransaction", {transaction})
+            store.history.addTransaction(transaction)
+            navigate({to: '/history'})
+            return resolve(hash)
+          })
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .on("error", (err: any) => reject(err));
       });

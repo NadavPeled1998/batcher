@@ -44,7 +44,6 @@ export class NFTs {
     const list = nfts
       .filter((nft) => nft.contract_type === "ERC721")
       .map((nft, index) => {
-        // this.setIconUrls(index)
         return {
           token_address: nft.token_address,
           address: nft.token_address,
@@ -57,7 +56,6 @@ export class NFTs {
           amount: nft.amount,
           type: "erc721",
         };
-        // this.setIconUrls(index)
       }) as NFT[];
     this.list = list;
     list.map((nft) => {
@@ -65,6 +63,40 @@ export class NFTs {
         this.setIconUrl(nft.address, nft.id, iconUrl)
       );
     });
+  }
+
+  merge(nfts: ResNFT[]) {
+    const newNfts = nfts.filter(nft => !this.list.find(it => it.token_address === nft.token_address && nft.token_id === it.id))
+    newNfts.map(nft => {
+      this.list.push({
+        token_address: nft.token_address,
+        address: nft.token_address,
+        id: nft.token_id,
+        name: nft.name,
+        symbol: nft.symbol,
+        owner: nft.owner_of,
+        uri: nft.token_uri,
+        block_number: nft.block_number,
+        amount: nft.amount,
+        type: "erc721",
+      })
+      getImage(nft.token_uri).then((iconUrl) =>
+        this.setIconUrl(nft.token_address, nft.token_id, iconUrl)
+      );
+    })
+    const oldNftsIndexes: number[] = []
+    this.list.map((it, index) => {
+      if(!nfts.find(nft => it.token_address === nft.token_address && nft.token_id === it.id)) {
+        oldNftsIndexes.push(index)
+      }
+    })
+    if(oldNftsIndexes.length){
+      const list: any = this.list.slice()
+      oldNftsIndexes.map(index => {
+        list[index] = undefined
+      })
+      this.list = list.filter((it: any) => it)
+    }
   }
 
   get(nftId: string) {

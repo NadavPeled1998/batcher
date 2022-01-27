@@ -83,7 +83,6 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params
                     erc20ABI as any,
                     token.address
                 );
-                console.log("getEstimatedGasLimit 2 erc20", { address: token.address })
                 if (!isThereToken) {
                     isThereToken = true
                     gasLimit += firstTokenAddition
@@ -92,9 +91,7 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params
                     const balance = await erc20Contract.methods
                         .balanceOf(address)
                         .call();
-                    console.log("getEstimatedGasLimit 3 erc20", { balance })
 
-                    console.log({ balance });
                     if (+balance) {
                         gasLimit += existToken;
                     } else {
