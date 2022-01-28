@@ -69,7 +69,7 @@ export const ApproveModal: FC<Props> = observer(
                     maxW="full"
                     overflow="hidden"
                   >
-                    <TokenIcon token={token.symbol} size="30" />
+                    {token.type !== 'erc721' && <TokenIcon token={token.symbol} size="30" />}
                     <Box overflow="hidden">
                       <Text>{token.symbol}</Text>
                       <Ellipsis mt="-0.5" fontSize="xs" color="gray.500">

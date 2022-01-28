@@ -68,14 +68,14 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
     const filteredNfts = !search
       ? nfts
       : nfts.filter((nft) => {
-          const reg = new RegExp(search, "i");
-          return (
-            nft.name.match(reg) ||
-            nft.symbol.match(reg) ||
-            nft.id.match(reg) ||
-            nft.token_address.match(reg)
-          );
-        });
+        const reg = new RegExp(search, "i");
+        return (
+          nft.name.match(reg) ||
+          nft.symbol.match(reg) ||
+          nft.id.match(reg) ||
+          nft.token_address.match(reg)
+        );
+      });
 
     const handleSelect = (nft: NFT) => {
       const key = nftKey(nft);
@@ -138,30 +138,19 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                 {isFetching ? (
                   <Spinner mx="auto" my={4} />
                 ) : (
-                  nftList.map(({ isSelected, nft }, index) => (
-                    <NFTItem
-                      selected={isSelected}
-                      key={index}
-                      w={["45%", "45%", "240px"]}
-                      imageProps={{ h: ["140px", "240px", "240px"] }}
-                      nft={nft}
-                      onSelect={handleSelect}
-                    />
-                  ))
-                  // <NFTList
-                  //   items={nftList}
-                  //   renderer={({ key, style, item: { isSelected, nft } }) => (
-                  //     <NFTItem
-                  //     m={2}
-                  //       key={key}
-                  //       style={style}
-                  //       nft={nft}
-                  //       selected={isSelected}
-                  //       onSelect={handleSelect}
-                  //     />
-                  //   )}
-                  // />
-                )}
+                    nftList
+                      .filter(({ nft }) => !store.batch.items.find(item => item.token.address.toLowerCase() === nft.address?.toLowerCase() && (item.token as NFT).id === nft.id))
+                      .map(({ isSelected, nft }, index) => (
+                        <NFTItem
+                          selected={isSelected}
+                          key={index}
+                          w={["45%", "45%", "240px"]}
+                          imageProps={{ h: ["140px", "240px", "240px"] }}
+                          nft={nft}
+                          onSelect={handleSelect}
+                        />
+                      ))
+                  )}
               </Flex>
             </Flex>
           </ModalBody>
