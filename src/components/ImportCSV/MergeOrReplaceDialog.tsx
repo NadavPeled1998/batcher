@@ -27,7 +27,6 @@ export const MergeOrReplaceDialog: FC<ReplaceDialogProps> = ({
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={onClose}
-      isCentered
     >
       <AlertDialogOverlay>
         <AlertDialogContent bg="gray.800" rounded={24}>
