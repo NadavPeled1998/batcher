@@ -110,8 +110,8 @@ export class Form {
   }
 
   clear() {
-    // this.address = "";
-    // this.amount = 0;
+    this.address = "";
+    this.amount = 0;
     this.selectedNFTs = [];
   }
 
