@@ -52,13 +52,13 @@ export const SendForm: FC = observer(() => {
     externalGasFee,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account, web3 } =
+  const { authenticate, isAuthenticated, isWeb3Enabled, account } =
     useMoralis();
 
   const isConnected = true || (isAuthenticated && isWeb3Enabled && account);
 
   useEffect(() => {
-    if (store.commands.approveCommand.done) setIsApproveModalOpen(true);
+    if (store.commands.approveCommand.done) setIsApproveModalOpen(false);
   }, [store.commands.approveCommand.done]);
 
   return (
