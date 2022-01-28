@@ -146,11 +146,6 @@ export const useSendForm = () => {
     }
   }, [amountController.value, addressController.value]);
 
-  useEffect(() => {
-    store.form.reset();
-    store.batch.clear();
-  }, [account, chainId]);
-
   const focusInput = (shapedErrors: ErrorShape) => {
     if (shapedErrors.address) {
       addressRef.current.focus();

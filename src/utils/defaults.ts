@@ -5,6 +5,7 @@ import { NATIVE_ADDRESS_0xE } from "./network";
 interface IDefaultCurrency {
  symbol: string;
  name: string;
+ logo?: string
 }
 type defaultCurrencies = { [key in string]: IDefaultCurrency };
 
@@ -12,10 +13,12 @@ const DEFAULT_CURRENCIES: defaultCurrencies = {
   '0x4': {
     symbol: "ETH",
     name: "Ethereum",
+    logo: undefined,
   },
   '0xa869': {
     symbol: "AVAX",
     name: "Avalanche-2",
+    logo: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png?1604021818'
   }
 }
 
@@ -27,7 +30,7 @@ export const genDefaultETHToken = (chainId?: string | null): Token => {
     symbol:defaultCurrency?.symbol,
     name: defaultCurrency?.name,
     balance: "0",
-    logo: undefined,
+    logo: defaultCurrency?.logo,
     thumbnail: undefined,
     type: "native",
   };
@@ -41,7 +44,7 @@ export const generateNativeTokenMetaData = (chainId?: string | null): TokenMetaD
     decimals: "18",
     symbol: defaultCurrency?.symbol,
     name: defaultCurrency?.name,
-    logo: undefined,
+    logo: defaultCurrency?.logo,
     thumbnail: undefined,
     type: "native",
   };

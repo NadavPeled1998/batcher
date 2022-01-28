@@ -181,6 +181,11 @@ export const useAccount = () => {
       });
   }, [account, chainId, api, fetchTokensMetaData]);
 
+  useEffect(() => {
+    store.form.reset();
+    store.batch.clear();
+  }, [account, chainId]);
+
   useEffect(fetchBalances, [account, fetchBalances, chainId]);
   useEffect(fetchTransfers, [account, fetchTransfers, chainId]);
   useEffect(fetchERC721Balances, [account, fetchTransfers, chainId]);
