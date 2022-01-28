@@ -1,11 +1,10 @@
-import { extendTheme, ThemeConfig } from "@chakra-ui/react";
+import { extendTheme, ThemeConfig, withDefaultProps } from "@chakra-ui/react";
 import { pSBC } from "./pSBC";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
   useSystemColorMode: false,
 };
-
 
 export const createColors = (color: string) => {
   const colors = {
@@ -22,18 +21,33 @@ export const createColors = (color: string) => {
   return colors;
 };
 
-const theme = extendTheme({
-  config,
-  colors: {
-    primary: createColors("#0095FF"),
-    // primary: createColors("#19BC4F"),
-    muted: createColors("#676C77"),
-    border: createColors("#343B48"),
+const theme = extendTheme(
+  {
+    config,
+    colors: {
+      primary: createColors("#0095FF"),
+      // primary: createColors("#FF075D"),
+      muted: createColors("#676C77"),
+      border: createColors("#343B48"),
+    },
+    fonts: {
+      heading: "Poppins",
+      body: "Poppins",
+    },
+    components: {
+      Button: {
+        defaultProps: {
+          rounded: "full",
+        },
+      },
+    },
   },
-  fonts: {
-    heading: "Poppins",
-    body: "Poppins",
-  },
-});
+  withDefaultProps({
+    defaultProps: {
+      rounded: "full",
+    },
+    components: ["Button"],
+  })
+);
 
 export default theme;

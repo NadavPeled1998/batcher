@@ -17,7 +17,7 @@ export interface BatchItemProps {
 
 export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
   return (
-    <Flex fontSize="sm" alignItems="center" gap={2} w="full" flex={1}>
+    <Flex fontSize="sm" alignItems="center" gap={2} w="full" flex={1} minH="8">
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
       {item.token.type === "erc721" ? (
         <>

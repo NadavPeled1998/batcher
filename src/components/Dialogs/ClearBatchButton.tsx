@@ -6,12 +6,13 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  ButtonProps,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { X } from "react-feather";
 import { store } from "../../store";
 
-export const ClearBatchButton = () => {
+export const ClearBatchButton: FC<ButtonProps> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef<any>();
@@ -30,6 +31,7 @@ export const ClearBatchButton = () => {
         rounded="full"
         leftIcon={<X size="1.2em" />}
         onClick={() => setIsOpen(true)}
+        {...props}
       >
         Clear all
       </Button>

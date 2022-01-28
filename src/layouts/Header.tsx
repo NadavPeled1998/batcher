@@ -61,11 +61,11 @@ export const Header: FC<FlexProps> = (props) => {
               History
             </Text>
           </Tab>
-          <Tab w="50%">
+          {/* <Tab w="50%">
             <Text px={4} color="white">
               Playground
             </Text>
-          </Tab>
+          </Tab> */}
         </TabList>
       </Tabs>
     </Flex>

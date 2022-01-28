@@ -4,19 +4,24 @@ import { FC, useRef } from "react";
 import { CSVDownload, CSVLink } from "react-csv";
 import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
+import { IBatchItem } from "../../store/batch";
 import { NFT } from "../../store/nfts";
 import { TokenMetaData } from "../../store/tokens";
 import { convertBatchToCSV } from "../../utils/csv";
 import { ClearBatchButton } from "../Dialogs/ClearBatchButton";
 import { BatchItem } from "./BatchItem";
 
-export interface IBatchItem {
-  address: string;
-  amount: number;
-  token: TokenMetaData | NFT;
+// export interface IBatchItem {
+//   address: string;
+//   amount: number;
+//   token: TokenMetaData | NFT;
+// }
+export interface BatchListProps {
+  batch?: IBatchItem[];
+  readonly?: boolean;
 }
 
-export const BatchList: FC<{ batch?: IBatchItem[] }> = observer(({ batch }) => {
+export const BatchList: FC<BatchListProps> = observer(({ batch, readonly }) => {
   const items = batch || store.batch.items;
   const listRef = useRef<HTMLDivElement>(null);
   if (!items.length) return null;
@@ -32,7 +37,7 @@ export const BatchList: FC<{ batch?: IBatchItem[] }> = observer(({ batch }) => {
             ({items.length})
           </Text>
         </Text>
-        <ClearBatchButton />
+        <ClearBatchButton hidden={readonly} />
       </Flex>
       <Divider borderColor="gray.700" />
       <Flex direction="column" flex={1}>
@@ -40,21 +45,23 @@ export const BatchList: FC<{ batch?: IBatchItem[] }> = observer(({ batch }) => {
           ref={listRef}
           h="full"
           maxH={["160px", "220px"]}
-          overflowY="scroll"
+          overflowY="auto"
         >
           {items
             .slice()
             .map((item, index) => (
               <Flex alignItems="center" w="full">
                 <Text fontSize="xs">{index + 1}.</Text>
-                <BatchItem key={index} item={item} />
+                <BatchItem key={index} item={item} readonly={readonly} />
               </Flex>
             ))
             .reverse()}
         </Box>
-        <CSVLink data={csvData} filename="batch.csv">
-          Download me
-        </CSVLink>
+        {/* <Box hidden={readonly}>
+          <CSVLink data={csvData} filename="batch.csv">
+            Download me
+          </CSVLink>
+        </Box> */}
       </Flex>
     </Flex>
   );
