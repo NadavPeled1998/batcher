@@ -100,10 +100,7 @@ export const CSVExample = () => {
                     )}
                   </Td>
                   <Td>
-                    {shortenAddress(
-                      "0x3605B2a6Af4364fC3605B2a6c188ca94775d8E2B6F34C405188ca94"
-                    )}{" "}
-                    (ID)
+                      5084
                   </Td>
                 </Tr>
               </Tbody>
