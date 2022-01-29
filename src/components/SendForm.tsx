@@ -67,12 +67,17 @@ export const SendForm: FC = observer(() => {
       direction={["column", "column", "column", "row"]}
       gap={8}
       bg="gray.900"
-      p={[7, 10]}
+      p={[7]}
       h="auto"
       rounded="40px"
       maxW="full"
       mx="auto"
       onSubmit={submit}
+      borderTopWidth={1}
+      borderTopColor="gray.700"
+      // borderBottomWidth={1}
+      borderBottomColor="primary.500"
+      boxShadow="2xl"
     >
       <Flex
         alignItems="center"

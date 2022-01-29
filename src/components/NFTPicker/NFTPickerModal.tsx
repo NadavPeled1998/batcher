@@ -2,6 +2,8 @@ import {
   Box,
   Button,
   Flex,
+  Heading,
+  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -13,6 +15,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -27,6 +30,7 @@ import { NFT } from "../../store/nfts";
 import { NFTList } from "../NFTList/NFTList";
 import { NFTImage } from "./NFTImage";
 import { NFTItem } from "./NFTItem";
+import sadHorsePNG from "../../assets/dragon2.png";
 
 interface NFTListItem {
   isSelected?: boolean;
@@ -77,6 +81,8 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
           );
         });
 
+    const hasNFTs = filteredNfts.length > 0;
+
     const handleSelect = (nft: NFT) => {
       const key = nftKey(nft);
       if (selectedMap[key]) {
@@ -115,7 +121,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
           <ModalCloseButton rounded="full" />
           <ModalBody p={[1, 2, 6]}>
             <Flex direction="column" h="full">
-              <InputGroup size="lg" mb={6} maxW="xl" mx="auto">
+              <InputGroup size="lg" mb={6} maxW="xl" mx="auto" hidden={!hasNFTs}>
                 <InputLeftElement children={<Search />} />
                 <Input
                   rounded="full"
@@ -135,19 +141,26 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                 justifyContent="center"
                 overflowY="auto"
               >
-                {isFetching ? (
-                  <Spinner mx="auto" my={4} />
-                ) : (
-                  nftList.map(({ isSelected, nft }, index) => (
-                    <NFTItem
-                      selected={isSelected}
-                      key={index}
-                      w={["45%", "45%", "240px"]}
-                      imageProps={{ h: ["140px", "240px", "240px"] }}
-                      nft={nft}
-                      onSelect={handleSelect}
-                    />
-                  ))
+                {
+                  isFetching ? (
+                    <Spinner mx="auto" my={4} />
+                  ) : hasNFTs ? (
+                    nftList.map(({ isSelected, nft }, index) => (
+                      <NFTItem
+                        selected={isSelected}
+                        key={index}
+                        w={["45%", "45%", "240px"]}
+                        imageProps={{ h: ["140px", "240px", "240px"] }}
+                        nft={nft}
+                        onSelect={handleSelect}
+                      />
+                    ))
+                  ) : (
+                    <Stack alignItems="center" my="auto">
+                      <Image src={sadHorsePNG} w="200px" maxW="full" />
+                      <Text fontSize="lg">You don't have any NFTs yet.</Text>
+                    </Stack>
+                  )
                   // <NFTList
                   //   items={nftList}
                   //   renderer={({ key, style, item: { isSelected, nft } }) => (
@@ -161,7 +174,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                   //     />
                   //   )}
                   // />
-                )}
+                }
               </Flex>
             </Flex>
           </ModalBody>
@@ -177,6 +190,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
               Cancel
             </Button>
             <Button
+              hidden={!hasNFTs}
               rounded="full"
               colorScheme="primary"
               mx="auto"

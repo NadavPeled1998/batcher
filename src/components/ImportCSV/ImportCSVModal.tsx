@@ -233,7 +233,7 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
                       alignItems="center"
                       pointerEvents={isDragOver ? "none" : "auto"}
                     >
-                      <DownloadCloud size="3em" strokeWidth={1.5} />
+                      <Download size="3em" strokeWidth={1.5} />
                       <Text fontSize="xl" fontWeight={500}>
                         Drag & Drop
                       </Text>
