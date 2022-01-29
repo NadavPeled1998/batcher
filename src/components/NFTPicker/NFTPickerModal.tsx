@@ -156,7 +156,7 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                         ({ nft }) =>
                           !store.batch.items.find(
                             (item) =>
-                              item.token.address.toLowerCase() ===
+                              (item.token.address || (item.token as NFT).token_address ).toLowerCase() ===
                                 nft.address?.toLowerCase() &&
                               (item.token as NFT).id === nft.id
                           )
