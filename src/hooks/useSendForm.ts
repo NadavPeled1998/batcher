@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useRef } from "react";
 import * as yup from "yup";
 import { AddressInput } from "../components/AddressInput";
-import { TokenAmountInput } from "../components/TokenAmountInput";
+import { InputType, TokenAmountInput } from "../components/TokenAmountInput";
 import { TokenPicker } from "../components/TokenPicker/TokenPicker";
 import { NFTPicker } from "../components/NFTPicker/NFTPicker";
 import { store } from "../store";
@@ -82,7 +82,8 @@ export const useSendForm = () => {
           .positive()
           .test("is-enough-balance", `You don't have enough ${store.form.selectedToken.symbol}`, function (value) {
             if(web3) {
-              const total = etherToWei(web3, Number(store.batch.totals[store.form.selectedToken.symbol]?.total || '0') + Number(value || '0'), store.form.selectedToken.decimals)
+              const amount = store.form.amountInputType === InputType.Token ? value : store.form._amount
+              const total = etherToWei(web3, Number(store.batch.totals[store.form.selectedToken.symbol]?.total || '0') + Number(amount || '0'), store.form.selectedToken.decimals)
               return Number(total) <= Number(store.form.selectedToken.balance) 
             }
             return true

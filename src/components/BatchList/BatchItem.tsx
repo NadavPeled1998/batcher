@@ -32,7 +32,9 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
           .then(metadata => {
             if(metadata.token_uri) {
               getImage(metadata.token_uri)
-                .then((iconUrl) => setIconUrl(iconUrl))
+                .then((iconUrl) => {
+                  setIconUrl(iconUrl)
+                })
             }
         })
       }
@@ -57,7 +59,7 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
           <Text>
             {formatNumber(item.amount, 6)}{" "}
             <Text d="inline" fontSize="xs">
-              {item.token.symbol} - {item.token.type}
+              {item.token.symbol}
             </Text>
           </Text>
           <TokenIcon token={item.token as TokenMetaData} size="16" />
@@ -68,7 +70,7 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
         strokeWidth={4}
         color="var(--chakra-colors-primary-200)"
       />
-      <Text>{shortenAddress(item.address)}  - {shortenAddress(item.token.address || '')}</Text>
+      <Text>{shortenAddress(item.address)}</Text>
       <CloseButton
         hidden={readonly}
         rounded="full"
