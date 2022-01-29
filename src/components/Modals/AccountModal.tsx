@@ -61,9 +61,9 @@ export const AccountModal: FC<AccountModalProps> = ({ isOpen, onClose }) => {
           <Stack spacing={4}>
             <HStack justifyContent="space-between">
               <Text fontSize="sm">Connected with Metamask</Text>
-              <Button bg="gray.700" color="white" size="xs" rounded="full">
+              {/* <Button bg="gray.700" color="white" size="xs" rounded="full">
                 Disconnect
-              </Button>
+              </Button> */}
             </HStack>
             <HStack>
               <FeatherWallet />
