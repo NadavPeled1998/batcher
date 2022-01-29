@@ -19,14 +19,25 @@ import { approveAsset, checkIfNeedApprove } from "../utils/allowance";
 import { Transaction } from '../store/history'
 import { MULTI_SEND_CONTRACT_ADDRESSES } from "../utils/multiSendContractAddress";
 import { useNavigate } from 'react-location'
+import { etherToWei } from "../utils/ethereum";
 
 const schema = yup
   .object({
     address: yup
       .string()
+      .test("is-different-address", "You can't send to yourself", function (value) {
+        return value?.toLocaleLowerCase() !== 'account'?.toLocaleLowerCase()
+      })
       .test("is-valid-address", "Invalid address", isValidAddress),
     ...(store.form.assetType === AssetType.Token && {
-      amount: yup.number().required().positive().default(0),
+      amount: yup
+      .number()
+      .required()
+      .positive()
+      .test("is-enough-balance", `You don't have enough balance`, function (value) {
+        return true
+      })
+      .default(0),
     }),
   })
   .required();
@@ -37,6 +48,7 @@ type ErrorShape = {
 };
 
 const createErrors = (errors: any) => {
+  console.log("errors", {errors})
   return errors.inner.reduce((acc: any, err: any) => {
     if (!acc[err.path]) acc[err.path] = {};
     acc[err.path].message = err.message;
@@ -58,9 +70,24 @@ export const useSendForm = () => {
     .object({
       address: yup
         .string()
+        .required()
+        .test("is-different-address", "You can't send to yourself", function (value) {
+          return value?.toLocaleLowerCase() !== account?.toLocaleLowerCase()
+        })
         .test("is-valid-address", "Invalid address", isValidAddress),
       ...(store.form.assetType === AssetType.Token && {
-        amount: yup.number().required().positive().default(0),
+        amount: yup
+          .number()
+          .required()
+          .positive()
+          .test("is-enough-balance", `You don't have enough ${store.form.selectedToken.symbol}`, function (value) {
+            if(web3) {
+              const total = etherToWei(web3, Number(store.batch.totals[store.form.selectedToken.symbol]?.total || '0') + Number(value || '0'), store.form.selectedToken.decimals)
+              return Number(total) <= Number(store.form.selectedToken.balance) 
+            }
+            return true
+          })
+          .default(0),
       }),
     })
     .required();
@@ -118,11 +145,6 @@ export const useSendForm = () => {
       validate();
     }
   }, [amountController.value, addressController.value]);
-
-  useEffect(() => {
-    store.form.reset();
-    store.batch.clear();
-  }, [account, chainId]);
 
   const focusInput = (shapedErrors: ErrorShape) => {
     if (shapedErrors.address) {
@@ -261,7 +283,6 @@ export const useSendForm = () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .on("error", (err: any) => reject(err));
       });
-
       store.form.reset();
       store.batch.clear();
     }

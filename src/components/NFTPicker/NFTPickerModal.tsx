@@ -121,7 +121,13 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
           <ModalCloseButton rounded="full" />
           <ModalBody p={[1, 2, 6]}>
             <Flex direction="column" h="full">
-              <InputGroup size="lg" mb={6} maxW="xl" mx="auto" hidden={!hasNFTs}>
+              <InputGroup
+                size="lg"
+                mb={6}
+                maxW="xl"
+                mx="auto"
+                hidden={!hasNFTs}
+              >
                 <InputLeftElement children={<Search />} />
                 <Input
                   rounded="full"
@@ -145,16 +151,26 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                   isFetching ? (
                     <Spinner mx="auto" my={4} />
                   ) : hasNFTs ? (
-                    nftList.map(({ isSelected, nft }, index) => (
-                      <NFTItem
-                        selected={isSelected}
-                        key={index}
-                        w={["45%", "45%", "240px"]}
-                        imageProps={{ h: ["140px", "240px", "240px"] }}
-                        nft={nft}
-                        onSelect={handleSelect}
-                      />
-                    ))
+                    nftList
+                      .filter(
+                        ({ nft }) =>
+                          !store.batch.items.find(
+                            (item) =>
+                              item.token.address.toLowerCase() ===
+                                nft.address?.toLowerCase() &&
+                              (item.token as NFT).id === nft.id
+                          )
+                      )
+                      .map(({ isSelected, nft }, index) => (
+                        <NFTItem
+                          selected={isSelected}
+                          key={index}
+                          w={["45%", "45%", "240px"]}
+                          imageProps={{ h: ["140px", "240px", "240px"] }}
+                          nft={nft}
+                          onSelect={handleSelect}
+                        />
+                      ))
                   ) : (
                     <Stack alignItems="center" my="auto">
                       <Image src={sadHorsePNG} w="200px" maxW="full" />

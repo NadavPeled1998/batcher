@@ -21,5 +21,5 @@ export const isNative = (address: string) => {
 };
 
 export const getTokenAddressToFetch = (address: string) => {
-  return isNative(address) ? networkConfigs["0x1"].wrapped : address;
+  return isNative(address) ? networkConfigs["0x4"].wrapped : address;
 };
