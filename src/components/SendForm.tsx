@@ -53,10 +53,10 @@ export const SendForm: FC = observer(() => {
     externalGasFee,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account, chainId} =
+  const { authenticate, isAuthenticated, isWeb3Enabled, account, chainId } =
     useMoralis();
 
-  const isConnected = true || (isAuthenticated && isWeb3Enabled && account);
+  const isConnected = isAuthenticated && isWeb3Enabled && account;
 
   useEffect(() => {
     if (store.commands.approveCommand.done) setIsApproveModalOpen(false);
@@ -89,7 +89,13 @@ export const SendForm: FC = observer(() => {
         position="relative"
         bg="gray.900"
       >
-        <ImportCSVButton alignSelf="flex-end" position="absolute" cursor="pointer" top={0} right={0} />
+        <ImportCSVButton
+          alignSelf="flex-end"
+          position="absolute"
+          cursor="pointer"
+          top={0}
+          right={0}
+        />
         <FormControl colorScheme="primary" isInvalid={Boolean(errors.address)}>
           <FormLabel
             fontSize="sm"
@@ -287,7 +293,10 @@ export const SendForm: FC = observer(() => {
             mt="auto"
             variant="ghost"
             rounded="full"
-            disabled={Boolean(errors.address) || !networkConfigs[chainId as string]?.chainName}
+            disabled={
+              Boolean(errors.address) ||
+              !networkConfigs[chainId as string]?.chainName
+            }
             leftIcon={<Layers />}
           >
             Batch

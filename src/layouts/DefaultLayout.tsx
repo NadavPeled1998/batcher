@@ -33,7 +33,7 @@ export const DefaultLayout = () => {
       authenticate();
     }
   }, []);
-  
+
   useEffect(() => {
     if (web3) {
       globals.web3 = web3;
@@ -45,7 +45,7 @@ export const DefaultLayout = () => {
       direction="column"
       h="100vh"
       p={[2, 8]}
-      pt={10}
+      pt={[4, 10]}
       pb={4}
       overflow="auto"
     >
