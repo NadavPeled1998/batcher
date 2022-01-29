@@ -36,7 +36,7 @@ export const EstimatedGas: FC<Props> = observer(
 
     return (
       <Flex
-        hidden={+gasFee > +externalGasFee}
+        hidden={+gasFee >= +externalGasFee}
         alignItems="center"
         justifyContent="center"
         fontSize="sm"
