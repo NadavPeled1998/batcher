@@ -6,13 +6,10 @@ import "./App.css";
 import { routes } from "./routes";
 import { Fonts } from "./theme/Fonts";
 import theme from "./theme/theme";
-import { ToastContainer, Slide } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./theme/react-toastify.css";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from "react-query";

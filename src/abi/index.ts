@@ -1,5 +1,6 @@
 import abiDecoder from "abi-decoder";
 import { TokenType } from "../store/prices";
+import { isNative } from "../utils/address";
 import { NATIVE_ADDRESS_0xE } from "../utils/network";
 import erc20Abi from "./erc20.json";
 import erc721Abi from "./erc721.json";
@@ -50,6 +51,15 @@ const decodeTransfers = (func: DecodedInput) => {
         ...acc[j],
         [PARAMS[i]]: v,
       };
+      if(isNative(acc[j].token_address) || !acc[j].token_address) {
+        acc[j].type = 'native'
+      }
+      else if(func.name.includes('ERC20')) {
+        acc[j].type = 'erc20'
+      }
+      else if(func.name.includes('ERC721')) {
+        acc[j].type = 'erc721'        
+      }
     });
     return acc;
   }, [] as DecodedTransfer[]);
@@ -58,6 +68,7 @@ const decodeTransfers = (func: DecodedInput) => {
 export const decodeInput = (input: string): DecodedTransfer[] | undefined => {
   try {
     const decoded = abiDecoder.decodeMethod(input);
+    console.log("decoded", {decoded})
     return decodeTransfers(decoded);
   } catch (error) {
     return;

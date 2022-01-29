@@ -3,6 +3,7 @@ import Moralis from "moralis";
 import { store } from ".";
 import { DecodedTransfer, decodeInput } from "../abi";
 import { IBatchItem, TotalsMap } from "./batch";
+import { NFT } from "./nfts";
 import { tokensStore } from "./tokens";
 
 export interface Transaction {
@@ -38,15 +39,38 @@ export interface TransactionHistoryListItem {
 }
 
 const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
-  const token = tokensStore.get(decodedTransfer.token_address) || {};
-  return {
-    address: decodedTransfer.receiver,
-    amount: Moralis.Units.FromWei(
-      decodedTransfer.amount,
-      Number(token.decimals) || 18
-    ),
-    token,
-  };
+  if(decodedTransfer.type === 'erc721') {
+    const nft: NFT = { 
+    token_address: decodedTransfer.token_address,
+    address: decodedTransfer.token_address,
+    id: decodedTransfer.amount,
+    name: '', 
+    symbol: '', 
+    owner: '', 
+    uri: '', 
+    block_number: '', 
+    amount: '', 
+    type: 'erc721',
+    }
+
+    return {
+      address: decodedTransfer.receiver,
+      amount: +decodedTransfer.amount,
+      token: nft,
+    };
+  }
+  else {
+    const token = tokensStore.get(decodedTransfer.token_address) || {};
+
+    return {
+      address: decodedTransfer.receiver,
+      amount: Moralis.Units.FromWei(
+        decodedTransfer.amount,
+        Number(token.decimals) || 18
+      ),
+      token,
+    };
+   }
 };
 
 export class TransactionHistory {
