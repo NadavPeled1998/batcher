@@ -29,7 +29,7 @@ export const AccountModal: FC<AccountModalProps> = ({ isOpen, onClose }) => {
   const [state, copyToClipboard] = useCopyToClipboard();
 
   const openExplorer = () => {
-    if (chainId === undefined) {
+    if (chainId === undefined || !networkConfigs[chainId!]) {
       return toast.error("Something went wrong. Please try again later.");
     }
     const url = `${
