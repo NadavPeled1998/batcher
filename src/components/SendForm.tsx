@@ -24,6 +24,7 @@ import { store } from "../store";
 import { AssetType } from "../store/form";
 import { convertBatchToCSV } from "../utils/csv";
 import { formatNumber } from "../utils/currency";
+import { networkConfigs } from "../utils/network";
 import { AddressInput } from "./AddressInput";
 import { ApproveModal } from "./ApproveModal";
 import { BatchList } from "./BatchList/BatchList";
@@ -52,7 +53,7 @@ export const SendForm: FC = observer(() => {
     externalGasFee,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account } =
+  const { authenticate, isAuthenticated, isWeb3Enabled, account, chainId} =
     useMoralis();
 
   const isConnected = true || (isAuthenticated && isWeb3Enabled && account);
@@ -83,7 +84,7 @@ export const SendForm: FC = observer(() => {
         position="relative"
         bg="gray.900"
       >
-        <ImportCSVButton alignSelf="flex-end" position="absolute" top={0} right={0} />
+        <ImportCSVButton alignSelf="flex-end" position="absolute" cursor="pointer" top={0} right={0} />
         <FormControl colorScheme="primary" isInvalid={Boolean(errors.address)}>
           <FormLabel
             fontSize="sm"
@@ -281,7 +282,7 @@ export const SendForm: FC = observer(() => {
             mt="auto"
             variant="ghost"
             rounded="full"
-            disabled={Boolean(errors.address)}
+            disabled={Boolean(errors.address) || !networkConfigs[chainId as string]?.chainName}
             leftIcon={<Layers />}
           >
             Batch
