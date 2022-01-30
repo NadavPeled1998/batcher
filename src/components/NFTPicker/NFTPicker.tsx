@@ -12,10 +12,12 @@ import {
 import { observer } from "mobx-react-lite";
 import { FC, useState } from "react";
 import { PlusCircle, X } from "react-feather";
+import { useMoralis } from "react-moralis";
 import { store } from "../../store";
 import { NFT } from "../../store/nfts";
 import { NFTImage } from "./NFTImage";
 import { TokenPickerModal } from "./NFTPickerModal";
+import { toast } from "react-toastify";
 
 export interface NFTPickerProps extends Omit<BoxProps, "onChange"> {
   onChange?: (nfts: NFT[]) => void;
@@ -25,6 +27,7 @@ export interface NFTPickerProps extends Omit<BoxProps, "onChange"> {
 export const NFTPicker: FC<NFTPickerProps> = observer(
   ({ onChange, value: selectedNFTs = [], ...props }) => {
     const modalController = useDisclosure();
+    const { isAuthenticated } = useMoralis();
     const { prices } = store.tokens;
 
     const removeNFT = (nft: NFT) => {
@@ -33,6 +36,15 @@ export const NFTPicker: FC<NFTPickerProps> = observer(
 
     const clearNFTs = () => {
       onChange?.([]);
+    };
+
+    const openModal = () => {
+      if (!isAuthenticated) {
+        return toast.info("Connect wallet to see your NFTs", {
+          hideProgressBar: true,
+        });
+      }
+      modalController.onOpen();
     };
 
     return (
@@ -140,7 +152,7 @@ export const NFTPicker: FC<NFTPickerProps> = observer(
               <>
                 <Box
                   variant="ghost"
-                  onClick={modalController.onOpen}
+                  onClick={openModal}
                   d="flex"
                   rounded="3xl"
                   alignItems="center"

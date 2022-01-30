@@ -38,12 +38,11 @@ export class Tokens {
   }
 
   async fetchTokensMetaData(addresses: string[], chainId: ChainID) {
-    const unfetched = this.filterUnfetched(addresses);
-    if (unfetched.length === 0) return console.log("all tokens are fetched");
-
+    const unFetched = this.filterUnfetched(addresses);
+    if (unFetched.length === 0) return;
     const [tokens, error] = await awesomePromise(
       Moralis.Web3API.token.getTokenMetadata({
-        addresses: unfetched,
+        addresses: unFetched,
         chain: chainId,
       })
     );
@@ -68,7 +67,7 @@ export class Tokens {
   }
 
   get(address: string) {
-    return this.tokensMap[address];
+    return this.tokensMap[address?.toLowerCase()];
   }
 
   getBySymbol(symbol: string) {

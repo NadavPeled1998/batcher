@@ -95,6 +95,7 @@ export const useAccount = () => {
     },
     [chainId]
   );
+
   const fetchBalances = useCallback(() => {
     if (!account) return;
 
@@ -154,8 +155,6 @@ export const useAccount = () => {
           if (nft.contract_type === "ERC721") return nft;
         });
 
-        console.log("erc721Addresses:", erc721Addresses);
-
         store.nfts.set(erc721Addresses as ResNFT[]);
       });
   }, [account, chainId, api]);
@@ -185,6 +184,12 @@ export const useAccount = () => {
     store.form.reset();
     store.batch.clear();
   }, [account, chainId]);
+
+  useEffect(() => {
+    if(chainId) {
+      store.tokens.setNative(chainId);
+    }
+  }, [chainId])
 
   useEffect(fetchBalances, [account, fetchBalances, chainId]);
   useEffect(fetchTransfers, [account, fetchTransfers, chainId]);

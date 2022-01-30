@@ -196,7 +196,6 @@ export const convertCSVToBatch = async (file: File) => {
     };
 
     if (!item.row.validation.valid) {
-      console.log("item.row.validation.valid:", item);
       errors.push(new CSVError(item.row));
     }
 

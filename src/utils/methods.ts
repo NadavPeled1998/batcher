@@ -3,6 +3,7 @@ import { store } from "../store";
 import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
 import multiSendABI from '../abi/multiSend.json'
+import { MULTI_SEND_CONTRACT_ADDRESSES } from "./multiSendContractAddress";
 
 export const getParams = (web3: MoralisType.Web3 | null) => {
     let isSendERC20 = false;
@@ -15,6 +16,7 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
     let value = "";
 
     if (web3) {
+        console.log("sendTransaction getParams batch items", {items: store.batch.items})
         store.batch.items.forEach((item) => {
             // push to receivers
             receivers.push(item.address);
@@ -35,7 +37,7 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
                 );
                 addresses.push("0x0000000000000000000000000000000000000000");
             } else {
-                addresses.push(item.token.address);
+                addresses.push(item.token.address || (item.token as NFT).token_address);
             }
 
             if (item.token.type === "erc20") {
@@ -59,10 +61,10 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
     };
 };
 
-export const getMethodWithParamsAndSendPayload: (web3: MoralisType.Web3 | null) => {
+export const getMethodWithParamsAndSendPayload: (web3: MoralisType.Web3 | null, multiSendContractAddress: string) => {
     methodWithParams: any;
     sendPayload: any;
-} = (web3) => {
+} = (web3, multiSendContractAddress) => {
     const {
         isSendERC20,
         isSendERC721,
@@ -77,7 +79,7 @@ export const getMethodWithParamsAndSendPayload: (web3: MoralisType.Web3 | null) 
         const multiSendContract = new web3.eth.Contract(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             multiSendABI as any,
-            "0xa679356125A6d1EE8807904adF72ef3BDa2f9aD9"
+            multiSendContractAddress
         );
         if (isSendERC721 && isSendERC20) {
             return {

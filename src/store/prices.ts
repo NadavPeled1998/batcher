@@ -46,16 +46,16 @@ export class Prices {
   }
 
   get(address: string) {
-    return this.map[address];
+    return this.map[address?.toLowerCase()];
   }
 
   add(tokenPrice: TokenPrice | TokenPrice[]) {
     if (Array.isArray(tokenPrice)) {
       tokenPrice.forEach((t) => {
-        this.map[t.address] = t;
+        this.map[t.address.toLowerCase()] = t;
       });
     } else {
-      this.map[tokenPrice.address] = tokenPrice;
+      this.map[tokenPrice.address.toLowerCase()] = tokenPrice;
     }
   }
 
@@ -70,7 +70,6 @@ export class Prices {
       const tokenPrices: TokenPrice[] = []
 
       tokens.map(token => {
-        console.log("prices on run", res[token.name], res[token.name.toLowerCase()]?.usd, token.name, token)
         const usdPrice = +res[token.name.toLowerCase()]?.usd || +res[token.symbol.toLowerCase()]?.usd
         if (usdPrice) {
           tokenPrices.push({
@@ -86,7 +85,6 @@ export class Prices {
       return tokenPrices
     }
     catch {
-      console.log("prices fetch failed")
       return []
     }
   }
@@ -161,6 +159,18 @@ export class Tokens {
     makeAutoObservable(this);
   }
 
+  setNative(chainId: string, token?: Token) {
+    if(token) {
+      this.native = token
+    }
+    else {
+      const defaultToken = genDefaultETHToken(chainId)
+      if(defaultToken) {
+        this.native = genDefaultETHToken(chainId)
+      }
+    }
+  }
+
   set(tokens: Token[]) {
     this.list = [
       ...tokens.map((token: Token) => {
@@ -177,7 +187,6 @@ export class Tokens {
       if(addressWithBalance[token.token_address]) {
         token.balance = addressWithBalance[token.token_address]
       }
-      console.log("setBalances", {address: token.token_address,token})
       return token
     })
     this.list = newList

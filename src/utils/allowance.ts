@@ -24,9 +24,7 @@ export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account:
                 .allowance(account, MULTI_SEND_CONTRACT_ADDRESS)
                 .call();
 
-            const total =
-                (totals[erc20.symbol]?.total || 0) + (Number(amount) || 0);
-            console.log("checkIfNeedApprove", { total, allowance });
+            const total = (totals[erc20.symbol]?.total || 0) + (Number(amount) || 0);
             if (+allowance < +etherToWei(web3, total, erc20.decimals)) {
                 addToNeedsApproveMap(erc20.token_address, erc20);
             } else {
@@ -53,7 +51,7 @@ export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account:
     }
 };
 
-export const approveAsset = (web3: MoralisType.Web3 | null, account: string | null, token: Token | NFT) => {
+export const approveAsset = (web3: MoralisType.Web3 | null, account: string | null, token: Token | NFT, spender: string ) => {
     const { setApproveToken } = store.batch;
     const { approveCommand } = store.commands
     if(web3) {
@@ -63,9 +61,10 @@ export const approveAsset = (web3: MoralisType.Web3 | null, account: string | nu
                 erc20ABI as any,
                 token.token_address
             );
+            // need to change to the object
             erc20Contract.methods
                 .approve(
-                    "0xa679356125A6d1EE8807904adF72ef3BDa2f9aD9",
+                    spender,
                     "115792089237316195423570985008687907853269984665640564039457584007913129639935"
                 )
                 .send({ from: account })
@@ -84,9 +83,10 @@ export const approveAsset = (web3: MoralisType.Web3 | null, account: string | nu
                 erc721ABI as any,
                 token.token_address
             );
+            // need to change to the object
             erc721Contract.methods
                 .setApprovalForAll(
-                    "0xa679356125A6d1EE8807904adF72ef3BDa2f9aD9",
+                    spender,
                     true
                 )
                 .send({ from: account })

@@ -24,16 +24,15 @@ const location = new ReactLocation();
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <Fonts />
-      <ToastContainer
-        hideProgressBar
-        draggablePercent={20}
-        theme="dark"
-        position="top-center"
-        // transition={Slide}
-      />
       <QueryClientProvider client={queryClient}>
         <MoralisProvider appId={appId} serverUrl={serverUrl}>
+          <Fonts />
+          <ToastContainer
+            hideProgressBar
+            draggablePercent={20}
+            theme="dark"
+            position="top-center"
+          />
           <Router location={location} routes={routes}>
             <Outlet />
           </Router>

@@ -20,14 +20,17 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC, useEffect, useState } from "react";
-import { Download, DownloadCloud, Plus } from "react-feather";
+import { Download, Plus } from "react-feather";
+import { useMoralis } from "react-moralis";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 import { useDropArea } from "react-use";
+import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { IBatchItem } from "../../store/batch";
 import { BatchItemFromCSV, convertCSVToBatch, isCSV } from "../../utils/csv";
-import { CSVErrors, TokenNotFoundError } from "../../utils/errors";
+import { CSVErrors, TokenNotFoundError, NotEnoughBalanceError, SendToYourselfError } from "../../utils/errors";
+import { etherToWei } from "../../utils/ethereum";
 import { BatchList } from "../BatchList/BatchList";
 import { Totals } from "../Totals";
 import { CSVExample } from "./CSVExample";
@@ -42,6 +45,7 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
     const errorModalController = useDisclosure();
     const mergeOrReplaceDialogController = useDisclosure();
     const [file, setFile] = useState<File>();
+    const { web3, account } = useMoralis();
 
     const {
       data: converted,
@@ -64,16 +68,40 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
         if (item.type === "native") return store.tokens.list[0];
         if (item.type === "erc20")
           return store.tokens.list.find(
-            (token) => token.token_address === item.token_address
+            (token) => token.token_address?.toLowerCase() === item.token_address?.toLowerCase()
           );
         if (item.type === "erc721")
-          return store.nfts.get(item.token_address, item.token_id!);
+          return store.nfts.get(item.token_address?.toLowerCase(), item.token_id!);
       };
-
+      const totals: any = {}
       return converted?.baseBatch!.map((item) => {
         const token = getToken(item);
         if (!token) throw new TokenNotFoundError("Token not found", item);
+        if(item.recipient_address?.toLowerCase() === account?.toLowerCase()) throw new SendToYourselfError("Send to yourself", item)
 
+        if(item.type === 'erc721') {
+          if(!totals[token.token_address]) {
+            totals[token.token_address] = []
+          }
+          if(totals[token.token_address].find((tokenId: string) => tokenId === item.token_id)) {
+            throw new NotEnoughBalanceError("You can't send the same NFT twice", item)
+          }
+          else {
+            totals[token.token_address].push(item.token_id)
+          }
+        }
+        else {
+          if(!totals[token.token_address]) {
+            totals[token.token_address] = 0
+          }
+          totals[token.token_address] += Number(item.amount)
+          const erc20 = token as Token
+          if(web3) {
+            if(Number(etherToWei(web3, totals[token.token_address], erc20.decimals)) > Number(erc20.balance)) {
+              throw new NotEnoughBalanceError("Not enough balance", item);
+            } 
+          }
+        }
         return {
           address: item.recipient_address,
           amount: item.amount,

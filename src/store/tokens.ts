@@ -47,8 +47,8 @@ export class Tokens {
   }
 
   async fetchTokensMetaData(addresses: string[], chainId: ChainID) {
-    // const unfetched = this.filterUnFetched(addresses);
-    // if (unfetched.length === 0) return console.log("all tokens are fetched");
+    const unFetched = this.filterUnFetched(addresses);
+    if (unFetched.length === 0) return;
 
     await Moralis.Web3API.token
       .getTokenMetadata({
@@ -59,9 +59,6 @@ export class Tokens {
         const defaultToken = generateNativeTokenMetaData(chainId)
         const defaultToken2 = generateNativeTokenMetaData(chainId)
         defaultToken2.address = NATIVE_ADDRESS_0x0
-
-        console.log("fetchTokensMetaData", [...data, defaultToken, defaultToken2])
-        console.log("fetchTokensMetaData")
         this.add([...data, defaultToken, defaultToken2])
       })
       .catch((e) => console.error("fetch tokens metadata failed", e));
@@ -71,12 +68,12 @@ export class Tokens {
     if (Array.isArray(token)) {
       token.forEach((t) => this.add(t));
     } else {
-      this.tokensMap[token.address] = {  ...token, type: isNative(token.address) ? 'native' : 'erc20'  };
+      this.tokensMap[token.address.toLowerCase()] = {  ...token, type: isNative(token.address.toLowerCase()) ? 'native' : 'erc20'  };
     }
   }
 
   get(address: string) {
-    return this.tokensMap[address];
+    return this.tokensMap[address?.toLowerCase()];
   }
 
   getBySymbol(symbol: string) {

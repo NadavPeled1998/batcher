@@ -68,7 +68,6 @@ const decodeTransfers = (func: DecodedInput) => {
 export const decodeInput = (input: string): DecodedTransfer[] | undefined => {
   try {
     const decoded = abiDecoder.decodeMethod(input);
-    console.log("decoded", {decoded})
     return decodeTransfers(decoded);
   } catch (error) {
     return;

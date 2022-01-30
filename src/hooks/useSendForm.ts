@@ -48,7 +48,6 @@ type ErrorShape = {
 };
 
 const createErrors = (errors: any) => {
-  console.log("errors", {errors})
   return errors.inner.reduce((acc: any, err: any) => {
     if (!acc[err.path]) acc[err.path] = {};
     acc[err.path].message = err.message;
@@ -185,7 +184,8 @@ export const useSendForm = () => {
   };
 
   const getGasFee = async () => {
-    let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload(web3)
+    const multiSendContractAddress = MULTI_SEND_CONTRACT_ADDRESSES[chainId as string]
+    let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload(web3, multiSendContractAddress)
     let gasLimit = ''
     try {
       gasLimit = await getGasLimit({
@@ -229,15 +229,14 @@ export const useSendForm = () => {
     const { approveCommand } = store.commands;
     approveCommand.setRunning();
     Object.values(needsApproveMap).map((token) =>
-      approveAsset(web3, account, token)
+      approveAsset(web3, account, token, MULTI_SEND_CONTRACT_ADDRESSES[chainId as string])
     );
   };
 
   const sendTransaction = async () => {
     if (web3) {
-      let { methodWithParams, sendPayload } =
-        getMethodWithParamsAndSendPayload(web3);
-        console.log('methodWithParams:', methodWithParams)
+      const multiSendContractAddress = MULTI_SEND_CONTRACT_ADDRESSES[chainId as string]
+      let { methodWithParams, sendPayload } = getMethodWithParamsAndSendPayload(web3, multiSendContractAddress);
       let gas = "1000000";
       try {
         gas = await getGasLimit({
@@ -276,7 +275,6 @@ export const useSendForm = () => {
               block_number: '',
               block_hash: '',
             }
-            console.log("addTransaction", {transaction})
             store.history.addTransaction(transaction)
             navigate({to: '/history'})
             return resolve(hash)

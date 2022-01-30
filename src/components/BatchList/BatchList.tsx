@@ -50,7 +50,7 @@ export const BatchList: FC<BatchListProps> = observer(({ batch, readonly }) => {
           {items
             .slice()
             .map((item, index) => (
-              <Flex alignItems="center" w="full">
+              <Flex alignItems="center" w="full" key={index}>
                 <Text fontSize="xs">{index + 1}.</Text>
                 <BatchItem key={index} item={item} readonly={readonly} />
               </Flex>
