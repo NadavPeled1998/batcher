@@ -1,21 +1,12 @@
 import { Box, Divider, Flex, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC, useRef } from "react";
-import { CSVDownload, CSVLink } from "react-csv";
-import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { IBatchItem } from "../../store/batch";
-import { NFT } from "../../store/nfts";
-import { TokenMetaData } from "../../store/tokens";
-import { convertBatchToCSV } from "../../utils/csv";
+// import { convertBatchToCSV } from "../../utils/csv";
 import { ClearBatchButton } from "../Dialogs/ClearBatchButton";
 import { BatchItem } from "./BatchItem";
 
-// export interface IBatchItem {
-//   address: string;
-//   amount: number;
-//   token: TokenMetaData | NFT;
-// }
 export interface BatchListProps {
   batch?: IBatchItem[];
   readonly?: boolean;
@@ -26,7 +17,8 @@ export const BatchList: FC<BatchListProps> = observer(({ batch, readonly }) => {
   const listRef = useRef<HTMLDivElement>(null);
   if (!items.length) return null;
   listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  const csvData = convertBatchToCSV(items);
+  
+  // const csvData = convertBatchToCSV(items);
 
   return (
     <Flex direction="column" gap={2} flex={1}>

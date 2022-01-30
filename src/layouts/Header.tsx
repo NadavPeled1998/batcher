@@ -8,7 +8,6 @@ import {
   Text,
   Button,
   HStack,
-  Box,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FC } from "react";
@@ -29,7 +28,6 @@ enum TabNames {
 const routeIndex: { [key: string]: TabNames } = {
   "/": TabNames.Send,
   "/history": TabNames.History,
-  "/playground": TabNames.Playground,
 };
 
 // invert keys and values of routeIndex
@@ -115,8 +113,6 @@ export const Header: FC<FlexProps> = (props) => {
             )}
           </Flex>
         </Flex>
-        {/* <Img src={logo} w={32} mb={4} /> */}
-
         <Tabs
           w="auto"
           colorScheme="primary"
@@ -138,11 +134,6 @@ export const Header: FC<FlexProps> = (props) => {
                 History
               </Text>
             </Tab>
-            {/* <Tab w="50%">
-            <Text px={4} color="white">
-              Playground
-            </Text>
-          </Tab> */}
           </TabList>
         </Tabs>
       </Flex>

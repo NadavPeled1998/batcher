@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import Moralis from "moralis";
-import { ChainID } from "../hooks/useERC20Balance";
+import { ChainID } from "./prices";
 import { makePersistable } from "mobx-persist-store";
 import { generateNativeTokenMetaData } from "../utils/defaults";
 import { NATIVE_ADDRESS_0x0, NATIVE_ADDRESS_0xE } from "../utils/network";

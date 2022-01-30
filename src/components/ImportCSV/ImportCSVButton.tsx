@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import { FC } from "react";
 import { DownloadCloud, Settings } from "react-feather";
-import { useClickAway } from "react-use";
 import { ImportCSVModal } from "./ImportCSVModal";
 
 export const ImportCSVButton: FC<TextProps> = (props: any) => {

@@ -2,7 +2,6 @@ import { Divider, Flex, FlexProps, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { store } from "../store";
-import { NFT } from "../store/nfts";
 import { TotalsMap } from "../store/batch";
 import { formatNumber } from "../utils/currency";
 interface TotalProps extends FlexProps {

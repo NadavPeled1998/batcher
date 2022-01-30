@@ -3,7 +3,6 @@ import { store } from "../store";
 import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
 import multiSendABI from '../abi/multiSend.json'
-import { MULTI_SEND_CONTRACT_ADDRESSES } from "./multiSendContractAddress";
 
 export const getParams = (web3: MoralisType.Web3 | null) => {
     let isSendERC20 = false;
@@ -16,7 +15,6 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
     let value = "";
 
     if (web3) {
-        console.log("sendTransaction getParams batch items", {items: store.batch.items})
         store.batch.items.forEach((item) => {
             // push to receivers
             receivers.push(item.address);

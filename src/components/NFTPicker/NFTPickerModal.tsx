@@ -1,8 +1,6 @@
 import {
-  Box,
   Button,
   Flex,
-  Heading,
   Image,
   Input,
   InputGroup,
@@ -20,22 +18,14 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { Moralis } from "moralis";
 import { FC, useEffect, useState } from "react";
 import { Search } from "react-feather";
 import { useMap } from "react-use";
-import { Token } from "../../hooks/useERC20Balance";
 import { store } from "../../store";
 import { NFT } from "../../store/nfts";
-import { NFTList } from "../NFTList/NFTList";
-import { NFTImage } from "./NFTImage";
 import { NFTItem } from "./NFTItem";
 import sadHorsePNG from "../../assets/dragon2.png";
 
-interface NFTListItem {
-  isSelected?: boolean;
-  nft: NFT;
-}
 interface TokenPickerModalProps extends ReturnType<typeof useDisclosure> {
   onSelect: (nft: NFT[]) => void;
   selectedNFTs: NFT[];
@@ -177,19 +167,6 @@ export const TokenPickerModal: FC<TokenPickerModalProps> = observer(
                       <Text fontSize="lg">You don't have any NFTs yet.</Text>
                     </Stack>
                   )
-                  // <NFTList
-                  //   items={nftList}
-                  //   renderer={({ key, style, item: { isSelected, nft } }) => (
-                  //     <NFTItem
-                  //     m={2}
-                  //       key={key}
-                  //       style={style}
-                  //       nft={nft}
-                  //       selected={isSelected}
-                  //       onSelect={handleSelect}
-                  //     />
-                  //   )}
-                  // />
                 }
               </Flex>
             </Flex>

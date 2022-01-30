@@ -1,8 +1,6 @@
 import {
-  Badge,
   Box,
   Button,
-  Divider,
   Flex,
   Spinner,
   Text,
@@ -13,7 +11,7 @@ import { Check, ChevronDown, ExternalLink, Layers, XCircle } from "react-feather
 import { useMoralis } from "react-moralis";
 import { BatchItem } from "../../../components/BatchList/BatchItem";
 import { Totals } from "../../../components/Totals";
-import { ChainID } from "../../../hooks/useERC20Balance";
+import { ChainID } from "../../../store/prices";
 import { TransactionHistoryListItem } from "../../../store/history";
 import { shortenAddress } from "../../../utils/address";
 import { formatNumber } from "../../../utils/currency";
@@ -136,7 +134,6 @@ export const HistoryListItem: FC<Props> = ({ item }) => {
             my={4}
             borderRightWidth={[0, 0, 2]}
             borderColor="gray.800"
-            // borderStyle="dashed"
             borderBottomWidth={[1, 1, 0]}
           ></Box>
           {item.transaction.receipt_status !== "0" && (

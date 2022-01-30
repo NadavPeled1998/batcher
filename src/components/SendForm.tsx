@@ -22,7 +22,7 @@ import { useBatchListFocuser } from "../hooks/useBatchListFocuser";
 import { useSendForm } from "../hooks/useSendForm";
 import { store } from "../store";
 import { AssetType } from "../store/form";
-import { convertBatchToCSV } from "../utils/csv";
+// import { convertBatchToCSV } from "../utils/csv";
 import { formatNumber } from "../utils/currency";
 import { networkConfigs } from "../utils/network";
 import { AddressInput } from "./AddressInput";

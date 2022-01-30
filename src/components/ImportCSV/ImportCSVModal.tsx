@@ -25,7 +25,7 @@ import { useMoralis } from "react-moralis";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 import { useDropArea } from "react-use";
-import { Token } from "../../hooks/useERC20Balance";
+import { Token } from "../../store/prices";
 import { store } from "../../store";
 import { IBatchItem } from "../../store/batch";
 import { BatchItemFromCSV, convertCSVToBatch, isCSV } from "../../utils/csv";
@@ -76,7 +76,12 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
       const totals: any = {}
       return converted?.baseBatch!.map((item) => {
         const token = getToken(item);
-        if (!token) throw new TokenNotFoundError("Token not found", item);
+        if (!token) {
+          if(item.type === "erc721") {
+            throw new TokenNotFoundError("NFT not found", item)
+          }
+          throw new TokenNotFoundError("Token not found", item)
+        }
         if(item.recipient_address?.toLowerCase() === account?.toLowerCase()) throw new SendToYourselfError("Send to yourself", item)
 
         if(item.type === 'erc721') {

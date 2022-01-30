@@ -9,9 +9,7 @@ import {
   Box,
   useDisclosure,
   Collapse,
-  Text,
-  HStack,
-  Stack,
+  Text
 } from "@chakra-ui/react";
 import { ChevronDown } from "react-feather";
 import { shortenAddress } from "../../utils/address";
@@ -59,7 +57,7 @@ export const CSVExample = () => {
                       Native token example
                     </Flex>
                     {shortenAddress(
-                      "0xAf4364fC3605B2a6c188ca94775d8E2B6F34C405"
+                      "0x0BA244e54b39A5Ff9e7cDCf9435Ff85eB5A9e161"
                     )}
                   </Td>
                   <Td>1.5</Td>
@@ -72,7 +70,7 @@ export const CSVExample = () => {
                       ERC20 token example
                     </Flex>
                     {shortenAddress(
-                      "0xAf4364fC3605B2a6c188ca94775d8E2B6F34C405"
+                      "0x0BA244e54b39A5Ff9e7cDCf9435Ff85eB5A9e161"
                     )}
                   </Td>
                   <Td>121</Td>
@@ -90,7 +88,7 @@ export const CSVExample = () => {
                       ERC721 (NFT) example
                     </Flex>
                     {shortenAddress(
-                      "0xAf4364fC3605B2a6c188ca94775d8E2B6F34C405"
+                      "0x0BA244e54b39A5Ff9e7cDCf9435Ff85eB5A9e161"
                     )}
                   </Td>
                   <Td></Td>

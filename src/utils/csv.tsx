@@ -1,20 +1,8 @@
 import { IBatchItem } from "../store/batch";
-import { NFT, nftsStore } from "../store/nfts";
-import { TokenMetaData, tokensStore } from "../store/tokens";
+import { NFT } from "../store/nfts";
 import { isNative, isValidAddress } from "./address";
 import csv from "csvtojson";
 import { TokenType } from "../store/prices";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  CloseButton,
-  Code,
-  Flex,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
 import { CSVError, CSVErrors } from "./errors";
 
 export const isCSV = (file: File) => {

@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
-import { Check, X } from "react-feather";
+import { Check } from "react-feather";
 import { store } from "../store";
 import { Ellipsis } from "./Ellipsis";
 import { TokenIcon } from "./TokenPicker/TokenIcon";

@@ -2,15 +2,13 @@ import {
   Box,
   BoxProps,
   Button,
-  CloseButton,
-  Divider,
   Flex,
   Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { PlusCircle, X } from "react-feather";
 import { useMoralis } from "react-moralis";
 import { store } from "../../store";

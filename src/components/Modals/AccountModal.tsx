@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { FC, useEffect } from "react";
-import { Copy, Download, ExternalLink } from "react-feather";
+import { Copy, ExternalLink } from "react-feather";
 import { useMoralis } from "react-moralis";
 import { toast } from "react-toastify";
 import { useCopyToClipboard } from "react-use";
@@ -25,7 +25,7 @@ import { networkConfigs } from "../../utils/network";
 interface AccountModalProps extends ReturnType<typeof useDisclosure> {}
 
 export const AccountModal: FC<AccountModalProps> = ({ isOpen, onClose }) => {
-  const { account, web3, chainId } = useMoralis();
+  const { account, chainId } = useMoralis();
   const [state, copyToClipboard] = useCopyToClipboard();
 
   const openExplorer = () => {
@@ -90,7 +90,7 @@ export const AccountModal: FC<AccountModalProps> = ({ isOpen, onClose }) => {
                 leftIcon={<ExternalLink size="1.2em" />}
                 onClick={openExplorer}
               >
-                <Text>View on etherscan</Text>
+                <Text>View on explorer</Text>
               </Button>
             </HStack>
           </Stack>

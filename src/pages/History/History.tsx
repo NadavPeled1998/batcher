@@ -10,7 +10,6 @@ export const History = observer(() => {
     <Flex direction="column" w="900px" maxW="full" mx="auto">
       <Flex
         direction="column"
-        // bg="gray.900"
         w="full"
         mx="auto"
         px={[2, 4]}
@@ -26,12 +25,6 @@ export const History = observer(() => {
         <Text color="gray.500" fontSize="xs">
           Here you can see all the batches you have sent
         </Text>
-        {/* <Flex gap={2} fontSize="sm" alignItems="center">
-          <Text rounded="full" color="primary.200">
-            10/15/21
-          </Text>
-          <ChevronDown color="var(--chakra-colors-primary-200)" size="1.2em" />
-        </Flex> */}
       </Flex>
       <Flex
         hidden={!store.history.isFetching}

@@ -1,4 +1,4 @@
-import { ChainID } from "../hooks/useERC20Balance";
+import { ChainID } from "../store/prices";
 
 export const NATIVE_ADDRESS_0xE: string =
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";

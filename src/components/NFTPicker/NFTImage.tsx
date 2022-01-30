@@ -1,7 +1,6 @@
 import { Flex, Image, ImageProps, Spinner } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { NFT } from "../../store/nfts";
-import { DEFAULT_IMAGE } from "../../utils/nft";
 import fallBackImg from "../../assets/image.svg";
 interface NFTImageProps extends ImageProps {
   nft?: NFT;

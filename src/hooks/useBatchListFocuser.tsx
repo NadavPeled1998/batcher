@@ -1,6 +1,5 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { ChevronsDown, PlusCircle } from "react-feather";
 import { useInView } from "react-intersection-observer";
 import { toast } from "react-toastify";
 import { LottieArrowDown } from "../assets/lottie-animations/LottieArrowDown/LottieArrowDown";

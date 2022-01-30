@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import { store } from "../store";
 import { genDefaultETHToken } from "../utils/defaults";
-import { ChainID } from "./useERC20Balance";
+import { ChainID } from "../store/prices";
 import multiSendAbi from "../abi/multiSend.json";
 import erc721Abi from "../abi/erc721.json";
 import * as abiDecoder from "abi-decoder";
@@ -146,7 +146,7 @@ export const useAccount = () => {
 
     api.account
       .getNFTs({
-        address: account, // "0x299c92988198a5965111537797cc1789a5d7e336" || account,
+        address: account,
         chain: chainId as ChainID,
       })
       .then((NFTs) => {

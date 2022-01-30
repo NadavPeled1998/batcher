@@ -1,11 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import { Token } from "../hooks/useERC20Balance";
-
-interface Command {
-  running: boolean;
-  done: boolean;
-  failed: boolean;
-}
 export class CMD {
   constructor() {
     makeAutoObservable(this);
@@ -38,12 +31,6 @@ export class CMD {
 }
 
 export class Commands {
-  // approveCommand: Command = {
-  //   running: false,
-  //   done: false,
-  //   failed: false,
-  // };
-
   approveCommand: CMD = new CMD();
 
   constructor() {

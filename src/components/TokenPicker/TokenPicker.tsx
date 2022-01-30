@@ -4,14 +4,13 @@ import {
   Spinner,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { ChevronDown } from "react-feather";
 import { useMoralis } from "react-moralis";
-import { Token } from "../../hooks/useERC20Balance";
+import { Token } from "../../store/prices";
 import { store } from "../../store";
 import { TokenIcon } from "./TokenIcon";
 import { TokenPickerModal } from "./TokenPickerModal";

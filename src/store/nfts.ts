@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import Moralis from "moralis";
-import { ChainID } from "../hooks/useERC20Balance";
+import { ChainID } from "./prices";
 import { getImage } from "../utils/nft";
 
 export interface NFT {

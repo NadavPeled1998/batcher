@@ -1,15 +1,29 @@
 import { makeAutoObservable } from "mobx";
 import { Moralis } from "moralis";
-import { ChainID, Token } from "../hooks/useERC20Balance";
 import { getTokenAddressToFetch, isNative } from "../utils/address";
 import { CHAINS } from "../utils/chain";
 import { genDefaultETHToken } from "../utils/defaults";
-
+import {
+  UseNativeBalancesParams
+} from "react-moralis";
 interface TokenPriceFetchStatus {
   succeed?: boolean;
   failed?: boolean;
   error?: any;
 }
+
+export type ChainID = UseNativeBalancesParams["chain"];
+export interface Token {
+  token_address: string;
+  name: string;
+  symbol: string;
+  logo?: string | undefined;
+  thumbnail?: string | undefined;
+  decimals: string;
+  balance: string;
+  type?: string // 'native' | 'erc20' | 'erc721'
+}
+
 
 export type TokenType = "native" | "erc20" | "erc721";
 

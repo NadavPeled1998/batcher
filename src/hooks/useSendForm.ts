@@ -20,6 +20,8 @@ import { Transaction } from '../store/history'
 import { MULTI_SEND_CONTRACT_ADDRESSES } from "../utils/multiSendContractAddress";
 import { useNavigate } from 'react-location'
 import { etherToWei } from "../utils/ethereum";
+import { NFT } from "../store/nfts";
+import { Token } from "../store/prices";
 
 const schema = yup
   .object({
@@ -214,7 +216,7 @@ export const useSendForm = () => {
           ? [store.form.selectedToken]
           : store.form.selectedNFTs) || [];
 
-      tokens.forEach(async (token) => {
+      tokens.forEach(async (token: Token | NFT) => {
         checkIfNeedApprove(web3, account, chainId, token, String(store.form.amount));
       });
     }

@@ -18,7 +18,7 @@ import { observer } from "mobx-react-lite";
 import { Moralis } from "moralis";
 import { FC } from "react";
 import { Search } from "react-feather";
-import { Token } from "../../hooks/useERC20Balance";
+import { Token } from "../../store/prices";
 import { store } from "../../store";
 import { TokenIcon } from "./TokenIcon";
 

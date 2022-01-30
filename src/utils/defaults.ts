@@ -1,6 +1,8 @@
-import { Token } from "../hooks/useERC20Balance";
+import { ReactNode } from "react";
+import { Token } from "../store/prices";
 import { TokenMetaData } from "../store/tokens";
 import { NATIVE_ADDRESS_0xE } from "./network";
+import avaxIcon from '../assets/avax.png' 
 
 interface IDefaultCurrency {
  symbol: string;
@@ -18,12 +20,12 @@ const DEFAULT_CURRENCIES: defaultCurrencies = {
   '0xa869': {
     symbol: "AVAX",
     name: "Avalanche-2",
-    logo: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png?1604021818'
+    logo: avaxIcon
   },
   '0xa86a': {
     symbol: "AVAX",
     name: "Avalanche-2",
-    logo: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png?1604021818'
+    logo: avaxIcon
   }
 }
 

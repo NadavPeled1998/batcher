@@ -2,7 +2,7 @@ import MoralisType from "moralis";
 import { store } from "../store";
 import erc20ABI from '../abi/erc20.json'
 import erc721ABI from '../abi/erc721.json'
-import { Token } from "../hooks/useERC20Balance";
+import { Token } from "../store/prices";
 import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
 import { MULTI_SEND_CONTRACT_ADDRESSES } from "./multiSendContractAddress";

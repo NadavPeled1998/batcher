@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Moralis from "moralis";
 import { InputType } from "../components/TokenAmountInput";
-import { Token } from "../hooks/useERC20Balance";
+import { Token } from "./prices";
 import { genDefaultETHToken } from "../utils/defaults";
 import { Batch } from "./batch";
 import { NFT } from "./nfts";

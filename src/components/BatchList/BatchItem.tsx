@@ -11,7 +11,7 @@ import { shortenAddress } from "../../utils/address";
 import { formatNumber } from "../../utils/currency";
 import { NFTImage } from "../NFTPicker/NFTImage";
 import { TokenIcon } from "../TokenPicker/TokenIcon";
-import { ChainID } from "../../hooks/useERC20Balance";
+import { ChainID } from "../../store/prices";
 import { getImage } from "../../utils/nft";
 
 export interface BatchItemProps {
