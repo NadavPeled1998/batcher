@@ -19,6 +19,11 @@ const DEFAULT_CURRENCIES: defaultCurrencies = {
     symbol: "AVAX",
     name: "Avalanche-2",
     logo: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png?1604021818'
+  },
+  '0xa86a': {
+    symbol: "AVAX",
+    name: "Avalanche-2",
+    logo: 'https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png?1604021818'
   }
 }
 
