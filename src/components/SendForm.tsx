@@ -53,8 +53,7 @@ export const SendForm: FC = observer(() => {
     externalGasFee,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account, chainId } =
-    useMoralis();
+  const { authenticate, isAuthenticated, isWeb3Enabled, account, chainId } = useMoralis();
 
   const isConnected = isAuthenticated && isWeb3Enabled && account;
 
