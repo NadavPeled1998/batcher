@@ -24,9 +24,11 @@ export const DefaultLayout = () => {
   }, [isAuthenticated, isWeb3Enabled, isWeb3EnableLoading]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      authenticate();
-    }
+    ;(async function connectInjected() {
+      if (!isAuthenticated) {
+        await authenticate()
+      }
+    })()
   }, []);
 
   return (

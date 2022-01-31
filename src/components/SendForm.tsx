@@ -53,9 +53,9 @@ export const SendForm: FC = observer(() => {
     externalGasFee,
   } = useSendForm();
 
-  const { authenticate, isAuthenticated, isWeb3Enabled, account, chainId } = useMoralis();
+  const { authenticate, isAuthenticated, account, chainId } = useMoralis();
 
-  const isConnected = isAuthenticated && isWeb3Enabled && account;
+  const isConnected = isAuthenticated && account;
 
   useEffect(() => {
     if (store.commands.approveCommand.done) setIsApproveModalOpen(false);
@@ -310,7 +310,7 @@ export const SendForm: FC = observer(() => {
             size="lg"
             disabled={Boolean(errors.address)}
             leftIcon={<FeatherWallet size="1.2em" />}
-            onClick={() => authenticate()}
+            onClick={async () => await authenticate()}
           >
             Connect wallet
           </Button>

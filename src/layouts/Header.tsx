@@ -106,7 +106,7 @@ export const Header: FC<FlexProps> = (props) => {
                 rounded="full"
                 size="md"
                 leftIcon={<FeatherWallet size="1.2em" />}
-                onClick={() => authenticate()}
+                onClick={async () => await authenticate()}
               >
                 Connect wallet
               </Button>
