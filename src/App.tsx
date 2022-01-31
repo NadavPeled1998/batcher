@@ -17,8 +17,8 @@ import {
 const queryClient = new QueryClient();
 // const serverUrl = process.env.REACT_APP_MORALIS_SERVER_URL!;
 // const appId = process.env.REACT_APP_MORALIS_APP_ID!;
-const serverUrl = "https://zbqogacyxxx7.usemoralis.com:2053/server";
-const appId = "jKZDa5G9DdnPSzGR4akqUG5pJ6G8Jh9efZWBgT2D";
+const serverUrl =  process.env.REACT_APP_MORALIS_SERVER_URL as string;
+const appId = process.env.REACT_APP_MORALIS_APP_ID as string;
 
 const location = new ReactLocation();
 function App() {
