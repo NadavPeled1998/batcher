@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { store } from "../store";
 import { TotalsMap } from "../store/batch";
+import { NFT } from "../store/nfts";
 import { formatNumber } from "../utils/currency";
 interface TotalProps extends FlexProps {
   totals?: TotalsMap;
@@ -54,7 +55,7 @@ export const Totals: FC<TotalProps> = observer(({ totals, ...props }) => {
               <Text fontSize="xs">
                 ($
                 {formatNumber(
-                  total * store.tokens.prices.get(token!.address)?.usdPrice || 0
+                  total * (store.tokens.prices.get(token.address || (token as NFT).token_address)?.usdPrice || 0)
                 )}
                 )
               </Text>
