@@ -37,6 +37,7 @@ import { CSVExample } from "./CSVExample";
 import { ErrorModal } from "./ErrorModal";
 import { InputFileButton } from "./InputFileButton";
 import { MergeOrReplaceDialog } from "./MergeOrReplaceDialog";
+import { checkIfNeedApprove } from "../../utils/allowance";
 
 interface ImportCSVModalProps extends ReturnType<typeof useDisclosure> {}
 
@@ -45,7 +46,7 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
     const errorModalController = useDisclosure();
     const mergeOrReplaceDialogController = useDisclosure();
     const [file, setFile] = useState<File>();
-    const { web3, account } = useMoralis();
+    const { web3, account, chainId } = useMoralis();
 
     const {
       data: converted,
@@ -107,6 +108,9 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
             } 
           }
         }
+
+        checkIfNeedApprove(web3, account, chainId, token, String(item.amount));
+
         return {
           address: item.recipient_address,
           amount: item.amount,
