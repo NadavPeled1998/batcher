@@ -6,6 +6,7 @@ import { genDefaultETHToken } from "../utils/defaults";
 import {
   UseNativeBalancesParams
 } from "react-moralis";
+import { tokenMetaDataType } from "./tokens";
 interface TokenPriceFetchStatus {
   succeed?: boolean;
   failed?: boolean;
@@ -21,11 +22,8 @@ export interface Token {
   thumbnail?: string | undefined;
   decimals: string;
   balance: string;
-  type?: string // 'native' | 'erc20' | 'erc721'
+  type?:  tokenMetaDataType
 }
-
-
-export type TokenType = "native" | "erc20" | "erc721";
 
 export interface TokenPrice {
   fetchStatus?: TokenPriceFetchStatus;
@@ -83,7 +81,7 @@ export class Prices {
 
       const tokenPrices: TokenPrice[] = []
 
-      tokens.map(token => {
+      tokens.forEach(token => {
         const usdPrice = +res[token.name.toLowerCase()]?.usd || +res[token.symbol.toLowerCase()]?.usd
         if (usdPrice) {
           tokenPrices.push({
@@ -190,7 +188,7 @@ export class Tokens {
       ...tokens.map((token: Token) => {
         return {
           ...token,
-          type: isNative(token.token_address) ? "native" : "erc20",
+          type: isNative(token.token_address) ? tokenMetaDataType.NATIVE : tokenMetaDataType.ERC20,
         };
       }),
     ];

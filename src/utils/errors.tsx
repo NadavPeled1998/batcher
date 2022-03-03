@@ -13,6 +13,7 @@ import {
 import { HelpCircle } from "react-feather";
 import { BatchItemFromCSV } from "./csv";
 import { store } from "../store";
+import { tokenMetaDataType } from "../store/tokens";
 
 export class NotEnoughBalanceError {
   constructor(
@@ -24,15 +25,15 @@ export class NotEnoughBalanceError {
   }
   get jsx() {
     let token: any = {}
-    if (this.item.type === "native") {
+    if (this.item.type === tokenMetaDataType.NATIVE) {
       token = store.tokens.list[0];
     }
-    if (this.item.type === "erc20") {
+    if (this.item.type === tokenMetaDataType.ERC20) {
       token = store.tokens.list.find(
         (token) => token.token_address?.toLowerCase() === this.item.token_address?.toLowerCase()
       )
     }
-    if (this.item.type === "erc721") {
+    if (this.item.type === tokenMetaDataType.ERC721) {
       token = store.nfts.get(this.item.token_address?.toLowerCase(), this.item.token_id!);
     }
     return (

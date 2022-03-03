@@ -38,6 +38,7 @@ import { ErrorModal } from "./ErrorModal";
 import { InputFileButton } from "./InputFileButton";
 import { MergeOrReplaceDialog } from "./MergeOrReplaceDialog";
 import { checkIfNeedApprove } from "../../utils/allowance";
+import { tokenMetaDataType } from "../../store/tokens";
 
 interface ImportCSVModalProps extends ReturnType<typeof useDisclosure> {}
 
@@ -66,26 +67,26 @@ export const ImportCSVModal: FC<ImportCSVModalProps> = observer(
       reset: resetBatchItems,
     } = useMutation(async () => {
       const getToken = (item: BatchItemFromCSV) => {
-        if (item.type === "native") return store.tokens.list[0];
-        if (item.type === "erc20")
+        if (item.type === tokenMetaDataType.NATIVE) return store.tokens.list[0];
+        if (item.type === tokenMetaDataType.ERC20)
           return store.tokens.list.find(
             (token) => token.token_address?.toLowerCase() === item.token_address?.toLowerCase()
           );
-        if (item.type === "erc721")
+        if (item.type === tokenMetaDataType.ERC721)
           return store.nfts.get(item.token_address?.toLowerCase(), item.token_id!);
       };
       const totals: any = {}
       return converted?.baseBatch!.map((item) => {
         const token = getToken(item);
         if (!token) {
-          if(item.type === "erc721") {
+          if(item.type === tokenMetaDataType.ERC721) {
             throw new TokenNotFoundError("NFT not found", item)
           }
           throw new TokenNotFoundError("Token not found", item)
         }
         if(item.recipient_address?.toLowerCase() === account?.toLowerCase()) throw new SendToYourselfError("Send to yourself", item)
 
-        if(item.type === 'erc721') {
+        if(item.type === tokenMetaDataType.ERC721) {
           if(!totals[token.token_address]) {
             totals[token.token_address] = []
           }

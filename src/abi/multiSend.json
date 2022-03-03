@@ -1,140 +1,140 @@
 [
-    {
-        "inputs": [
-            {
-                "internalType": "address payable[]",
-                "name": "_receivers",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_amounts",
-                "type": "uint256[]"
-            },
-            {
-                "internalType": "address[]",
-                "name": "_tokens",
-                "type": "address[]"
-            },
-            {
-                "internalType": "string[]",
-                "name": "_types",
-                "type": "string[]"
-            }
-        ],
-        "name": "multiSendAll",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address payable[]",
-                "name": "_receivers",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_amounts",
-                "type": "uint256[]"
-            },
-            {
-                "internalType": "address[]",
-                "name": "_tokens",
-                "type": "address[]"
-            }
-        ],
-        "name": "multiSendERC20",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address payable[]",
-                "name": "_receivers",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_tokenIds",
-                "type": "uint256[]"
-            },
-            {
-                "internalType": "address[]",
-                "name": "_tokens",
-                "type": "address[]"
-            }
-        ],
-        "name": "multiSendERC721",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address payable[]",
-                "name": "_receivers",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_amounts",
-                "type": "uint256[]"
-            }
-        ],
-        "name": "multiSendNative",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address payable[]",
-                "name": "_receivers",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_amounts",
-                "type": "uint256[]"
-            },
-            {
-                "internalType": "address[]",
-                "name": "_tokens",
-                "type": "address[]"
-            }
-        ],
-        "name": "multiSendNativeAndERC20",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address payable[]",
-                "name": "_receivers",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "_amounts",
-                "type": "uint256[]"
-            },
-            {
-                "internalType": "address[]",
-                "name": "_tokens",
-                "type": "address[]"
-            }
-        ],
-        "name": "multiSendNativeAndERC721",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    }
+  {
+    "inputs": [
+      {
+        "internalType": "address payable[]",
+        "name": "_receivers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_types",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "multiSendAll",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable[]",
+        "name": "_receivers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "multiSendERC20",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable[]",
+        "name": "_receivers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_tokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "multiSendERC721",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable[]",
+        "name": "_receivers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "multiSendNative",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable[]",
+        "name": "_receivers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "multiSendNativeAndERC20",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable[]",
+        "name": "_receivers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "multiSendNativeAndERC721",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ]

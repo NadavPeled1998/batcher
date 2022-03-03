@@ -1,10 +1,15 @@
 import { makeAutoObservable } from "mobx";
 import Moralis from "moralis";
 import { ChainID } from "./prices";
-import { makePersistable } from "mobx-persist-store";
 import { generateNativeTokenMetaData } from "../utils/defaults";
 import { NATIVE_ADDRESS_0x0, NATIVE_ADDRESS_0xE } from "../utils/network";
 import { isNative } from "../utils/address";
+
+export enum tokenMetaDataType {
+  NATIVE = 1,
+  ERC20 = 2,
+  ERC721 = 3,
+}
 
 export interface TokenMetaData {
   address: string;
@@ -16,7 +21,7 @@ export interface TokenMetaData {
   thumbnail?: string;
   block_number?: string;
   validated?: string;
-  type?: "erc20" | "erc721" | "native";
+  type?: tokenMetaDataType;
 }
 
 export type TokensMetaDataMap = {
@@ -35,11 +40,6 @@ export class Tokens {
 
   constructor() {
     makeAutoObservable(this);
-    makePersistable(this, {
-      name: "TokensStore",
-      properties: ["tokensMap"],
-      storage: window.localStorage,
-    });
   }
 
   filterUnFetched(addresses: string[]) {
@@ -68,7 +68,7 @@ export class Tokens {
     if (Array.isArray(token)) {
       token.forEach((t) => this.add(t));
     } else {
-      this.tokensMap[token.address.toLowerCase()] = {  ...token, type: isNative(token.address.toLowerCase()) ? 'native' : 'erc20'  };
+      this.tokensMap[token.address.toLowerCase()] = {  ...token, type: isNative(token.address.toLowerCase()) ? tokenMetaDataType.NATIVE : tokenMetaDataType.ERC20  };
     }
   }
 

@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import Moralis from "moralis";
 import { ChainID } from "./prices";
 import { getImage } from "../utils/nft";
+import { tokenMetaDataType } from "./tokens";
 
 export interface NFT {
   token_address: string;
@@ -13,7 +14,7 @@ export interface NFT {
   uri?: string;
   block_number: string; //same
   amount?: string;
-  type: "erc721";
+  type: tokenMetaDataType.ERC721;
   iconUrl?: string;
 }
 
@@ -54,11 +55,11 @@ export class NFTs {
           uri: nft.token_uri,
           block_number: nft.block_number,
           amount: nft.amount,
-          type: "erc721",
+          type: tokenMetaDataType.ERC721,
         };
       }) as NFT[];
     this.list = list;
-    list.map((nft) => {
+    list.forEach((nft) => {
       getImage(nft.uri).then((iconUrl) =>
         this.setIconUrl(nft.address, nft.id, iconUrl)
       );
@@ -70,9 +71,7 @@ export class NFTs {
       (nft) => nft.token_address === token_address && nft.id === token_id
     );
   }
-  // get(nftId: string) {
-  //   return this.list.find((nft) => nft.id === nftId);
-  // }
+   
   merge(nfts: ResNFT[]) {
     const newNfts = nfts.filter(
       (nft) =>
@@ -81,7 +80,7 @@ export class NFTs {
             it.token_address === nft.token_address && nft.token_id === it.id
         )
     );
-    newNfts.map((nft) => {
+    newNfts.forEach((nft) => {
       this.list.push({
         token_address: nft.token_address,
         address: nft.token_address,
@@ -92,14 +91,14 @@ export class NFTs {
         uri: nft.token_uri,
         block_number: nft.block_number,
         amount: nft.amount,
-        type: "erc721",
+        type: tokenMetaDataType.ERC721,
       });
       getImage(nft.token_uri).then((iconUrl) =>
         this.setIconUrl(nft.token_address, nft.token_id, iconUrl)
       );
     });
     const oldNftsIndexes: number[] = [];
-    this.list.map((it, index) => {
+    this.list.forEach((it, index) => {
       if (
         !nfts.find(
           (nft) =>
@@ -111,7 +110,7 @@ export class NFTs {
     });
     if (oldNftsIndexes.length) {
       const list: any = this.list.slice();
-      oldNftsIndexes.map((index) => {
+      oldNftsIndexes.forEach((index) => {
         list[index] = undefined;
       });
       this.list = list.filter((it: any) => it);

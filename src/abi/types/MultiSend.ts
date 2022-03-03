@@ -83,7 +83,7 @@ export interface MultiSend {
     _receivers: string[],
     _amounts: string[],
     _tokens: string[],
-    _types: string[]
+    _types: number[]
   ): MethodPayableReturnContext;
   /**
    * Payable: true

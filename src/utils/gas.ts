@@ -3,6 +3,7 @@ import { store } from "../store";
 import erc20ABI from '../abi/erc20.json'
 import erc721ABI from '../abi/erc721.json'
 import { createERC20Contract, createERC721Contract } from "../contracts";
+import { tokenMetaDataType } from "../store/tokens";
 
 export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params: any) => {
 
@@ -69,7 +70,7 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params
     if (web3) {
         for (let i = 0; i < store.batch.items.length; i++) {
             const { token, address } = store.batch.items[i];
-            if (token.type === "native") {
+            if (token.type === tokenMetaDataType.NATIVE) {
                 const balance = await web3.eth.getBalance(address)
                 if (balance) {
                     gasLimit += existNative;
@@ -77,7 +78,7 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params
                 else {
                     gasLimit += unExistNative;
                 }
-            } else if (token.type === "erc20") {
+            } else if (token.type === tokenMetaDataType.ERC20) {
                 const erc20Contract = new web3.eth.Contract(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     erc20ABI as any,
@@ -100,7 +101,7 @@ export const getEstimatedGasLimit = async (web3: MoralisType.Web3 | null, params
                 } catch {
                     gasLimit += existToken;
                 }
-            } else if (token.type === "erc721") {
+            } else if (token.type === tokenMetaDataType.ERC721) {
                 if (!isThereNFT) {
                     isThereNFT = true
                     gasLimit += firstNFTAddition
@@ -160,9 +161,9 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
     if (web3) {
         for (let i = 0; i < store.batch.items.length; i++) {
             const { token, address } = store.batch.items[i];
-            if (token.type === "native") {
+            if (token.type === tokenMetaDataType.NATIVE) {
                 gasLimit += 21000;
-            } else if (token.type === "erc20") {
+            } else if (token.type === tokenMetaDataType.ERC20) {
                 const erc20Contract = createERC20Contract(web3, token.address);
                 try {
                     const balance = await erc20Contract.methods
@@ -176,7 +177,7 @@ export const getExternalGasLimit: (web3: MoralisType.Web3 | null) => Promise<str
                 } catch {
                     gasLimit += 37000;
                 }
-            } else if (token.type === "erc721") {
+            } else if (token.type === tokenMetaDataType.ERC721) {
                 const erc721Contract = createERC721Contract(web3, token.address);
                 try {
                     const balance = await erc721Contract.methods

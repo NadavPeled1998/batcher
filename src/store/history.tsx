@@ -4,7 +4,7 @@ import { store } from ".";
 import { DecodedTransfer, decodeInput } from "../abi";
 import { IBatchItem, TotalsMap } from "./batch";
 import { NFT } from "./nfts";
-import { tokensStore } from "./tokens";
+import { tokenMetaDataType, tokensStore } from "./tokens";
 
 export interface Transaction {
   hash: string;
@@ -39,7 +39,7 @@ export interface TransactionHistoryListItem {
 }
 
 const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
-  if(decodedTransfer.type === 'erc721') {
+  if(decodedTransfer.type === tokenMetaDataType.ERC721) {
     const nft: NFT = { 
     token_address: decodedTransfer.token_address,
     address: decodedTransfer.token_address,
@@ -50,7 +50,7 @@ const createBatchItem = (decodedTransfer: DecodedTransfer): IBatchItem => {
     uri: '', 
     block_number: '', 
     amount: '', 
-    type: 'erc721',
+    type: tokenMetaDataType.ERC721,
     }
 
     return {
@@ -94,10 +94,18 @@ export class TransactionHistory {
   }
 
   addTransaction(transaction: Transaction) {
-    this.transactions = [transaction, ...this.transactions];
+    const prevTransactionIndex =  this.transactions.findIndex(prevTransaction => prevTransaction.hash === transaction.hash)
+    if(prevTransactionIndex < 0) {
+      this.transactions = [transaction, ...this.transactions];
+    }
+    else {
+      const prevTransactions = this.transactions.slice()
+      prevTransactions.splice(prevTransactionIndex, 1)
+      this.transactions = [transaction, ...prevTransactions]
+    }
   }
 
-  setPendingTransactionStatus({hash, receipt_status}: Transaction) {
+  setPendingTransactionStatus({hash, receipt_status}: {hash: string, receipt_status: string}) {
     const index = this.transactions.findIndex(transaction => transaction.hash === hash)
     this.transactions[index].receipt_status = receipt_status
   }

@@ -18,6 +18,7 @@ import { observer } from "mobx-react-lite";
 import { FC } from "react";
 import { Check } from "react-feather";
 import { store } from "../store";
+import { tokenMetaDataType } from "../store/tokens";
 import { Ellipsis } from "./Ellipsis";
 import { TokenIcon } from "./TokenPicker/TokenIcon";
 
@@ -69,7 +70,7 @@ export const ApproveModal: FC<Props> = observer(
                     maxW="full"
                     overflow="hidden"
                   >
-                    {token.type !== 'erc721' && <TokenIcon token={token.symbol} size="30" />}
+                    {token.type !== tokenMetaDataType.ERC721 && <TokenIcon token={token} size="30" />}
                     <Box overflow="hidden">
                       <Text>{token.symbol}</Text>
                       <Ellipsis mt="-0.5" fontSize="xs" color="gray.500">

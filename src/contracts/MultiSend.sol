@@ -53,13 +53,6 @@ interface IERC721 {
         view
         returns (bool);
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external;
-
     event Transfer(
         address indexed from,
         address indexed to,
@@ -78,12 +71,21 @@ interface IERC721 {
 }
 
 contract MultiSend {
+    function multiSendNative(
+        address payable[] memory _receivers,
+        uint256[] memory _amounts
+    ) public payable {
+        for (uint256 i = 0; i < _receivers.length; i++) {
+            _receivers[i].transfer(_amounts[i]);
+        }
+        payable(msg.sender).transfer(address(this).balance);
+    }
 
     function multiSendERC20(
         address payable[] memory _receivers,
         uint256[] memory _amounts,
         address[] memory _tokens
-    ) public payable {
+    ) public {
         for (uint256 i = 0; i < _receivers.length; i++) {
             IERC20(_tokens[i]).transferFrom(
                 msg.sender,
@@ -93,20 +95,11 @@ contract MultiSend {
         }
     }
 
-        function multiSendNative(
-        address payable[] memory _receivers,
-        uint256[] memory _amounts
-    ) public payable {
-        for (uint256 i = 0; i < _receivers.length; i++) {
-            _receivers[i].transfer(_amounts[i]);
-        }
-    }
-
     function multiSendERC721(
         address payable[] memory _receivers,
         uint256[] memory _tokenIds,
         address[] memory _tokens
-    ) public payable {
+    ) public {
         for (uint256 i = 0; i < _receivers.length; i++) {
             IERC721(_tokens[i]).transferFrom(
                 msg.sender,
@@ -132,6 +125,7 @@ contract MultiSend {
                 );
             }
         }
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     function multiSendNativeAndERC721(
@@ -150,30 +144,25 @@ contract MultiSend {
                 );
             }
         }
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     function multiSendAll(
         address payable[] memory _receivers,
         uint256[] memory _amounts,
         address[] memory _tokens,
-        string[] memory _types
+        uint256[] memory _types
     ) public payable {
-            bytes32 hashNative = keccak256(abi.encodePacked(("native")));
-            bytes32 hashERC20 = keccak256(abi.encodePacked(("erc20")));
-            bytes32 hashERC721 = keccak256(abi.encodePacked(("erc721")));
         for (uint256 i = 0; i < _receivers.length; i++) {
-            bytes32 hashType = keccak256(abi.encodePacked((_types[i])));
-            if (hashType == hashNative) {
+            if (_types[i] == 1) {
                 _receivers[i].transfer(_amounts[i]);
-            }
-            else if(hashType  == hashERC20){
+            } else if (_types[i] == 2) {
                 IERC20(_tokens[i]).transferFrom(
                     msg.sender,
                     _receivers[i],
                     _amounts[i]
                 );
-            }
-            else if(hashType  == hashERC721){
+            } else if (_types[i] == 3) {
                 IERC721(_tokens[i]).transferFrom(
                     msg.sender,
                     _receivers[i],
@@ -181,5 +170,6 @@ contract MultiSend {
                 );
             }
         }
+        payable(msg.sender).transfer(address(this).balance);
     }
 }

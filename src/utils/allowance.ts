@@ -6,6 +6,7 @@ import { Token } from "../store/prices";
 import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
 import { MULTI_SEND_CONTRACT_ADDRESSES } from "./multiSendContractAddress";
+import { tokenMetaDataType } from "../store/tokens";
 
 
 export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account: string | null, chainId: string | null, token: Token | NFT, amount?: string) => {
@@ -13,7 +14,7 @@ export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account:
         const MULTI_SEND_CONTRACT_ADDRESS = MULTI_SEND_CONTRACT_ADDRESSES[chainId];
 
         const { setApproveToken, addToNeedsApproveMap, totals } = store.batch;
-        if (token.type === "erc20") {
+        if (token.type === tokenMetaDataType.ERC20) {
             const erc20 = token as Token
             const erc20Contract = new web3.eth.Contract(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,7 +32,7 @@ export const checkIfNeedApprove = async (web3: MoralisType.Web3 | null, account:
                 setApproveToken(erc20.token_address);
             }
         }
-        if (token.type === "erc721") {
+        if (token.type === tokenMetaDataType.ERC721) {
             const erc721 = token as NFT
             const erc721Contract = new web3.eth.Contract(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,7 +56,7 @@ export const approveAsset = (web3: MoralisType.Web3 | null, account: string | nu
     const { setApproveToken } = store.batch;
     const { approveCommand } = store.commands
     if(web3) {
-        if (token.type === "erc20") {
+        if (token.type === tokenMetaDataType.ERC20) {
             const erc20Contract = new web3.eth.Contract(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 erc20ABI as any,
@@ -77,7 +78,7 @@ export const approveAsset = (web3: MoralisType.Web3 | null, account: string | nu
                     approveCommand.setFailed();
                 });
         }
-        if (token.type === "erc721") {
+        if (token.type === tokenMetaDataType.ERC721) {
             const erc721Contract = new web3.eth.Contract(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 erc721ABI as any,

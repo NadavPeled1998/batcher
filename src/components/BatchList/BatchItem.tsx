@@ -6,7 +6,7 @@ import { useMoralis } from "react-moralis";
 import { store } from "../../store";
 import { IBatchItem } from "../../store/batch";
 import { NFT } from "../../store/nfts";
-import { TokenMetaData } from "../../store/tokens";
+import { TokenMetaData, tokenMetaDataType } from "../../store/tokens";
 import { shortenAddress } from "../../utils/address";
 import { formatNumber } from "../../utils/currency";
 import { NFTImage } from "../NFTPicker/NFTImage";
@@ -24,7 +24,7 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
   const [iconUrl, setIconUrl] = useState<string>('')
   
   useEffect(() => {
-    if(item.token.type === 'erc721') {
+    if(item.token.type === tokenMetaDataType.ERC721) {
       const token = item.token as NFT
       if(!token.uri) {
         const options = { address: token.token_address, token_id: token.id, chain: chainId as ChainID };
@@ -44,12 +44,12 @@ export const BatchItem: FC<BatchItemProps> = ({ item, readonly }) => {
         }
       }
     }
-  }, [item.token.type])
+  }, [item, chainId])
 
   return (
     <Flex fontSize="sm" alignItems="center" gap={2} w="full" flex={1} minH="8">
       <Send size="1em" color="var(--chakra-colors-primary-200)" />
-      {item.token.type === "erc721" ? (
+      {item.token.type === tokenMetaDataType.ERC721 ? (
         <>
           <Badge colorScheme="teal">NFT</Badge>
           <NFTImage boxSize="5" nft={{...item.token as NFT, iconUrl: (item.token as NFT).iconUrl || iconUrl}} />

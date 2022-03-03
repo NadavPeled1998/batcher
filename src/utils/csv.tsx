@@ -2,8 +2,8 @@ import { IBatchItem } from "../store/batch";
 import { NFT } from "../store/nfts";
 import { isNative, isValidAddress } from "./address";
 import csv from "csvtojson";
-import { TokenType } from "../store/prices";
 import { CSVError, CSVErrors } from "./errors";
+import { tokenMetaDataType } from "../store/tokens";
 
 export const isCSV = (file: File) => {
   const fileType = file.type;
@@ -17,7 +17,7 @@ export interface BatchItemFromCSV {
   token_address: string;
   token_id?: string;
   amount?: number;
-  type: "native" | "erc20" | "erc721";
+  type: tokenMetaDataType;
   row: {
     index: number;
     line: string;
@@ -40,7 +40,7 @@ export const convertBatchToCSV = (batch: IBatchItem[]) => {
 
     if (isNative(item.token.address)) {
       csvItem["Amount"] = item.amount.toString();
-    } else if (item.token.type === "erc721") {
+    } else if (item.token.type === tokenMetaDataType.ERC721) {
       const { token_address, id } = item.token as NFT;
       csvItem["Token address"] = token_address;
       csvItem["Token ID"] = id;
@@ -85,7 +85,7 @@ type IsCVSRowValidProps = {
   amount?: string;
   token_address?: string;
   token_id?: string;
-  type: TokenType;
+  type: tokenMetaDataType;
 };
 
 type IsCVSRowValidReturn = {
@@ -107,20 +107,20 @@ const isCSVRowValid = (params: IsCVSRowValidProps): IsCVSRowValidReturn => {
   const isERC721Valid = recipient_address && token_address && token_id;
 
   switch (params.type) {
-    case "native":
+    case tokenMetaDataType.NATIVE:
       return {
         valid: isNativeValid,
         recipient_address,
         amount,
       };
-    case "erc20":
+    case tokenMetaDataType.ERC20:
       return {
         valid: isERC20Valid,
         recipient_address,
         amount,
         token_address,
       };
-    case "erc721":
+    case tokenMetaDataType.ERC721:
       return {
         valid: isERC721Valid,
         recipient_address,
@@ -133,13 +133,13 @@ const isCSVRowValid = (params: IsCVSRowValidProps): IsCVSRowValidReturn => {
 const getCSVTokenType = (
   token_address: string,
   token_id: string
-): TokenType => {
+): tokenMetaDataType => {
   if (token_id) {
-    return "erc721";
+    return tokenMetaDataType.ERC721;
   } else if (!token_address || isNative(token_address)) {
-    return "native";
+    return tokenMetaDataType.NATIVE;
   } else {
-    return "erc20";
+    return tokenMetaDataType.ERC20;
   }
 };
 

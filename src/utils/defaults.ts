@@ -1,5 +1,5 @@
 import { Token } from "../store/prices";
-import { TokenMetaData } from "../store/tokens";
+import { TokenMetaData, tokenMetaDataType } from "../store/tokens";
 import { NATIVE_ADDRESS_0xE } from "./network";
 import avaxIcon from '../assets/avax.png' 
 
@@ -7,21 +7,25 @@ interface IDefaultCurrency {
  symbol: string;
  name: string;
  logo?: string
+ blockchain: string,
 }
 type defaultCurrencies = { [key in string]: IDefaultCurrency };
 
-const DEFAULT_CURRENCIES: defaultCurrencies = {
+export const DEFAULT_CURRENCIES: defaultCurrencies = {
   '0x4': {
+    blockchain: "Eth",
     symbol: "ETH",
     name: "Ethereum",
     logo: undefined,
   },
   '0xa869': {
+    blockchain: "Avax",
     symbol: "AVAX",
     name: "Avalanche-2",
     logo: avaxIcon
   },
   '0xa86a': {
+    blockchain: "Avax",
     symbol: "AVAX",
     name: "Avalanche-2",
     logo: avaxIcon
@@ -38,7 +42,7 @@ export const genDefaultETHToken = (chainId?: string | null): Token => {
     balance: "0",
     logo: defaultCurrency?.logo,
     thumbnail: undefined,
-    type: "native",
+    type: tokenMetaDataType.NATIVE,
   };
 };
 
@@ -52,6 +56,6 @@ export const generateNativeTokenMetaData = (chainId?: string | null): TokenMetaD
     name: defaultCurrency?.name,
     logo: defaultCurrency?.logo,
     thumbnail: undefined,
-    type: "native",
+    type: tokenMetaDataType.NATIVE,
   };
 };

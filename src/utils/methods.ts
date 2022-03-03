@@ -3,6 +3,7 @@ import { store } from "../store";
 import { NFT } from "../store/nfts";
 import { etherToWei } from "./ethereum";
 import multiSendABI from '../abi/multiSend.json'
+import { tokenMetaDataType } from "../store/tokens";
 
 export const getParams = (web3: MoralisType.Web3 | null) => {
     let isSendERC20 = false;
@@ -11,7 +12,7 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
     let receivers: string[] = [];
     let amounts: string[] = [];
     let addresses: string[] = [];
-    let types: string[] = [];
+    let types: number[] = [];
     let value = "";
 
     if (web3) {
@@ -20,7 +21,7 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
             receivers.push(item.address);
 
             // push to amounts
-            if (item.token.type === "erc721") {
+            if (item.token.type === tokenMetaDataType.ERC721) {
                 isSendERC721 = true;
                 amounts.push((item.token as NFT).id);
             } else {
@@ -28,7 +29,7 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
             }
 
             // push to addresses
-            if (item.token.type === "native") {
+            if (item.token.type === tokenMetaDataType.NATIVE) {
                 isSendNative = true;
                 value = String(
                     +value + +etherToWei(web3, item.amount, item.token.decimals)
@@ -38,7 +39,7 @@ export const getParams = (web3: MoralisType.Web3 | null) => {
                 addresses.push(item.token.address || (item.token as NFT).token_address);
             }
 
-            if (item.token.type === "erc20") {
+            if (item.token.type === tokenMetaDataType.ERC20) {
                 isSendERC20 = true;
             }
             // push to types

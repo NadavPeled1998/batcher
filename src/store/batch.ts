@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Token } from "./prices";
 import { NFT } from "./nfts";
-import { TokenMetaData } from "./tokens";
+import { TokenMetaData, tokenMetaDataType } from "./tokens";
 
 export interface IBatchItem {
   address: string;
@@ -28,7 +28,7 @@ export class Batch {
 
   generateTotals(items: IBatchItem[]) {
     return items.reduce((acc, item) => {
-      if (item.token.type === "erc721") {
+      if (item.token.type === tokenMetaDataType.ERC721) {
         if (!acc.nft) acc.nft = { total: 0 };
         acc.nft.total += 1;
       } else {

@@ -19,14 +19,7 @@ export const Totals: FC<TotalProps> = observer(({ totals, ...props }) => {
       <Divider borderColor="gray.700" />
       <Flex gap={3} flexWrap="wrap">
         {items.map(([key, { token, total }], i) => {
-          if (key === "nft" /*token?.type === "erc721"*/) {
-            // const nft = token as NFT;
-            // return (
-            //   <Flex gap="1" fontSize="sm" alignItems="center" key={nft.symbol}>
-            //     <Text color="gray.400">{nft.symbol}</Text>
-            //     <Text fontSize="xs">{`${nft.name} #${nft.id}`}</Text>
-            //   </Flex>
-            // );
+          if (key === "nft") {
             return (
               <Flex
                 gap="1"
@@ -36,14 +29,6 @@ export const Totals: FC<TotalProps> = observer(({ totals, ...props }) => {
               >
                 <Text color="gray.400">NFT</Text>
                 <Text fontWeight="medium">{total}</Text>
-                {/* <Text fontSize="xs">
-                  ($
-                  {formatNumber(
-                    total * store.tokens.prices.get(token!.address)?.usdPrice ||
-                      0
-                  )}
-                  )
-                </Text> */}
               </Flex>
             );
           }
