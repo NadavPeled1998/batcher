@@ -72,9 +72,9 @@ interface IERC721 {
 
 contract MultiSend {
     function multiSendNative(
-        address payable[] memory _receivers,
-        uint256[] memory _amounts
-    ) public payable {
+        address payable[] calldata _receivers,
+        uint256[] calldata _amounts
+    ) external payable {
         for (uint256 i = 0; i < _receivers.length; i++) {
             _receivers[i].transfer(_amounts[i]);
         }
@@ -82,10 +82,10 @@ contract MultiSend {
     }
 
     function multiSendERC20(
-        address payable[] memory _receivers,
-        uint256[] memory _amounts,
-        address[] memory _tokens
-    ) public {
+        address payable[] calldata _receivers,
+        uint256[] calldata _amounts,
+        address[] calldata _tokens
+    ) external {
         for (uint256 i = 0; i < _receivers.length; i++) {
             IERC20(_tokens[i]).transferFrom(
                 msg.sender,
@@ -96,10 +96,10 @@ contract MultiSend {
     }
 
     function multiSendERC721(
-        address payable[] memory _receivers,
-        uint256[] memory _tokenIds,
-        address[] memory _tokens
-    ) public {
+        address payable[] calldata _receivers,
+        uint256[] calldata _tokenIds,
+        address[] calldata _tokens
+    ) external {
         for (uint256 i = 0; i < _receivers.length; i++) {
             IERC721(_tokens[i]).transferFrom(
                 msg.sender,
@@ -110,10 +110,10 @@ contract MultiSend {
     }
 
     function multiSendNativeAndERC20(
-        address payable[] memory _receivers,
-        uint256[] memory _amounts,
-        address[] memory _tokens
-    ) public payable {
+        address payable[] calldata _receivers,
+        uint256[] calldata _amounts,
+        address[] calldata _tokens
+    ) external payable {
         for (uint256 i = 0; i < _receivers.length; i++) {
             if (_tokens[i] == address(0)) {
                 _receivers[i].transfer(_amounts[i]);
@@ -129,10 +129,10 @@ contract MultiSend {
     }
 
     function multiSendNativeAndERC721(
-        address payable[] memory _receivers,
-        uint256[] memory _amounts,
-        address[] memory _tokens
-    ) public payable {
+        address payable[] calldata _receivers,
+        uint256[] calldata _amounts,
+        address[] calldata _tokens
+    ) external payable {
         for (uint256 i = 0; i < _receivers.length; i++) {
             if (_tokens[i] == address(0)) {
                 _receivers[i].transfer(_amounts[i]);
@@ -148,11 +148,11 @@ contract MultiSend {
     }
 
     function multiSendAll(
-        address payable[] memory _receivers,
-        uint256[] memory _amounts,
-        address[] memory _tokens,
-        uint256[] memory _types
-    ) public payable {
+        address payable[] calldata _receivers,
+        uint256[] calldata _amounts,
+        address[] calldata _tokens,
+        uint256[] calldata _types
+    ) external payable {
         for (uint256 i = 0; i < _receivers.length; i++) {
             if (_types[i] == 1) {
                 _receivers[i].transfer(_amounts[i]);
